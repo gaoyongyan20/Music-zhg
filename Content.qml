@@ -1,11 +1,36 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import QtMultimedia
 
 Frame {
     property alias backgrondImage: _backgrondImage
     anchors.fill: parent
 
+    property alias dialogs: _dialogs
+    property alias audio: _audio
+    property alias playmusic: _playmusic
+    property alias text: _text
+    Text {
+        id: _text
+        font.pointSize: 24
+        width: 150
+        height: 50
+    }
+    TapHandler {
+        onTapped: {
+            playmusic.play()
+        }
+    }
+    Dialogs {
+        id: _dialogs
+    }
+    MediaPlayer {
+        id: _playmusic
+        audioOutput: AudioOutput {
+            id: _audio
+        }
+    }
     RowLayout {
         anchors.fill: parent
 

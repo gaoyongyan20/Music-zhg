@@ -6,6 +6,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "freemusic.js" as Controller
 
 ApplicationWindow {
     width: 640
@@ -84,10 +85,46 @@ ApplicationWindow {
         }
     }
 
-    footer: Footer {}
+    footer: Footer {
+        // id: footer
+        //进度条
+        playProgressSlider.to: content.playmusic.duration
+        playProgressSlider.value: content.playmusic.position
+        playProgressSlider.onMoved: {
+            content.playmusic.position = playProgressSlider.value
+        }
+
+        //进度条起点-文本
+        textOrigin.text: Controller.formatTime(content.playmusic.position)
+        //进度条终点-文本
+        textTerminus.text: Controller.formatTime(content.playmusic.duration)
+
+
+        /*更新时间戳，存疑
+        Timer {
+            id: timer
+            interval: 1000 // 更新时间戳的频率
+            running: true
+            onTriggered: {
+                // 每秒更新一次文本
+                footer.textOrigin.text = Controller.formatTime(
+                            content.playmusic.position)
+                footer.textTerminus.text = Controller.formatTime(
+                            content.playmusic.duration)
+            }
+        }*/
+
+        //声音图标
+
+        //音量
+        volumeSlider.to: 1.0
+        volumeSlider.value: content.audio.volume
+        volumeSlider.onMoved: content.audio.volume = volumeSlider.value
+    }
 
     Actions {
         id: actions
+        open.onTriggered: Controller.open()
     }
 
     Content {

@@ -3,7 +3,12 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 Item {
+    property alias playProgressSlider: _playProgressSlider
+    property alias volumeSlider: _volumeSlider
+    property alias textOrigin: _textOrigin
+    property alias textTerminus: _textTerminus
 
+    property alias voiceIcon: _voiceIcon
     RowLayout {
         id: layout
         anchors.bottom: parent.bottom
@@ -15,7 +20,7 @@ Item {
         }
 
         RoundButton {
-            id: play_button
+            id: _play_button
             icon.name: "media-playback-start-symbolic"
             // anchors.left: backward_button.right
         }
@@ -25,23 +30,26 @@ Item {
         }
 
         Text {
+            id: _textOrigin
             text: "00:00"
         }
 
         Slider {
-            id: playProgressSlider
+            id: _playProgressSlider
         }
 
         Text {
+            id: _textTerminus
             text: "3:45"
         }
 
         RoundButton {
+            id: _voiceIcon
             icon.name: "player-volume"
         }
 
         Slider {
-            id: volumeSlider
+            id: _volumeSlider
             width: 50
         }
 
