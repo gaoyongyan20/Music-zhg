@@ -1,27 +1,30 @@
-function open() {
+//改为同时打开多首歌曲
+function setFilesModel (selectedFiles){
     content.dialogs.fileOpen.open()
-    content.dialogs.fileOpen.rejected.connect(() => {
-                                                  return
-                                              })
 
-    content.dialogs.fileOpen.accepted.connect(() => {
-                                                  let filepath = content.dialogs.fileOpen.selectedFile
-                                                  console.log(
-                                                      filepath.toString())
+    content.dialogs.fileOpen.rejected.
+    connect(()=>{ return })
 
-                                                  // let index = filepath.toString().lastIndexOf('/')
-                                                  // if (index !== -1) {
-                                                  var data = content.playmusic.metaData
-                                                  content.text.text = filepath
-                                                  console.log("title:",
-                                                              content.text.text)
-                                                  // }
-                                                  content.playmusic.source = filepath.toString()
-                                                  content.playmusic.play()
+    content.dialogs.fileOpen.accepted.
+    connect(()=>{
 
-                                                  return
-                                              })
+    content.filesModel.clear();
+     arguments[0]=content.dialogs.fileOpen.selectedFiles
+    for(var i=0;i<arguments[0].length;i++){
+        var filePath=selectedFiles[i]
+        var data={
+            "filePath":filePath,
+            "title":"loading",
+            "author":"loading"
+        };
+        content.filesModel.append(data);
+        content.getTitle(filePath,i);
+    }
+    content.listview.model=content.filesModel
+    content.listview.currentIndex=0
+})
 }
+
 //将时间毫秒转化为00：00格式
 function formatTime(milliseconds) {
     //Math.floor（）向下取整，返回小于等于给定值的最大值

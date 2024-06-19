@@ -124,7 +124,7 @@ ApplicationWindow {
 
     Actions {
         id: actions
-        open.onTriggered: Controller.open()
+        open.onTriggered: Controller.setFilesModel()
     }
 
     Content {
