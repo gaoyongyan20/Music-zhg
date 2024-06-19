@@ -98,7 +98,18 @@ ApplicationWindow {
         textOrigin.text: Controller.formatTime(content.playmusic.position)
         //进度条终点-文本
         textTerminus.text: Controller.formatTime(content.playmusic.duration)
-
+        //播放列表显示
+        playlist.onClicked: {
+            if(content.songRect.width===0&&content.songRect.height===0)
+            {
+                content.songRect.width=200
+                content.songRect.height=200
+                content.songRect.visible=true
+            }else{
+                content.songRect.width=0
+                content.songRect.height=0
+            }
+        }
 
         /*更新时间戳，存疑
         Timer {
@@ -125,6 +136,7 @@ ApplicationWindow {
     Actions {
         id: actions
         open.onTriggered: Controller.setFilesModel()
+        background.onTriggered: content.imageDialog.open()
     }
 
     Content {

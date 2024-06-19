@@ -5,22 +5,63 @@ import QtMultimedia
 
 Frame {
     id:root
+
     property alias backgrondImage: _backgrondImage
     anchors.fill: parent
     property alias filesModel: _filesModel
     property alias listview: _multipath
     property alias player: _playmusic
-
     property alias dialogs: _dialogs
     property alias audio: _audio
     property alias playmusic: _playmusic
+    property alias imageDialog:_imageDialog
+    property alias playlistshow: _playlistshow
+    property alias songRect:_songRect
+    property alias faceImage: _faceImage
+    property string textauthor: "author"
+    property string textalubm: "album"
+
+    Image {
+        id: _backgrondImage
+        z:-1111
+        width: root.width-20
+        height: root.height-20
+        opacity: 0.9
+        Layout.alignment: Qt.AlignCenter
+        source: "qrc:/root/Music-zhg/images/myimage1.png"
+        onSourceChanged: {
+                update()
+            }
+    }
 
     Dialogs {
-
         id: _dialogs
 
-        // fileOpen.onAccepted:
-        //     setFilesModel(fileOpen.selectedFiles)
+        Dialog{
+            id:_imageDialog
+            title:"select background"
+            width: 300
+            height: 200
+            GridView {
+                 anchors.fill: parent
+                 model: ["myimage1.png", "myimage2.png"]
+                 delegate: Rectangle {
+                     width: 50; height: 50
+                     Image {
+                         width: parent.width
+                         height: parent.height
+                         source: "qrc:/root/Music-zhg/images/" + modelData
+                         TapHandler{
+                             onTapped: {
+                                 // 将点击的图片设置为程序的背景
+                                 backgrondImage.source = "qrc:/root/Music-zhg/images/" + modelData
+                                 faceImage.source= "qrc:/root/Music-zhg/images/" + modelData
+                             }
+                         }
+                     }
+                 }
+             }
+        }
     }
 
     MediaPlayer {
@@ -29,6 +70,9 @@ Frame {
             id: _audio
         }
     }
+
+
+
 
         //从指定的媒体文件路径（fp）中提取标题和作者信息，利用元对象
         function getTitle(fp,i){
@@ -58,57 +102,68 @@ Frame {
 
         ColumnLayout {
             id: _leftLayout
-            width: 300
-            height: 350
-            Layout.fillWidth: true
-            Layout.fillHeight: true
 
-            // -----放置图片(换成Image)
-            Image {
-                id: _backgrondImage
-                width: 200
-                height: 150
+            Rectangle{
+                width: 100
+                height: 100
+                border.color: "black"
+                border.width: 8
+                Layout.alignment: Qt.AlignHCenter
+                Image {
+                    width: parent.width-4
+                    height: parent.height-4
+                    id:_faceImage
+                    anchors.centerIn: parent
+                    source: "qrc:/root/Music-zhg/images/myimage1.png"
+                }
             }
 
+
             Rectangle {
-                width: 200
+                width: 150
                 height: 30
                 color: "transparent"
                 Text {
-                    // text: "author"
+                    text:textalubm
                     anchors.centerIn: parent
                 }
             }
             Rectangle {
-                width: 200
+                width: 150
                 height: 30
                 color: "transparent"
                 Text {
-                    //  text: "album"
+                     text: textauthor
                     anchors.centerIn: parent
                 }
             }
         }
 
         ColumnLayout {
+
             Rectangle {
-                width: 300
-                height: 350
+                // width: 300
+                // height: 350
+                // opacity: 0.8
                 color: "transparent"
+                id:_playlistshow
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
                 Rectangle {
                     id: _songRect
+                    opacity: 0.7
                     width: 200
                     height: 200
-                    color: "transparent"
+                    visible: false
+                    // color: "blue"
                     anchors.bottom: parent.bottom
                     anchors.right: parent.right
 
                     // visible: false
                     // z: -1
                     ScrollView {
+
                         id: _scorllView
                         anchors.fill: parent
                         ScrollBar.horizontal.policy: ScrollBar.AsNeeded
@@ -160,6 +215,8 @@ Frame {
                                               _multipath.currentIndex = index
                                               _playmusic.source = filePath
                                               _playmusic.play()
+                                              textauthor=author
+                                              textalubm=title
                                           }
                                       }
 

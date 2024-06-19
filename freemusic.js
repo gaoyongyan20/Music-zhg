@@ -7,7 +7,7 @@ function setFilesModel (selectedFiles){
 
     content.dialogs.fileOpen.accepted.
     connect(()=>{
-
+                console.log("accept")
     content.filesModel.clear();
      arguments[0]=content.dialogs.fileOpen.selectedFiles
     for(var i=0;i<arguments[0].length;i++){

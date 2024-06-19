@@ -7,8 +7,9 @@ Item {
     property alias volumeSlider: _volumeSlider
     property alias textOrigin: _textOrigin
     property alias textTerminus: _textTerminus
-
     property alias voiceIcon: _voiceIcon
+    property alias playlist: _playlist
+    property alias fullscreen:_fullscreen
     RowLayout {
         id: layout
         anchors.bottom: parent.bottom
@@ -54,10 +55,12 @@ Item {
         }
 
         RoundButton {
+            id:_playlist
             icon.name: "amarok_playlist-symbolic"
         }
 
         RoundButton {
+            id:_fullscreen
             icon.name: "gnumeric-row-hide-symbolic"
         }
     }

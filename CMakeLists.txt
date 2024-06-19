@@ -29,7 +29,8 @@ qt_add_qml_module(
   QML_FILES
   Dialogs.qml
   QML_FILES
-  freemusic.js)
+  freemusic.js
+  RESOURCES resources.qrc)
 
 target_compile_features(appMusicPlayer PRIVATE cxx_std_20)
 
