@@ -86,7 +86,16 @@ ApplicationWindow {
     }
 
     footer: Footer {
-        // id: footer
+        //上一首歌
+        backward_button.onClicked: {
+            Controller.setBackwardMusic()
+        }
+
+        //下一首歌
+        forward_button.onClicked: {
+            Controller.setForwardMusic()
+        }
+
         //进度条
         playProgressSlider.to: content.playmusic.duration
         playProgressSlider.value: content.playmusic.position
@@ -100,16 +109,16 @@ ApplicationWindow {
         textTerminus.text: Controller.formatTime(content.playmusic.duration)
         //播放列表显示
         playlist.onClicked: {
-            if(content.songRect.width===0&&content.songRect.height===0)
-            {
-                content.songRect.width=200
-                content.songRect.height=200
-                content.songRect.visible=true
-            }else{
-                content.songRect.width=0
-                content.songRect.height=0
+            if (content.songRect.width === 0 && content.songRect.height === 0) {
+                content.songRect.width = 200
+                content.songRect.height = 200
+                content.songRect.visible = true
+            } else {
+                content.songRect.width = 0
+                content.songRect.height = 0
             }
         }
+
 
         /*更新时间戳，存疑
         Timer {
@@ -126,6 +135,11 @@ ApplicationWindow {
         }*/
 
         //声音图标
+        voiceIcon.onClicked: {
+            voiceIcon.state === "playVoice" ? voiceIcon.state
+                                              = "Slience" : voiceIcon.state = "playVoice"
+            content.audio.volume = volumeSlider.value
+        }
 
         //音量
         volumeSlider.to: 1.0

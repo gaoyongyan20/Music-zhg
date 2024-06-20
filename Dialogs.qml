@@ -4,7 +4,7 @@ import QtQuick.Controls
 import QtQuick.Dialogs
 
 Item {
-    id:dialogroot
+    id: dialogroot
     property alias fileOpen: _fileOpen
     property alias about: _about
 

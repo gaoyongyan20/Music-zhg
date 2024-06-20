@@ -1,28 +1,59 @@
 //改为同时打开多首歌曲
-function setFilesModel (selectedFiles){
+function setFilesModel(selectedFiles) {
     content.dialogs.fileOpen.open()
 
-    content.dialogs.fileOpen.rejected.
-    connect(()=>{ return })
+    content.dialogs.fileOpen.rejected.connect(() => {
+                                                  return
+                                              })
 
-    content.dialogs.fileOpen.accepted.
-    connect(()=>{
-                console.log("accept")
-    content.filesModel.clear();
-     arguments[0]=content.dialogs.fileOpen.selectedFiles
-    for(var i=0;i<arguments[0].length;i++){
-        var filePath=selectedFiles[i]
-        var data={
-            "filePath":filePath,
-            "title":"loading",
-            "author":"loading"
-        };
-        content.filesModel.append(data);
-        content.getTitle(filePath,i);
+    content.dialogs.fileOpen.accepted.connect(() => {
+                                                  console.log("accept")
+                                                  content.filesModel.clear()
+                                                  arguments[0]
+                                                  = content.dialogs.fileOpen.selectedFiles
+                                                  for (var i = 0; i < arguments[0].length; i++) {
+                                                      var filePath = selectedFiles[i]
+                                                      var data = {
+                                                          "filePath": filePath,
+                                                          "title": "loading",
+                                                          "author": "loading"
+                                                      }
+                                                      content.filesModel.append(
+                                                          data)
+                                                      content.getTitle(
+                                                          filePath, i)
+                                                  }
+                                                  content.listview.model = content.filesModel
+                                                  content.listview.currentIndex = 0
+                                              })
+}
+
+//设置上一首歌
+function setBackwardMusic() {
+    var currentMusicIndex = content.listview.currentIndex
+    arguments[0] = content.dialogs.fileOpen.selectedFiles
+    if (currentMusicIndex === 0) {
+        content.playmusic.source = arguments[0][arguments[0].length - 1]
+        content.listview.currentIndex = arguments[0].length - 1
+    } else {
+        content.playmusic.source = arguments[0][currentMusicIndex - 1]
+        content.listview.currentIndex = currentMusicIndex - 1
     }
-    content.listview.model=content.filesModel
-    content.listview.currentIndex=0
-})
+    content.playmusic.play()
+}
+
+//设置下一首歌
+function setForwardMusic() {
+    var currentMusicIndex = content.listview.currentIndex
+    arguments[0] = content.dialogs.fileOpen.selectedFiles
+    if (currentMusicIndex === arguments[0].length - 1) {
+        content.playmusic.source = arguments[0][0]
+        content.listview.currentIndex = 0
+    } else {
+        content.playmusic.source = arguments[0][currentMusicIndex + 1]
+        content.listview.currentIndex = currentMusicIndex + 1
+    }
+    content.playmusic.play()
 }
 
 //将时间毫秒转化为00：00格式
