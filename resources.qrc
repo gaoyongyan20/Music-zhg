@@ -6,5 +6,6 @@
 
     <qresource prefix="/">
         <file alias="mysongs1.mp3">songs/海阔天空.mp3</file>
+        <file alias="mysongs2.mp3">songs/Valder Fields - Tamas Wells.mp3</file>
     </qresource>
 </RCC>

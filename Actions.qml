@@ -13,6 +13,8 @@ Item {
     property alias timingoff: _timingoff
     property alias background: _background
     property alias about: _about
+    property alias song1: _song1
+    property alias song2: _song2
 
     Action {
         id: _open
@@ -71,5 +73,13 @@ Item {
     Action {
         id: _exit
         icon.name: "application-exit"
+    }
+    Action{
+        id:_song1
+        text:qsTr("海阔天空")
+    }
+    Action{
+        id:_song2
+        text: qsTr("Valder Fields")
     }
 }

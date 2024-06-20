@@ -20,6 +20,7 @@ Frame {
     property alias faceImage: _faceImage
     property alias information: _information
     property alias rowlayout: _rowlayout
+    // property alias  addnext: _addnext
     property string textauthor: "author"
     property string textalubm: "album"
 
@@ -63,10 +64,7 @@ Frame {
                      }
                  }
              }
-
-
             }
-
         }
 
 
@@ -76,6 +74,13 @@ Frame {
             id: _audio
         }
     }
+
+    // function music_information(){
+    //    getTitle(so)
+    //     console.log(textalubm)
+    //     console.log(textauthor)
+
+    // }
 
     //从指定的媒体文件路径（fp）中提取标题和作者信息，利用元对象
     function getTitle(fp, i) {
@@ -237,13 +242,25 @@ Frame {
                                          color:songRoot.ListView.isCurrentItem?"red":"black"
                                      }
                                      Button{
-                                         id:addnext
+                                         id:_addnext
                                          width: 20
                                          height: 20
                                          icon.name:"bqm-add"
+                                         onClicked: {
+                                             var de=index
+                                             if(_multipath.currentIndex===de){
+                                                 return;
+                                             }
+
+                                             var newIndex=_multipath.currentIndex+1
+                                             content.filesModel.move(de,newIndex,1)
+                                             content.filesModel.move(_multipath.currentIndex,0,1)
+                                         }
+
+                                         }
                                      }
 
-                                }
+
                                 TapHandler {
                                     parent: songRoot
                                     onTapped: {
@@ -252,6 +269,7 @@ Frame {
                                         _playmusic.play()
                                         textauthor = author
                                         textalubm = title
+                                        content.filesModel.move(_multipath.currentIndex,0,1)
                                     }
                                 }
                             }

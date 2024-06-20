@@ -51,6 +51,15 @@ ApplicationWindow {
                 action: actions.about
             }
         }
+        Menu{
+            title:qsTr("local_music")
+            MenuItem{
+                action:actions.song1
+            }
+            MenuItem{
+                action:actions.song2
+            }
+        }
     }
 
     // -------设置工具栏------
@@ -119,7 +128,7 @@ ApplicationWindow {
                 content.songRect.height = 0
             }
         }
-        //
+        //全屏显示歌词板块
         fullscreen.onClicked: {
             if(content.information.width===0){
                 content.information.width=200
@@ -163,15 +172,26 @@ ApplicationWindow {
 
         open.onTriggered: Controller.setFilesModel()
         background.onTriggered: content.imageDialog.open()
-        timingoff.onTriggered: {
-            content.dialogs.timingoffDialog.open()
-        }
+        timingoff.onTriggered: content.dialogs.timingoffDialog.open()
         Timer {
             id: _timingoffTimer
             onTriggered: {
                 content.playmusic.pause()
             }
         }
+        song1.onTriggered: {
+            content.playmusic.source="qrc:/mysongs1.mp3"
+            content.playmusic.play()
+            content.textalubm="海阔天空"
+            content.textauthor="beyond"
+        }
+        song2.onTriggered: {
+            content.playmusic.source="qrc:/mysongs2.mp3"
+            content.playmusic.play()
+            content.textalubm="Valder Fields"
+            content.textauthor="Tamas Wells"
+        }
+
     }
 
     Content {
