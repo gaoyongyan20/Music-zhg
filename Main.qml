@@ -33,6 +33,9 @@ ApplicationWindow {
             MenuItem {
                 action: actions.random
             }
+            MenuItem {
+                action: actions.sequence
+            }
         }
 
         Menu {
@@ -68,6 +71,9 @@ ApplicationWindow {
             ToolButton {
                 action: actions.random
             }
+            ToolButton {
+                action: actions.sequence
+            }
 
             ToolSeparator {}
 
@@ -76,12 +82,6 @@ ApplicationWindow {
             }
             ToolButton {
                 action: actions.timingoff
-            }
-
-            ToolSeparator {}
-
-            ToolButton {
-                action: actions.about
             }
         }
     }
@@ -119,14 +119,21 @@ ApplicationWindow {
                 content.songRect.height = 0
             }
         }
-        //
         fullscreen.onClicked: {
-            if(content.information.width===0){
-                content.information.width=200
-            }else{
-                content.information.width=0
-                content.playlistshow.width=content.playlistshow.width+210
+            if (content.information.width === 0) {
+                content.information.width = 200
+            } else {
+                content.information.width = 0
+                content.playlistshow.width = content.playlistshow.width + 210
             }
+        }
+
+        // 当按下播放/暂停按钮时
+        onChangePause: {
+            content.player.pause()
+        }
+        onChangePlay: {
+            content.player.play()
         }
 
 
@@ -172,6 +179,14 @@ ApplicationWindow {
                 content.playmusic.pause()
             }
         }
+        loop.onTriggered: {
+            console.log("loop play now")
+            if (content.playmusic.loops === -1) {
+                content.playmusic.loops = 1
+            } else {
+                content.playmusic.loops = -1
+            }
+        }
     }
 
     Content {
@@ -188,5 +203,4 @@ ApplicationWindow {
             }
         }
     }
-
 }

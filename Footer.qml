@@ -13,6 +13,12 @@ Item {
 
     property alias backward_button: _backward_button
     property alias forward_button: _forward_button
+
+    // 当按下暂停按钮时发出的信号
+    signal changePlay
+    // 当按下播放按钮时发出的信号
+    signal changePause
+
     RowLayout {
         id: layout
         anchors.bottom: parent.bottom
@@ -26,6 +32,18 @@ Item {
         RoundButton {
             id: _play_button
             icon.name: "media-playback-start-symbolic"
+            TapHandler {
+                onTapped: {
+                    if (_play_button.icon.name === "media-playback-start-symbolic") {
+                        changePause()
+                        _play_button.icon.name = "media-playback-pause-symbolic"
+                    } else {
+                        changePlay()
+                        _play_button.icon.name = "media-playback-start-symbolic"
+                    }
+                }
+            }
+
             // anchors.left: backward_button.right
         }
 
