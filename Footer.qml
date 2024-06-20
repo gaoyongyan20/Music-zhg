@@ -9,14 +9,17 @@ Item {
     property alias textTerminus: _textTerminus
     property alias voiceIcon: _voiceIcon
     property alias playlist: _playlist
-    property alias fullscreen:_fullscreen
+    property alias fullscreen: _fullscreen
+
+    property alias backward_button: _backward_button
+    property alias forward_button: _forward_button
     RowLayout {
         id: layout
         anchors.bottom: parent.bottom
         spacing: 6
 
         RoundButton {
-            id: backward_button
+            id: _backward_button
             icon.name: "media-seek-backward"
         }
 
@@ -27,6 +30,7 @@ Item {
         }
 
         RoundButton {
+            id: _forward_button
             icon.name: "media-seek-forward"
         }
 
@@ -46,7 +50,31 @@ Item {
 
         RoundButton {
             id: _voiceIcon
-            icon.name: "player-volume"
+            state: "playVoice"
+            states: [
+                State {
+                    name: "playVoice"
+                    PropertyChanges {
+                        target: _voiceIcon
+                        icon.name: "player-volume"
+                    }
+                    PropertyChanges {
+                        target: _volumeSlider
+                        value: 0.5
+                    }
+                },
+                State {
+                    name: "Slience"
+                    PropertyChanges {
+                        target: _voiceIcon
+                        icon.name: "player-volume-muted"
+                    }
+                    PropertyChanges {
+                        target: _volumeSlider
+                        value: 0
+                    }
+                }
+            ]
         }
 
         Slider {
@@ -55,12 +83,12 @@ Item {
         }
 
         RoundButton {
-            id:_playlist
+            id: _playlist
             icon.name: "amarok_playlist-symbolic"
         }
 
         RoundButton {
-            id:_fullscreen
+            id: _fullscreen
             icon.name: "gnumeric-row-hide-symbolic"
         }
     }

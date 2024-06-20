@@ -87,7 +87,16 @@ ApplicationWindow {
     }
 
     footer: Footer {
-        // id: footer
+        //上一首歌
+        backward_button.onClicked: {
+            Controller.setBackwardMusic(content.dialogs.fileOpen.selectedFiles)
+        }
+
+        //下一首歌
+        forward_button.onClicked: {
+            Controller.setForwardMusic(content.dialogs.fileOpen.selectedFiles)
+        }
+
         //进度条
         playProgressSlider.to: content.playmusic.duration
         playProgressSlider.value: content.playmusic.position
@@ -101,14 +110,13 @@ ApplicationWindow {
         textTerminus.text: Controller.formatTime(content.playmusic.duration)
         //播放列表显示
         playlist.onClicked: {
-            if(content.songRect.width===0&&content.songRect.height===0)
-            {
-                content.songRect.width=200
-                content.songRect.height=200
-                content.songRect.visible=true
-            }else{
-                content.songRect.width=0
-                content.songRect.height=0
+            if (content.songRect.width === 0 && content.songRect.height === 0) {
+                content.songRect.width = 200
+                content.songRect.height = 200
+                content.songRect.visible = true
+            } else {
+                content.songRect.width = 0
+                content.songRect.height = 0
             }
         }
         //
@@ -120,6 +128,7 @@ ApplicationWindow {
                 content.playlistshow.width=content.playlistshow.width+210
             }
         }
+
 
         /*更新时间戳，存疑
         Timer {
@@ -136,6 +145,11 @@ ApplicationWindow {
         }*/
 
         //声音图标
+        voiceIcon.onClicked: {
+            voiceIcon.state === "playVoice" ? voiceIcon.state
+                                              = "Slience" : voiceIcon.state = "playVoice"
+            content.audio.volume = volumeSlider.value
+        }
 
         //音量
         volumeSlider.to: 1.0
@@ -145,12 +159,34 @@ ApplicationWindow {
 
     Actions {
         id: actions
+        property alias timingoffTimer: _timingoffTimer
+
         open.onTriggered: Controller.setFilesModel()
         background.onTriggered: content.imageDialog.open()
+        timingoff.onTriggered: {
+            content.dialogs.timingoffDialog.open()
+        }
+        Timer {
+            id: _timingoffTimer
+            onTriggered: {
+                content.playmusic.pause()
+            }
+        }
     }
 
     Content {
         id: content
+        //自定义定时后，点击确认按钮
+        dialogs.button.onClicked: {
+            var number = parseInt(dialogs.text.text)
+            if (isNaN(number)) {
+                console.log("Invalid input")
+            } else {
+                console.log("The number is:", number)
+                actions.timingoffTimer.interval = number * 60000
+                actions.timingoffTimer.running = true
+            }
+        }
     }
 
 }

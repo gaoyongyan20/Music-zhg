@@ -2,12 +2,15 @@ import QtQuick
 import QtCore
 import QtQuick.Controls
 import QtQuick.Dialogs
+import QtQuick.Layouts
 
 Item {
-    id:dialogroot
+    id: dialogroot
     property alias fileOpen: _fileOpen
     property alias about: _about
-
+    property alias timingoffDialog: _timingoffDialog
+    property alias text: _text
+    property alias button: _button
     FileDialog {
         id: _fileOpen
         title: "Select some song files"
@@ -29,5 +32,31 @@ Item {
         modality: Qt.WindowModal
         buttons: MessageDialog.Ok
         text: "Fail to save the file!"
+    }
+    Dialog {
+        id: _timingoffDialog
+        title: "select timingoff"
+        width: 300
+        height: 200
+        ColumnLayout {
+            anchors.fill: parent
+            TextField {
+                id: _text
+                Layout.fillWidth: true
+                placeholderText: "Please enter your timing(minutes)"
+                validator: RegularExpressionValidator {
+                    regularExpression: /^[1-9]\d{0,3}$/
+                }
+                onTextChanged: {
+                    button.enabled = text.text !== ""
+                }
+            }
+            Button {
+                id: _button
+                Layout.fillWidth: true
+                text: "Confirm"
+                enabled: false
+            }
+        }
     }
 }
