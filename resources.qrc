@@ -1,10 +1,10 @@
 <RCC>
-    <qresource prefix="/root/Music-zhg/images/">
-        <file alias="myimage1.png">/root/Music-zhg/images/54481B1631F2F0CC8BD40F3AC4B2C52A.jpg</file>
-        <file alias="myimage2.png">/root/Music-zhg/images/DD3A5742AF77276B46A6EFD627C18580.jpg</file>
+    <qresource prefix="/">
+        <file alias="myimage1.png">images/54481B1631F2F0CC8BD40F3AC4B2C52A.jpg</file>
+        <file alias="myimage2.png">images/DD3A5742AF77276B46A6EFD627C18580.jpg</file>
     </qresource>
 
-    <qresource prefix="/root/Music-zhg/songs/">
-        <file alias="mysongs1.png">/root/Music-zhg/songs/海阔天空.mp3</file>
+    <qresource prefix="/">
+        <file alias="mysongs1.mp3">songs/海阔天空.mp3</file>
     </qresource>
 </RCC>

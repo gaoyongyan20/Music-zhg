@@ -9,6 +9,7 @@ import QtQuick.Layouts
 import "freemusic.js" as Controller
 
 ApplicationWindow {
+
     width: 640
     height: 480
     visible: true
@@ -110,6 +111,15 @@ ApplicationWindow {
                 content.songRect.height=0
             }
         }
+        //
+        fullscreen.onClicked: {
+            if(content.information.width===0){
+                content.information.width=200
+            }else{
+                content.information.width=0
+                content.playlistshow.width=content.playlistshow.width+210
+            }
+        }
 
         /*更新时间戳，存疑
         Timer {
@@ -142,4 +152,5 @@ ApplicationWindow {
     Content {
         id: content
     }
+
 }
