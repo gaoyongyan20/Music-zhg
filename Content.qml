@@ -5,7 +5,7 @@ import QtMultimedia
 
 Frame {
 
-    id:root
+    id: root
     anchors.fill: parent
     property alias backgrondImage: _backgrondImage
     property alias filesModel: _filesModel
@@ -22,7 +22,6 @@ Frame {
     property alias rowlayout: _rowlayout
     property string textauthor: "author"
     property string textalubm: "album"
-
 
     Image {
         id: _backgrondImage
@@ -45,33 +44,31 @@ Frame {
             width: 300
             height: 200
             GridView {
-                 anchors.fill: parent
-                 model: ["myimage1.png", "myimage2.png"]
-                 delegate: Rectangle {
-                     width: 50; height: 50
-                     Image {
-                         width: parent.width
-                         height: parent.height
-                         source: "qrc:/" + modelData
-                         TapHandler{
-                             onTapped: {
-                                 // 将点击的图片设置为程序的背景
-                                 backgrondImage.source = "qrc:/" + modelData
-                                 faceImage.source= "qrc:/" + modelData
-                             }
-                         }
-                     }
-                 }
-             }
-
-
+                anchors.fill: parent
+                model: ["myimage1.png", "myimage2.png"]
+                delegate: Rectangle {
+                    width: 50
+                    height: 50
+                    Image {
+                        width: parent.width
+                        height: parent.height
+                        source: "qrc:/" + modelData
+                        TapHandler {
+                            onTapped: {
+                                // 将点击的图片设置为程序的背景
+                                backgrondImage.source = "qrc:/" + modelData
+                                faceImage.source = "qrc:/" + modelData
+                            }
+                        }
+                    }
+                }
             }
-
         }
-
+    }
 
     MediaPlayer {
         id: _playmusic
+
         audioOutput: AudioOutput {
             id: _audio
         }
@@ -102,22 +99,22 @@ Frame {
     }
 
     RowLayout {
-        id:_rowlayout
+        id: _rowlayout
         anchors.fill: parent
 
-        Rectangle{
-            id:_information
-             width: 200
-             height: 1000
-             color: "yellow"
-             opacity: 0.8
-             clip: true
-             Layout.fillHeight: true
-             Layout.fillWidth: true
+        Rectangle {
+            id: _information
+            width: 200
+            height: 1000
+            color: "yellow"
+            opacity: 0.8
+            clip: true
+            Layout.fillHeight: true
+            Layout.fillWidth: true
 
             // ColumnLayout {
-            Rectangle{
-                id:a
+            Rectangle {
+                id: a
 
                 width: 100
                 height: 100
@@ -135,11 +132,11 @@ Frame {
                 }
             }
             Rectangle {
-                id:b
+                id: b
                 width: 150
                 height: 40
                 color: "transparent"
-                anchors.top:a.bottom
+                anchors.top: a.bottom
                 anchors.horizontalCenter: parent.horizontalCenter
                 Text {
                     text: textalubm
@@ -147,11 +144,11 @@ Frame {
                 }
             }
             Rectangle {
-                id:c
+                id: c
                 width: 150
                 height: 40
                 color: "transparent"
-                anchors.top:b.bottom
+                anchors.top: b.bottom
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 Text {
@@ -159,100 +156,95 @@ Frame {
                     anchors.centerIn: parent
                 }
             }
-        // }
+            // }
+        }
 
-      }
+        Rectangle {
+
+            opacity: 0.8
+            color: "pink"
+            anchors.left: information.right
+            id: _playlistshow
+            width: 440
+            height: 1000
+
+            Layout.fillWidth: true
+            Layout.fillHeight: true
 
             Rectangle {
+                id: _songRect
+                opacity: 0.7
+                width: 200
+                height: 200
+                visible: false
+                // color: "blue"
+                anchors.bottom: parent.bottom
+                anchors.right: parent.right
 
-                opacity: 0.8
-                color: "pink"
-                anchors.left: information.right
-                id:_playlistshow
-                width: 440
-                height: 1000
+                // visible: false
+                // z: -1
+                ScrollView {
 
+                    id: _scorllView
+                    anchors.fill: parent
+                    ScrollBar.horizontal.policy: ScrollBar.AsNeeded
+                    ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
+                    ColumnLayout {
+                        // 存放音频文件的视图
+                        ListView {
+                            // anchors.fill: parent
+                            interactive: true
+                            id: _multipath
+                            Layout.preferredWidth: 400
+                            Layout.preferredHeight: 200
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
 
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-
-                Rectangle {
-                    id: _songRect
-                    opacity: 0.7
-                    width: 200
-                    height: 200
-                    visible: false
-                    // color: "blue"
-                    anchors.bottom: parent.bottom
-                    anchors.right: parent.right
-
-                    // visible: false
-                    // z: -1
-                    ScrollView {
-
-                        id: _scorllView
-                        anchors.fill: parent
-                        ScrollBar.horizontal.policy: ScrollBar.AsNeeded
-                        ScrollBar.vertical.policy: ScrollBar.AsNeeded
-
-                        ColumnLayout {
-                            // 存放音频文件的视图
-                            ListView {
-                                // anchors.fill: parent
-                                interactive: true
-                                id: _multipath
-                                Layout.preferredWidth: 400
-                                Layout.preferredHeight: 200
-                                Layout.fillHeight: true
-                                Layout.fillWidth: true
-
-                                ListModel {
-                                    id: _filesModel
-                                }
-                                delegate: MyDelegate {}
+                            ListModel {
+                                id: _filesModel
                             }
+                            delegate: MyDelegate {}
+                        }
 
-                            component MyDelegate: Rectangle {
-                                id: songRoot
-                                required property string title
-                                required property string author
-                                required property url filePath
-                                required property int index
+                        component MyDelegate: Rectangle {
+                            id: songRoot
+                            required property string title
+                            required property string author
+                            required property url filePath
+                            required property int index
 
-                                // color: "red"
-                                height: 30
-                                width: _multipath.width
+                            // color: "red"
+                            height: 30
+                            width: _multipath.width
 
-                                RowLayout {
+                            RowLayout {
 
-                                     Text{
-                                         text: title
-                                         font.bold: true
-                                         color:songRoot.ListView.isCurrentItem?"red":"black"
-                                       }
-                                     Text{
-                                         text:author
-                                         font.bold: true
-                                         color:songRoot.ListView.isCurrentItem?"red":"black"
-                                     }
-                                     Button{
-                                         id:addnext
-                                         width: 20
-                                         height: 20
-                                         icon.name:"bqm-add"
-                                     }
-
+                                Text {
+                                    text: title
+                                    font.bold: true
+                                    color: songRoot.ListView.isCurrentItem ? "red" : "black"
                                 }
-                                TapHandler {
-                                    parent: songRoot
-                                    onTapped: {
-                                        _multipath.currentIndex = index
-                                        _playmusic.source = filePath
-                                        _playmusic.play()
-                                        textauthor = author
-                                        textalubm = title
-                                    }
+                                Text {
+                                    text: author
+                                    font.bold: true
+                                    color: songRoot.ListView.isCurrentItem ? "red" : "black"
+                                }
+                                Button {
+                                    id: addnext
+                                    width: 20
+                                    height: 20
+                                    icon.name: "bqm-add"
+                                }
+                            }
+                            TapHandler {
+                                parent: songRoot
+                                onTapped: {
+                                    _multipath.currentIndex = index
+                                    _playmusic.source = filePath
+                                    _playmusic.play()
+                                    textauthor = author
+                                    textalubm = title
                                 }
                             }
                         }
@@ -261,3 +253,4 @@ Frame {
             }
         }
     }
+}
