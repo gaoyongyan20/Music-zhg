@@ -17,7 +17,7 @@ Item {
         currentFolder: StandardPaths.standardLocations(
                            StandardPaths.DocumentsLocation)[0]
         fileMode: FileDialog.OpenFiles
-        nameFilters: ["audio files (*.mp3 *)"]
+        nameFilters: ["audio files (*.mp3)"]
     }
     MessageDialog {
         id: _about

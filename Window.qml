@@ -33,6 +33,9 @@ ApplicationWindow {
             MenuItem {
                 action: actions.random
             }
+            MenuItem {
+                action: actions.sequence
+            }
         }
 
         Menu {
@@ -51,6 +54,7 @@ ApplicationWindow {
                 action: actions.about
             }
         }
+
         Menu{
             title:qsTr("local_music")
             MenuItem{
@@ -77,6 +81,9 @@ ApplicationWindow {
             ToolButton {
                 action: actions.random
             }
+            ToolButton {
+                action: actions.sequence
+            }
 
             ToolSeparator {}
 
@@ -86,24 +93,20 @@ ApplicationWindow {
             ToolButton {
                 action: actions.timingoff
             }
-
-            ToolSeparator {}
-
-            ToolButton {
-                action: actions.about
-            }
         }
     }
 
     footer: Footer {
         //上一首歌
         backward_button.onClicked: {
-            Controller.setBackwardMusic(content.dialogs.fileOpen.selectedFiles)
+            Controller.setBackwardMusic(content.dialogs.fileOpen.selectedFiles,
+                                        actions.isLoop, actions.isRandom)
         }
 
         //下一首歌
         forward_button.onClicked: {
-            Controller.setForwardMusic(content.dialogs.fileOpen.selectedFiles)
+            Controller.setForwardMusic(content.dialogs.fileOpen.selectedFiles,
+                                       actions.isLoop, actions.isRandom)
         }
 
         //进度条
@@ -128,14 +131,23 @@ ApplicationWindow {
                 content.songRect.height = 0
             }
         }
+
         //全屏显示歌词板块
         fullscreen.onClicked: {
-            if(content.information.width===0){
-                content.information.width=200
-            }else{
-                content.information.width=0
-                content.playlistshow.width=content.playlistshow.width+210
+            if (content.information.width === 0) {
+                content.information.width = 200
+            } else {
+                content.information.width = 0
+                content.playlistshow.width = content.playlistshow.width + 210
             }
+        }
+
+        // 当按下播放/暂停按钮时
+        onChangePause: {
+            content.player.pause()
+        }
+        onChangePlay: {
+            content.player.play()
         }
 
 
@@ -169,16 +181,9 @@ ApplicationWindow {
     Actions {
         id: actions
         property alias timingoffTimer: _timingoffTimer
+        property bool isLoop: false
+        property bool isRandom: false
 
-        open.onTriggered: Controller.setFilesModel()
-        background.onTriggered: content.imageDialog.open()
-        timingoff.onTriggered: content.dialogs.timingoffDialog.open()
-        Timer {
-            id: _timingoffTimer
-            onTriggered: {
-                content.playmusic.pause()
-            }
-        }
         song1.onTriggered: {
             content.playmusic.source="qrc:/mysongs1.mp3"
             content.playmusic.play()
@@ -192,6 +197,41 @@ ApplicationWindow {
             content.textauthor="Tamas Wells"
         }
 
+        open.onTriggered: Controller.setFilesModel()
+        background.onTriggered: content.imageDialog.open()
+        timingoff.onTriggered: {
+            content.dialogs.timingoffDialog.open()
+        }
+        Timer {
+            id: _timingoffTimer
+            onTriggered: {
+                content.playmusic.pause()
+            }
+        }
+        loop.onTriggered: {
+            console.log("loop play now")
+            if (isRandom) {
+                isRandom = false
+            } // 若最终没有按下顺序播放，顺序/循环只能有一个状态
+            isLoop = true
+        }
+        sequence.onTriggered: {
+            console.log("sequence play now")
+            // 在播放途中如果先按了循环/随机，再按下顺序播放，最终状态为顺序播放状态
+            if (isLoop) {
+                isLoop = false
+            }
+            if (isRandom) {
+                isRandom = false
+            }
+        }
+        random.onTriggered: {
+            console.log("random play now")
+            if (isLoop) {
+                isLoop = false
+            }
+            isRandom = true
+        }
     }
 
     Content {
@@ -207,6 +247,12 @@ ApplicationWindow {
                 actions.timingoffTimer.running = true
             }
         }
+        playmusic.onPlaybackStateChanged: {
+            // 歌曲播放完毕的标志：
+            if (playmusic.position >= playmusic.duration) {
+                Controller.setForwardMusic(dialogs.fileOpen.selectedFiles,
+                                           actions.isLoop, actions.isRandom)
+            }
+        }
     }
-
 }

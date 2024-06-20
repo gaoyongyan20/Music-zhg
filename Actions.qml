@@ -15,6 +15,8 @@ Item {
     property alias about: _about
     property alias song1: _song1
     property alias song2: _song2
+    property alias sequence: _sequence
+
 
     Action {
         id: _open
@@ -37,7 +39,8 @@ Item {
 
     Action {
         id: _sequence
-        text: qsTr("")
+        text: qsTr("Sequence")
+        icon.name: "media-playlist-no-shuffle"
     }
 
     Action {

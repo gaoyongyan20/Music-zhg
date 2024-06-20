@@ -30,8 +30,33 @@ function setFilesModel(selectedFiles) {
 
 //设置上一首歌
 function setBackwardMusic() {
+    console.log("Now play in ", "loop: ", arguments[1], "random: ",
+                arguments[2])
     var currentMusicIndex = content.listview.currentIndex
-    // arguments[0] = content.dialogs.fileOpen.selectedFiles
+
+    // 判断是否循环播放
+    if (arguments[1]) {
+        content.playmusic.source = arguments[0][currentMusicIndex]
+        content.playmusic.play()
+        return
+    }
+
+    // 判断是否为随机播放
+    if (arguments[2]) {
+        var index = getRandomIndex(0, content.listview.count - 1)
+
+        // 当随机到当前歌曲的时候也可以重新刷新播放位置
+        if (content.listview.currentIndex === index) {
+            content.playmusic.position = 0
+        } else {
+            content.listview.currentIndex = index
+        }
+        content.playmusic.source = arguments[0][index]
+        content.playmusic.play()
+        return
+    }
+
+    // 顺序播放
     if (currentMusicIndex === 0) {
         content.playmusic.source = arguments[0][arguments[0].length - 1]
         content.listview.currentIndex = arguments[0].length - 1
@@ -41,13 +66,38 @@ function setBackwardMusic() {
         content.listview.currentIndex = currentMusicIndex - 1
         content.filesModel.move(content.listview.currentIndex,0,1)
     }
+
     content.playmusic.play()
 }
 
 //设置下一首歌
 function setForwardMusic() {
+    console.log("Now play in ", "loop: ", arguments[1], "random: ",
+                arguments[2])
     var currentMusicIndex = content.listview.currentIndex
-    // arguments[0] = content.dialogs.fileOpen.selectedFiles
+    // 判断是否为循环播放
+    if (arguments[1]) {
+        content.playmusic.source = arguments[0][currentMusicIndex]
+        content.playmusic.play()
+        return
+    }
+
+    // 判断是否为随机播放
+    if (arguments[2]) {
+        var index = getRandomIndex(0, content.listview.count - 1)
+
+        // 当随机到当前歌曲的时候也可以重新刷新播放位置
+        if (content.listview.currentIndex === index) {
+            content.playmusic.position = 0
+        } else {
+            content.listview.currentIndex = index
+        }
+        content.playmusic.source = arguments[0][index]
+        content.playmusic.play()
+        return
+    }
+
+    // 顺序播放
     if (currentMusicIndex === arguments[0].length - 1) {
         content.playmusic.source = arguments[0][0]
         content.listview.currentIndex = 0
@@ -73,4 +123,10 @@ function formatTime(milliseconds) {
     var formattedTime = minutes.toString().padStart(
                 2, '0') + ":" + remainingSeconds.toString().padStart(2, '0')
     return formattedTime
+}
+
+function getRandomIndex(min, max) {
+    // floor函数是向下取整
+    // Math.random()函数生成一个0到1之间的随机数（不包括1）
+    return Math.floor(Math.random() * (max - min + 1)) + min
 }
