@@ -10,7 +10,7 @@ Item {
     property alias voiceIcon: _voiceIcon
     property alias playlist: _playlist
     property alias fullscreen: _fullscreen
-
+    property alias play_button: _play_button
     property alias backward_button: _backward_button
     property alias forward_button: _forward_button
 
@@ -34,12 +34,12 @@ Item {
             icon.name: "media-playback-start-symbolic"
             TapHandler {
                 onTapped: {
-                    if (_play_button.icon.name === "media-playback-start-symbolic") {
+                    if (_play_button.icon.name === "media-playback-pause-symbolic") {
                         changePause()
-                        _play_button.icon.name = "media-playback-pause-symbolic"
+                        _play_button.icon.name = "media-playback-start-symbolic"
                     } else {
                         changePlay()
-                        _play_button.icon.name = "media-playback-start-symbolic"
+                        _play_button.icon.name = "media-playback-pause-symbolic"
                     }
                 }
             }

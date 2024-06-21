@@ -22,6 +22,8 @@ Frame {
     property alias rowlayout: _rowlayout
     property string textauthor: "author"
     property string textalubm: "album"
+    signal changeIcon()
+    signal changeinformation()
 
     Image {
         id: _backgrondImage
@@ -35,6 +37,7 @@ Frame {
             update()
         }
     }
+
     Dialogs {
         id: _dialogs
 
@@ -63,10 +66,8 @@ Frame {
                      }
                  }
              }
-
             }
         }
-
 
     MediaPlayer {
         id: _playmusic
@@ -101,6 +102,10 @@ Frame {
         metaDataReader.mediaStatusChanged.connect(f)
     }
 
+    function getfile(){
+
+    }
+
     RowLayout {
         id: _rowlayout
         anchors.fill: parent
@@ -109,8 +114,7 @@ Frame {
             id: _information
             width: 200
             height: 1000
-            color: "yellow"
-            opacity: 0.8
+            color: "transparent"
             clip: true
             Layout.fillHeight: true
             Layout.fillWidth: true
@@ -123,7 +127,6 @@ Frame {
                 height: 100
                 border.color: "black"
                 border.width: 8
-                // Layout.alignment: Qt.AlignHCenter
                 anchors.centerIn: parent
 
                 Image {
@@ -164,13 +167,11 @@ Frame {
 
         Rectangle {
 
-            opacity: 0.8
-            color: "pink"
             anchors.left: information.right
             id: _playlistshow
             width: 440
             height: 1000
-
+            color: "transparent"
             Layout.fillWidth: true
             Layout.fillHeight: true
 
@@ -224,6 +225,31 @@ Frame {
 
                                 RowLayout {
 
+                                    Button{
+                                        id:_addnext
+                                        width: 20
+                                        height: 20
+                                        icon.name:"bqm-add"
+
+                                        //添加一首歌曲为下一首播放
+                                        onClicked: {
+                                            var de=index
+                                            var newIndex=_multipath.currentIndex+1
+                                            //判断选择的下一首歌曲是否为当前正在播放的歌曲
+                                            if(_multipath.currentIndex===de){
+                                                return;
+                                            }
+                                            //判断当前播放歌曲是否为列表的最后一首，是：变成第一首，选择的歌曲变成第二首
+                                            if(_multipath.currentIndex === filesModel.count - 1){
+                                                content.filesModel.move(de,0,1)
+                                                content.filesModel.move(_multipath.currentIndex,0,1)
+                                                console.log(de)
+                                                console.log(_multipath.currentIndex)
+                                            }else//不是最后一首，将其变为第一首即可
+                                            content.filesModel.move(de,newIndex,1)
+                                            console.log(de)
+                                        }
+                                    }
                                      Text{
                                          text: title
                                          font.bold: true
@@ -234,38 +260,7 @@ Frame {
                                          font.bold: true
                                          color:songRoot.ListView.isCurrentItem?"red":"black"
                                      }
-                                     Button{
-                                         id:_addnext
-                                         width: 20
-                                         height: 20
-                                         icon.name:"bqm-add"
-                                         //合并时，不兼容，后期更改
-                                         onClicked: {
-                                             var de=index
-                                             if(_multipath.currentIndex===de){
-                                                 return;
-                                             }
-                                             // arguments[0]=dialogs.fileOpen.selectedFile
-
-                                             var newIndex=_multipath.currentIndex+1
-                                             content.filesModel.move(de,newIndex,1)
-                                             // if(_multipath.currentIndex===ListModel.count-1)
-                                             // {
-                                                 content.filesModel.move(_multipath.currentIndex,0,1)
-                                             // }
-
-                                         }
-
-
-                                         // onClicked: {
-                                         //     // var de=index
-                                         //     // var dev=_multipath.currentIndex+1
-                                         //     // // _multipath.currentIndex+1=de
-                                         //     dialogs.fileOpen.selectedFile
-                                         // }
-                                         }
                                      }
-
 
                                 TapHandler {
                                     parent: songRoot
@@ -273,11 +268,9 @@ Frame {
                                         _multipath.currentIndex = index
                                         _playmusic.source = filePath
                                         _playmusic.play()
-                                        textauthor = author
-                                        textalubm = title
-                                        content.filesModel.move(_multipath.currentIndex,0,1)
+                                        changeinformation()
+                                        changeIcon()
                                     }
-
                                 }
                             }
                         }
@@ -286,3 +279,4 @@ Frame {
             }
         }
     }
+
