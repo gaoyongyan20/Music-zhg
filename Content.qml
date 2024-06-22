@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import QtMultimedia
+import Lyrics
 
 Frame {
 
@@ -22,9 +23,36 @@ Frame {
     property alias rowlayout: _rowlayout
     property string textauthor: "author"
     property string textalubm: "album"
+    property alias lyrics: _lyrics
+
+    Lyrics {
+        id: _lyrics
+        // lyricsFile: "hello"
+
+        // 存疑
+        // onLyricsFileChanged: {
+        //     console.log(lyrics.test())
+        // }
+        // Component.onCompleted: {
+        //     console.log(lyrics.lyricsFile)
+        //     console.log(lyrics.test())
+        // }
+
+        // onLyricsFileChanged: {
+        //     console.log("Lyrics file changed:", lyricsFile)
+        // }
+        // Connections {
+        //     target: _lyrics
+        //     function onLyricsFileChanged() {
+        //         // 这里是信号的处理逻辑
+        //         console.log("Signal received from C++!")
+        //     }
+        // }
+    }
 
     Image {
         id: _backgrondImage
+
         z: -1111
         width: root.width - 20
         height: root.height - 20
@@ -33,6 +61,13 @@ Frame {
         source: "qrc:/myimage1.png"
         onSourceChanged: {
             update()
+        }
+        Connections {
+            target: _lyrics
+            function onLyricsFileChanged() {
+                // 这里是信号的处理逻辑
+                console.log("Signal received from C++!")
+            }
         }
     }
     Dialogs {
@@ -44,29 +79,27 @@ Frame {
             width: 300
             height: 200
             GridView {
-
-                 anchors.fill: parent
-                 model: ["myimage1.png", "myimage2.png"]
-                 delegate: Rectangle {
-                     width: 50; height: 50
-                     Image {
-                         width: parent.width
-                         height: parent.height
-                         source: "qrc:/" + modelData
-                         TapHandler{
-                             onTapped: {
-                                 // 将点击的图片设置为程序的背景
-                                 backgrondImage.source = "qrc:/" + modelData
-                                 faceImage.source= "qrc:/" + modelData
-                             }
-                         }
-                     }
-                 }
-             }
-
+                anchors.fill: parent
+                model: ["myimage1.png", "myimage2.png"]
+                delegate: Rectangle {
+                    width: 50
+                    height: 50
+                    Image {
+                        width: parent.width
+                        height: parent.height
+                        source: "qrc:/" + modelData
+                        TapHandler {
+                            onTapped: {
+                                // 将点击的图片设置为程序的背景
+                                backgrondImage.source = "qrc:/" + modelData
+                                faceImage.source = "qrc:/" + modelData
+                            }
+                        }
+                    }
+                }
             }
         }
-
+    }
 
     MediaPlayer {
         id: _playmusic
@@ -75,7 +108,6 @@ Frame {
             id: _audio
         }
     }
-
 
     //从指定的媒体文件路径（fp）中提取标题和作者信息，利用元对象
     function getTitle(fp, i) {
@@ -109,8 +141,9 @@ Frame {
             id: _information
             width: 200
             height: 1000
-            color: "yellow"
-            opacity: 0.8
+            // color: "yellow"
+            color: "transparent"
+            // opacity: 0
             clip: true
             Layout.fillHeight: true
             Layout.fillWidth: true
@@ -123,7 +156,6 @@ Frame {
                 height: 100
                 border.color: "black"
                 border.width: 8
-                // Layout.alignment: Qt.AlignHCenter
                 anchors.centerIn: parent
 
                 Image {
@@ -161,11 +193,9 @@ Frame {
             }
             // }
         }
+        ScrollLyrics {
 
-        Rectangle {
-
-            opacity: 0.8
-            color: "pink"
+            color: "transparent"
             anchors.left: information.right
             id: _playlistshow
             width: 440
@@ -212,6 +242,7 @@ Frame {
 
                         component MyDelegate: Rectangle {
                             id: songRoot
+
                             required property string title
                             required property string author
                             required property url filePath
@@ -221,63 +252,62 @@ Frame {
                             height: 30
                             width: _multipath.width
 
+                            RowLayout {
 
-                                RowLayout {
+                                Text {
+                                    text: title
+                                    font.bold: true
+                                    color: songRoot.ListView.isCurrentItem ? "red" : "black"
+                                }
+                                Text {
+                                    text: author
+                                    font.bold: true
+                                    color: songRoot.ListView.isCurrentItem ? "red" : "black"
+                                }
+                                Button {
+                                    id: _addnext
+                                    width: 20
+                                    height: 20
+                                    icon.name: "bqm-add"
+                                    //合并时，不兼容，后期更改
+                                    onClicked: {
+                                        var de = index
+                                        if (_multipath.currentIndex === de) {
+                                            return
+                                        }
 
-                                     Text{
-                                         text: title
-                                         font.bold: true
-                                         color:songRoot.ListView.isCurrentItem?"red":"black"
-                                       }
-                                     Text{
-                                         text:author
-                                         font.bold: true
-                                         color:songRoot.ListView.isCurrentItem?"red":"black"
-                                     }
-                                     Button{
-                                         id:_addnext
-                                         width: 20
-                                         height: 20
-                                         icon.name:"bqm-add"
-                                         //合并时，不兼容，后期更改
-                                         onClicked: {
-                                             var de=index
-                                             if(_multipath.currentIndex===de){
-                                                 return;
-                                             }
-                                             // arguments[0]=dialogs.fileOpen.selectedFile
-
-                                             var newIndex=_multipath.currentIndex+1
-                                             content.filesModel.move(de,newIndex,1)
-                                             // if(_multipath.currentIndex===ListModel.count-1)
-                                             // {
-                                                 content.filesModel.move(_multipath.currentIndex,0,1)
-                                             // }
-
-                                         }
-
-
-                                         // onClicked: {
-                                         //     // var de=index
-                                         //     // var dev=_multipath.currentIndex+1
-                                         //     // // _multipath.currentIndex+1=de
-                                         //     dialogs.fileOpen.selectedFile
-                                         // }
-                                         }
-                                     }
-
-
-                                TapHandler {
-                                    parent: songRoot
-                                    onTapped: {
-                                        _multipath.currentIndex = index
-                                        _playmusic.source = filePath
-                                        _playmusic.play()
-                                        textauthor = author
-                                        textalubm = title
-                                        content.filesModel.move(_multipath.currentIndex,0,1)
+                                        // arguments[0]=dialogs.fileOpen.selectedFile
+                                        var newIndex = _multipath.currentIndex + 1
+                                        content.filesModel.move(de, newIndex, 1)
+                                        // if(_multipath.currentIndex===ListModel.count-1)
+                                        // {
+                                        content.filesModel.move(
+                                                    _multipath.currentIndex, 0,
+                                                    1)
+                                        // }
                                     }
 
+                                    // onClicked: {
+                                    //     // var de=index
+                                    //     // var dev=_multipath.currentIndex+1
+                                    //     // // _multipath.currentIndex+1=de
+                                    //     dialogs.fileOpen.selectedFile
+                                    // }
+                                }
+                            }
+
+                            TapHandler {
+
+                                onTapped: {
+                                    accepted: true
+                                    target: songRoot
+                                    _multipath.currentIndex = index
+                                    _playmusic.source = filePath
+                                    _playmusic.play()
+                                    textauthor = author
+                                    textalubm = title
+                                    content.filesModel.move(
+                                                _multipath.currentIndex, 0, 1)
                                 }
                             }
                         }
@@ -286,3 +316,4 @@ Frame {
             }
         }
     }
+}
