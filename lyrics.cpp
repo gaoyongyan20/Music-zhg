@@ -1,34 +1,32 @@
-#pragma once
-#include <QQmlEngine>
-#include <QtQml/qqmlregistration.h>
-class Lyrics : public QObject
+#include <lyrics.h>
+
+Lyrics::Lyrics(QObject *parent)
+    : QObject(parent)
+{}
+
+QString Lyrics::lyricsFile() const
 {
-    Q_OBJECT
-    QML_ELEMENT
-    Q_PROPERTY(QString lyricsFile READ lyricsFile WRITE setLyricsFile NOTIFY lyricsFileChanged)
+    return m_lyricsFile;
+}
 
-public:
-    explicit Lyrics(QObject *parent = NULL);
+void Lyrics::setLyricsFile(QString &file)
+{
+    if (file != m_lyricsFile) {
+        m_lyricsFile = file;
+        emit lyricsFileChanged();
+    }
+}
 
-    //获取lrc文件的路径
-    QString lyricsFile() const;
-    void setLyricsFile(QString &file);
+QVector<QString> Lyrics::getAllLyrice()
+{
+    return m_lyrics;
+}
 
-    //获取歌词数组
-    QVector<QString> lyrics() const;
-    void setLyrics(QString &lyrics);
+int Lyrics::getIndexByKey(QString key)
+{
+    return 1;
+}
 
-    // Q_INVOKABLE QString test();
-    Q_INVOKABLE QVector<QString> getAllLyrice();
+void Lyrics::spiltLyrics() {}
 
-signals:
-    Q_SIGNAL void lyricsFileChanged();
-
-private:
-    // 当前歌词文件
-    QString m_lyricsFile;
-    //歌词（值）
-    QVector<QString> m_lyrics;
-    //到索引的映射
-    QMap<QString, int> m_keyIndexMap;
-};
+QString Lyrics::changeTimeShow(QString time) {}
