@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import QtMultimedia
+import Lyrics
 
 Frame {
 
@@ -22,8 +23,10 @@ Frame {
     property alias rowlayout: _rowlayout
     property string textauthor: "author"
     property string textalubm: "album"
-    signal changeIcon()
-    signal changeinformation()
+    signal changeIcon
+    signal changeinformation
+
+    Lyrics {}
 
     Image {
         id: _backgrondImage
@@ -48,26 +51,27 @@ Frame {
             height: 200
             GridView {
 
-                 anchors.fill: parent
-                 model: ["myimage1.png", "myimage2.png"]
-                 delegate: Rectangle {
-                     width: 50; height: 50
-                     Image {
-                         width: parent.width
-                         height: parent.height
-                         source: "qrc:/" + modelData
-                         TapHandler{
-                             onTapped: {
-                                 // 将点击的图片设置为程序的背景
-                                 backgrondImage.source = "qrc:/" + modelData
-                                 faceImage.source= "qrc:/" + modelData
-                             }
-                         }
-                     }
-                 }
-             }
+                anchors.fill: parent
+                model: ["myimage1.png", "myimage2.png"]
+                delegate: Rectangle {
+                    width: 50
+                    height: 50
+                    Image {
+                        width: parent.width
+                        height: parent.height
+                        source: "qrc:/" + modelData
+                        TapHandler {
+                            onTapped: {
+                                // 将点击的图片设置为程序的背景
+                                backgrondImage.source = "qrc:/" + modelData
+                                faceImage.source = "qrc:/" + modelData
+                            }
+                        }
+                    }
+                }
             }
         }
+    }
 
     MediaPlayer {
         id: _playmusic
@@ -76,7 +80,6 @@ Frame {
             id: _audio
         }
     }
-
 
     //从指定的媒体文件路径（fp）中提取标题和作者信息，利用元对象
     function getTitle(fp, i) {
@@ -102,9 +105,7 @@ Frame {
         metaDataReader.mediaStatusChanged.connect(f)
     }
 
-    function getfile(){
-
-    }
+    function getfile() {}
 
     RowLayout {
         id: _rowlayout
@@ -165,7 +166,7 @@ Frame {
             // }
         }
 
-        Rectangle {
+        ScrollLrics {
 
             anchors.left: information.right
             id: _playlistshow
@@ -222,55 +223,57 @@ Frame {
                             height: 30
                             width: _multipath.width
 
+                            RowLayout {
 
-                                RowLayout {
+                                Button {
+                                    id: _addnext
+                                    width: 20
+                                    height: 20
+                                    icon.name: "bqm-add"
 
-                                    Button{
-                                        id:_addnext
-                                        width: 20
-                                        height: 20
-                                        icon.name:"bqm-add"
-
-                                        //添加一首歌曲为下一首播放
-                                        onClicked: {
-                                            var de=index
-                                            var newIndex=_multipath.currentIndex+1
-                                            //判断选择的下一首歌曲是否为当前正在播放的歌曲
-                                            if(_multipath.currentIndex===de){
-                                                return;
-                                            }
-                                            //判断当前播放歌曲是否为列表的最后一首，是：变成第一首，选择的歌曲变成第二首
-                                            if(_multipath.currentIndex === filesModel.count - 1){
-                                                content.filesModel.move(de,0,1)
-                                                content.filesModel.move(_multipath.currentIndex,0,1)
-                                                console.log(de)
-                                                console.log(_multipath.currentIndex)
-                                            }else//不是最后一首，将其变为第一首即可
-                                            content.filesModel.move(de,newIndex,1)
-                                            console.log(de)
+                                    //添加一首歌曲为下一首播放
+                                    onClicked: {
+                                        var de = index
+                                        var newIndex = _multipath.currentIndex + 1
+                                        //判断选择的下一首歌曲是否为当前正在播放的歌曲
+                                        if (_multipath.currentIndex === de) {
+                                            return
                                         }
+                                        //判断当前播放歌曲是否为列表的最后一首，是：变成第一首，选择的歌曲变成第二首
+                                        if (_multipath.currentIndex === filesModel.count - 1) {
+                                            content.filesModel.move(de, 0, 1)
+                                            content.filesModel.move(
+                                                        _multipath.currentIndex,
+                                                        0, 1)
+                                            console.log(de)
+                                            console.log(_multipath.currentIndex)
+                                        } else
+                                            //不是最后一首，将其变为第一首即可
+                                            content.filesModel.move(de,
+                                                                    newIndex, 1)
+                                        console.log(de)
                                     }
-                                     Text{
-                                         text: title
-                                         font.bold: true
-                                         color:songRoot.ListView.isCurrentItem?"red":"black"
-                                       }
-                                     Text{
-                                         text:author
-                                         font.bold: true
-                                         color:songRoot.ListView.isCurrentItem?"red":"black"
-                                     }
-                                     }
+                                }
+                                Text {
+                                    text: title
+                                    font.bold: true
+                                    color: songRoot.ListView.isCurrentItem ? "red" : "black"
+                                }
+                                Text {
+                                    text: author
+                                    font.bold: true
+                                    color: songRoot.ListView.isCurrentItem ? "red" : "black"
+                                }
+                            }
 
-                                TapHandler {
-                                    parent: songRoot
-                                    onTapped: {
-                                        _multipath.currentIndex = index
-                                        _playmusic.source = filePath
-                                        _playmusic.play()
-                                        changeinformation()
-                                        changeIcon()
-                                    }
+                            TapHandler {
+                                parent: songRoot
+                                onTapped: {
+                                    _multipath.currentIndex = index
+                                    _playmusic.source = filePath
+                                    _playmusic.play()
+                                    changeinformation()
+                                    changeIcon()
                                 }
                             }
                         }
@@ -279,4 +282,4 @@ Frame {
             }
         }
     }
-
+}

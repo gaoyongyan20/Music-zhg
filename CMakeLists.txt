@@ -14,7 +14,7 @@ qt_add_executable(appMusicPlayer main.cpp)
 qt_add_qml_module(
   appMusicPlayer
   URI
-  MusicPlayer
+  Lyrics
   VERSION
   1.0
   QML_FILES
@@ -31,7 +31,13 @@ qt_add_qml_module(
   QML_FILES
   freemusic.js
   RESOURCES
-  resources.qrc)
+  resources.qrc
+  QML_FILES
+  ScrollLrics.qml
+  SOURCES
+  lyrics.cpp
+  SOURCES
+  lyrics.h)
 
 target_compile_features(appMusicPlayer PRIVATE cxx_std_20)
 

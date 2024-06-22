@@ -48,13 +48,13 @@ ApplicationWindow {
             }
         }
 
-        Menu{
-            title:qsTr("local_music")
-            MenuItem{
-                action:actions.song1
+        Menu {
+            title: qsTr("local_music")
+            MenuItem {
+                action: actions.song1
             }
-            MenuItem{
-                action:actions.song2
+            MenuItem {
+                action: actions.song2
             }
         }
 
@@ -64,8 +64,6 @@ ApplicationWindow {
                 action: actions.about
             }
         }
-
-
     }
 
     // -------设置工具栏------
@@ -99,7 +97,7 @@ ApplicationWindow {
     }
 
     footer: Footer {
-        id:foot
+        id: foot
         //上一首歌
         backward_button.onClicked: {
             Controller.setBackwardMusic(actions.isLoop, actions.isRandom)
@@ -137,10 +135,12 @@ ApplicationWindow {
         fullscreen.onClicked: {
             if (content.information.width === 0) {
                 content.information.width = 200
-                content.playlistshow.width-=210
+                content.playlistshow.width -= 210
+                fullscreen.icon.name = "gnumeric-row-unhide-symbolic"
             } else {
                 content.information.width = 0
                 content.playlistshow.width = content.playlistshow.width + 210
+                fullscreen.icon.name = "gnumeric-row-hide-symbolic"
             }
         }
 
@@ -187,20 +187,21 @@ ApplicationWindow {
         property bool isRandom: false
 
         song1.onTriggered: {
-            content.playmusic.source="qrc:/mysongs1.mp3"
+            content.playmusic.source = "qrc:/mysongs1.mp3"
             content.playmusic.play()
-            content.textalubm="海阔天空"
-            content.textauthor="beyond"
+            content.textalubm = "海阔天空"
+            content.textauthor = "beyond"
         }
         song2.onTriggered: {
-            content.playmusic.source="qrc:/mysongs2.mp3"
+            content.playmusic.source = "qrc:/mysongs2.mp3"
             content.playmusic.play()
-            content.textalubm="Valder Fields"
-            content.textauthor="Tamas Wells"
+            content.textalubm = "Valder Fields"
+            content.textauthor = "Tamas Wells"
         }
 
         open.onTriggered: Controller.setFilesModel()
         background.onTriggered: content.imageDialog.open()
+        about.onTriggered: content.dialogs.about.open()
         timingoff.onTriggered: {
             content.dialogs.timingoffDialog.open()
         }
@@ -250,7 +251,7 @@ ApplicationWindow {
             }
         }
         onChangeIcon: {
-          foot.play_button.icon.name = "media-playback-pause-symbolic"
+            foot.play_button.icon.name = "media-playback-pause-symbolic"
         }
 
         playmusic.onPlaybackStateChanged: {
@@ -260,7 +261,7 @@ ApplicationWindow {
                                            actions.isLoop, actions.isRandom)
             }
         }
-        onChangeinformation:{
+        onChangeinformation: {
             textalubm = filesModel.get(listview.currentIndex).title
             textauthor = filesModel.get(listview.currentIndex).author
         }
