@@ -66,6 +66,13 @@ ApplicationWindow {
                 action: actions.song2
             }
         }
+
+        Menu {
+            title: qsTr("About")
+            MenuItem {
+                action: actions.about
+            }
+        }
     }
 
     // -------设置工具栏------
@@ -99,16 +106,15 @@ ApplicationWindow {
     }
 
     footer: Footer {
+        id: foot
         //上一首歌
         backward_button.onClicked: {
-            Controller.setBackwardMusic(content.dialogs.fileOpen.selectedFiles,
-                                        actions.isLoop, actions.isRandom)
+            Controller.setBackwardMusic(actions.isLoop, actions.isRandom)
         }
 
         //下一首歌
         forward_button.onClicked: {
-            Controller.setForwardMusic(content.dialogs.fileOpen.selectedFiles,
-                                       actions.isLoop, actions.isRandom)
+            Controller.setForwardMusic(actions.isLoop, actions.isRandom)
         }
 
         //进度条
@@ -253,6 +259,10 @@ ApplicationWindow {
                 actions.timingoffTimer.running = true
             }
         }
+        onChangeIcon: {
+            foot.play_button.icon.name = "media-playback-pause-symbolic"
+        }
+
         playmusic.onPlaybackStateChanged: {
             // 歌曲播放完毕的标志：
             if (playmusic.position >= playmusic.duration) {
@@ -264,5 +274,9 @@ ApplicationWindow {
         // onLyricsFileChanged: {
         //     console.log(lyrics.test())
         // }
+        onChangeinformation: {
+            textalubm = filesModel.get(listview.currentIndex).title
+            textauthor = filesModel.get(listview.currentIndex).author
+        }
     }
 }

@@ -1,7 +1,7 @@
 #include <lyrics.h>
 
 Lyrics::Lyrics(QObject *parent)
-    : QObject(parent)
+: QObject(parent)
 {}
 
 QString Lyrics::lyricsFile() const
@@ -29,4 +29,7 @@ int Lyrics::getIndexByKey(QString key)
 
 void Lyrics::spiltLyrics() {}
 
-QString Lyrics::changeTimeShow(QString time) {}
+QString Lyrics::changeTimeShow(QString  timestamp) {
+    return timestamp;
+}
+
