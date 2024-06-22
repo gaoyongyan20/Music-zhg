@@ -7,6 +7,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "freemusic.js" as Controller
+import Lyrics
 
 ApplicationWindow {
 
@@ -45,6 +46,16 @@ ApplicationWindow {
             }
             MenuItem {
                 action: actions.timingoff
+            }
+        }
+
+        Menu {
+            title: qsTr("local_music")
+            MenuItem {
+                action: actions.song1
+            }
+            MenuItem {
+                action: actions.about
             }
         }
 
@@ -261,6 +272,10 @@ ApplicationWindow {
                                            actions.isLoop, actions.isRandom)
             }
         }
+
+        // onLyricsFileChanged: {
+        //     console.log(lyrics.test())
+        // }
         onChangeinformation: {
             textalubm = filesModel.get(listview.currentIndex).title
             textauthor = filesModel.get(listview.currentIndex).author
