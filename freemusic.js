@@ -25,7 +25,6 @@ function setFilesModel(selectedFiles) {
                                                   }
                                                   content.listview.model = content.filesModel
                                                   content.listview.currentIndex = 0
-
                                               })
 }
 
@@ -36,7 +35,8 @@ function setBackwardMusic() {
 
     // 判断是否循环播放
     if (arguments[0]) {
-        content.playmusic.source = content.filesModel.get(content.listview.currentIndex).filePath
+        content.playmusic.source = content.filesModel.get(
+                    content.listview.currentIndex).filePath
         content.changeinformation()
         content.playmusic.play()
         return
@@ -59,16 +59,16 @@ function setBackwardMusic() {
     }
 
     // 顺序播放
-    if (content.listview.currentIndex >0) {
-                content.listview.currentIndex -= 1
-            } else {
-                content.listview.currentIndex = content.filesModel.count - 1
-            }
-    var nextFilePath = content.filesModel.get(content.listview.currentIndex).filePath
-            content.playmusic.source = nextFilePath
+    if (content.listview.currentIndex > 0) {
+        content.listview.currentIndex -= 1
+    } else {
+        content.listview.currentIndex = content.filesModel.count - 1
+    }
+    var nextFilePath = content.filesModel.get(
+                content.listview.currentIndex).filePath
+    content.playmusic.source = nextFilePath
     content.changeinformation()
     content.playmusic.play()
-
 }
 
 //设置下一首歌
@@ -79,7 +79,8 @@ function setForwardMusic() {
 
     // 判断是否为循环播放
     if (arguments[0]) {
-        content.playmusic.source = content.filesModel.get(content.listview.currentIndex).filePath
+        content.playmusic.source = content.filesModel.get(
+                    content.listview.currentIndex).filePath
         content.changeinformation()
         content.playmusic.play()
         return
@@ -103,12 +104,13 @@ function setForwardMusic() {
 
     //判断当前是否为顺序播放
     if (content.listview.currentIndex < content.filesModel.count - 1) {
-                content.listview.currentIndex += 1
-            } else {
-                content.listview.currentIndex = 0
-            }
-    var nextFilePath = content.filesModel.get(content.listview.currentIndex).filePath
-            content.playmusic.source = nextFilePath
+        content.listview.currentIndex += 1
+    } else {
+        content.listview.currentIndex = 0
+    }
+    var nextFilePath = content.filesModel.get(
+                content.listview.currentIndex).filePath
+    content.playmusic.source = nextFilePath
     content.changeinformation()
     content.playmusic.play()
 }
@@ -136,3 +138,8 @@ function getRandomIndex(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
+function setLyricsModel() {
+    for (var data in arguments[0]) {
+        content.lyrics.model.append(data)
+    }
+}
