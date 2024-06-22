@@ -23,23 +23,15 @@ Frame {
     property alias rowlayout: _rowlayout
     property string textauthor: "author"
     property string textalubm: "album"
+
     property alias lyrics: _lyrics
 
     Lyrics {
         id: _lyrics
         // lyricsFile: "hello"
-
-        // 存疑
-        // onLyricsFileChanged: {
-        //     console.log(lyrics.test())
-        // }
         // Component.onCompleted: {
         //     console.log(lyrics.lyricsFile)
         //     console.log(lyrics.test())
-        // }
-
-        // onLyricsFileChanged: {
-        //     console.log("Lyrics file changed:", lyricsFile)
         // }
         // Connections {
         //     target: _lyrics
@@ -49,6 +41,9 @@ Frame {
         //     }
         // }
     }
+
+    signal changeIcon
+    signal changeinformation
 
     Image {
         id: _backgrondImage
@@ -70,9 +65,9 @@ Frame {
             }
         }
     }
+
     Dialogs {
         id: _dialogs
-
         Dialog {
             id: _imageDialog
             title: "select background"
@@ -100,7 +95,6 @@ Frame {
             }
         }
     }
-
     MediaPlayer {
         id: _playmusic
 
@@ -136,28 +130,21 @@ Frame {
     RowLayout {
         id: _rowlayout
         anchors.fill: parent
-
         Rectangle {
             id: _information
             width: 200
             height: 1000
-            // color: "yellow"
             color: "transparent"
-            // opacity: 0
             clip: true
             Layout.fillHeight: true
             Layout.fillWidth: true
-
-            // ColumnLayout {
             Rectangle {
                 id: a
-
                 width: 100
                 height: 100
                 border.color: "black"
                 border.width: 8
                 anchors.centerIn: parent
-
                 Image {
                     width: parent.width - 4
                     height: parent.height - 4
@@ -191,123 +178,118 @@ Frame {
                     anchors.centerIn: parent
                 }
             }
-            // }
         }
         ScrollLyrics {
-
             color: "transparent"
-            anchors.left: information.right
-            id: _playlistshow
-            width: 440
-            height: 1000
-
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-
             Rectangle {
-                id: _songRect
-                opacity: 0.7
-                width: 200
-                height: 200
-                visible: false
-                // color: "blue"
-                anchors.bottom: parent.bottom
-                anchors.right: parent.right
+                anchors.left: information.right
+                id: _playlistshow
+                width: 440
+                height: 1000
+                color: "transparent"
+                Layout.fillWidth: true
+                Layout.fillHeight: true
 
-                // visible: false
-                // z: -1
-                ScrollView {
+                Rectangle {
+                    id: _songRect
+                    opacity: 0.7
+                    width: 200
+                    height: 200
+                    visible: false
+                    // color: "blue"
+                    anchors.bottom: parent.bottom
+                    anchors.right: parent.right
 
-                    id: _scorllView
-                    anchors.fill: parent
-                    ScrollBar.horizontal.policy: ScrollBar.AsNeeded
-                    ScrollBar.vertical.policy: ScrollBar.AsNeeded
+                    // visible: false
+                    // z: -1
+                    ScrollView {
 
-                    ColumnLayout {
-                        // 存放音频文件的视图
-                        ListView {
-                            // anchors.fill: parent
-                            interactive: true
-                            id: _multipath
-                            Layout.preferredWidth: 400
-                            Layout.preferredHeight: 200
-                            Layout.fillHeight: true
-                            Layout.fillWidth: true
+                        id: _scorllView
+                        anchors.fill: parent
+                        ScrollBar.horizontal.policy: ScrollBar.AsNeeded
+                        ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
-                            ListModel {
-                                id: _filesModel
+                        ColumnLayout {
+                            // 存放音频文件的视图
+                            ListView {
+                                // anchors.fill: parent
+                                interactive: true
+                                id: _multipath
+                                Layout.preferredWidth: 400
+                                Layout.preferredHeight: 200
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
+
+                                ListModel {
+                                    id: _filesModel
+                                }
+                                delegate: MyDelegate {}
                             }
-                            delegate: MyDelegate {}
-                        }
 
-                        component MyDelegate: Rectangle {
-                            id: songRoot
+                            component MyDelegate: Rectangle {
+                                id: songRoot
 
-                            required property string title
-                            required property string author
-                            required property url filePath
-                            required property int index
+                                required property string title
+                                required property string author
+                                required property url filePath
+                                required property int index
 
-                            // color: "red"
-                            height: 30
-                            width: _multipath.width
+                                // color: "red"
+                                height: 30
+                                width: _multipath.width
 
-                            RowLayout {
+                                RowLayout {
+                                    Button {
+                                        id: _addnext
+                                        width: 20
+                                        height: 20
+                                        icon.name: "bqm-add"
 
-                                Text {
-                                    text: title
-                                    font.bold: true
-                                    color: songRoot.ListView.isCurrentItem ? "red" : "black"
-                                }
-                                Text {
-                                    text: author
-                                    font.bold: true
-                                    color: songRoot.ListView.isCurrentItem ? "red" : "black"
-                                }
-                                Button {
-                                    id: _addnext
-                                    width: 20
-                                    height: 20
-                                    icon.name: "bqm-add"
-                                    //合并时，不兼容，后期更改
-                                    onClicked: {
-                                        var de = index
-                                        if (_multipath.currentIndex === de) {
-                                            return
+                                        //添加一首歌曲为下一首播放
+                                        onClicked: {
+                                            var de = index
+                                            var newIndex = _multipath.currentIndex + 1
+                                            //判断选择的下一首歌曲是否为当前正在播放的歌曲
+                                            if (_multipath.currentIndex === de) {
+                                                return
+                                            }
+                                            //判断当前播放歌曲是否为列表的最后一首，是：变成第一首，选择的歌曲变成第二首
+                                            if (_multipath.currentIndex === filesModel.count - 1) {
+                                                content.filesModel.move(de, 0,
+                                                                        1)
+                                                content.filesModel.move(
+                                                            _multipath.currentIndex,
+                                                            0, 1)
+                                                console.log(de)
+                                                console.log(_multipath.currentIndex)
+                                            } else
+                                                //不是最后一首，将其变为第一首即可
+                                                content.filesModel.move(
+                                                            de, newIndex, 1)
+                                            console.log(de)
                                         }
-
-                                        // arguments[0]=dialogs.fileOpen.selectedFile
-                                        var newIndex = _multipath.currentIndex + 1
-                                        content.filesModel.move(de, newIndex, 1)
-                                        // if(_multipath.currentIndex===ListModel.count-1)
-                                        // {
-                                        content.filesModel.move(
-                                                    _multipath.currentIndex, 0,
-                                                    1)
-                                        // }
                                     }
-
-                                    // onClicked: {
-                                    //     // var de=index
-                                    //     // var dev=_multipath.currentIndex+1
-                                    //     // // _multipath.currentIndex+1=de
-                                    //     dialogs.fileOpen.selectedFile
-                                    // }
+                                    Text {
+                                        text: title
+                                        font.bold: true
+                                        color: songRoot.ListView.isCurrentItem ? "red" : "black"
+                                    }
+                                    Text {
+                                        text: author
+                                        font.bold: true
+                                        color: songRoot.ListView.isCurrentItem ? "red" : "black"
+                                    }
                                 }
-                            }
 
-                            TapHandler {
-
-                                onTapped: {
-                                    accepted: true
-                                    target: songRoot
-                                    _multipath.currentIndex = index
-                                    _playmusic.source = filePath
-                                    _playmusic.play()
-                                    textauthor = author
-                                    textalubm = title
-                                    content.filesModel.move(
-                                                _multipath.currentIndex, 0, 1)
+                                TapHandler {
+                                    parent: songRoot
+                                    onTapped: {
+                                        _multipath.currentIndex = index
+                                        _playmusic.source = filePath
+                                        _playmusic.play()
+                                        changeinformation()
+                                        changeIcon()
+                                    }
                                 }
                             }
                         }

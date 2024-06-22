@@ -40,7 +40,7 @@ Item {
     Action {
         id: _sequence
         text: qsTr("Sequence")
-        icon.name: "media-playlist-no-shuffle"
+        icon.name: "media-playlist-normal-symbolic"
     }
 
     Action {
@@ -80,9 +80,11 @@ Item {
     Action{
         id:_song1
         text:qsTr("海阔天空")
+        icon.name: "folder-music-symbolic"
     }
     Action{
         id:_song2
         text: qsTr("Valder Fields")
+         icon.name: "folder-music-symbolic"
     }
 }
