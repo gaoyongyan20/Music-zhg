@@ -14,10 +14,6 @@ public:
     QString lyricsFile() const;
     void setLyricsFile(QString &file);
 
-    //获取歌词数组
-    QVector<QString> lyrics() const;
-    void setLyrics(QString &lyrics);
-
     //得到存储歌词的容器，可以在qml中使用这个函数
     Q_INVOKABLE QVector<QString> getAllLyrice();
 

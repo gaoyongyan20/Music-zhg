@@ -21,10 +21,12 @@ Frame {
     property alias faceImage: _faceImage
     property alias information: _information
     property alias rowlayout: _rowlayout
+    property alias lyric:  _lyric
     property string textauthor: "author"
     property string textalubm: "album"
     signal changeIcon
     signal changeinformation
+    signal exchangepath
 
     Lyrics {}
 
@@ -105,7 +107,7 @@ Frame {
         metaDataReader.mediaStatusChanged.connect(f)
     }
 
-    function getfile() {}
+    // function getfile() {}
 
     RowLayout {
         id: _rowlayout
@@ -166,8 +168,21 @@ Frame {
             // }
         }
 
-        ScrollLrics {
+        Lyrics{
+            id:_lyric
+            // lyricsFile: getlrcpath()
 
+            // function setlrcmodel(){
+            //     playlistshow.lrcmodel.clear()
+            //     for(var i=0;i<=getAllLyrice().size();i++){
+            //        playlistshow.lrcmodel.append(lyrics[i])
+            //     }
+            //     playlistshow.list.model=lrcmodel
+            //     playlistshow.list.currentIndex=0
+            // }
+        }
+
+        ScrollLrics {
             anchors.left: information.right
             id: _playlistshow
             width: 440
@@ -175,6 +190,7 @@ Frame {
             color: "transparent"
             Layout.fillWidth: true
             Layout.fillHeight: true
+
 
             Rectangle {
                 id: _songRect
@@ -274,6 +290,7 @@ Frame {
                                     _playmusic.play()
                                     changeinformation()
                                     changeIcon()
+                                    exchangepath()
                                 }
                             }
                         }

@@ -13,6 +13,7 @@ void Lyrics::setLyricsFile(QString &file)
 {
     if (file != m_lyricsFile) {
         m_lyricsFile = file;
+        spiltLyrics(); // 成功设置歌词容器
         emit lyricsFileChanged();
     }
 }

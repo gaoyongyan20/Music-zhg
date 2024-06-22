@@ -136,3 +136,35 @@ function getRandomIndex(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
+function getlrcpath(){
+    var songpath=content.filesModel.get(content.listview.currentIndex).filePath
+    var lastDotIndex=songpath.toString().lastIndexOf(".");
+    //找到了后缀点号
+    if(lastDotIndex!==-1){
+        var extension=songpath.toString().substring(lastDotIndex+1);
+        var newsongpath=songpath.toString().replace(extension,"lrc");
+        console.log(newsongpath)
+        return newsongpath;
+    }
+}
+
+function setlrcmodel(){
+    content.playlistshow.lrcmodel.clear()
+
+    for(var data in arguments[0])
+    {
+        var ci = data
+        var da={"ci":ci}
+         content.playlistshow.lrcmodel.append(da)
+    }
+    content.playlistshow.list.model=content.playlistshow.lrcmodel
+    content.playlistshow.list.currentIndex=0
+}
+
+
+
+
+
+
+
+

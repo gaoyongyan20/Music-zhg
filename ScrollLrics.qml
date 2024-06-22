@@ -2,15 +2,22 @@ import QtQuick
 import QtQuick.Layouts
 
 Rectangle {
+
+    property alias lrcmodel: _lrcmodel
+    property alias list: _list
     id: lyricView
     // anchors.fill: parent
     clip: true
     ListView {
-        id: list
+        id: _list
         anchors.fill: parent
         width: 440
         height: 20
-        model: ["当前歌词的上一句", "当前歌词", "当前歌词的下一句", "当前歌词的下2句", "当前歌词的下3句"]
+        // model: ["当前歌词的上一句", "当前歌词", "当前歌词的下一句", "当前歌词的下2句", "当前歌词的下3句"]
+        ListModel{
+            id:_lrcmodel
+        }
+
         delegate: ListDelegate {}
         highlight: Rectangle {
             // color: "#7fff00"
@@ -28,7 +35,6 @@ Rectangle {
         //以下三项属性会影响滚动列表时当前项的位置。
         //例如，当视图滚动时，如果当前选择的项目应该保持在列表的中间，那么就将 prefredHighlightBegin 和 preredHighlightEnd 值设置为中间项目所在位置的顶部和底部坐标。
 
-
         /*这些属性会影响滚动列表时当前项的位置。例如，当视图滚动时，如果当前选择的项目应该保持在列表的中间，那么就将 prefredHighlightBegin 和 preredHighlightEnd
         值设置为中间项目所在位置的顶部和底部坐标。如果 currentItem 以编程方式更改，则列表将自动滚动，以便当前项位于视
         图的中间。此外，无论是否存在突出显示，当前项目索引的行为都会发生。*/
@@ -41,10 +47,11 @@ Rectangle {
         id: delegateItem
         width: list.width
         height: 50
+        required property string ci
         Text {
             id: recText
             font.pixelSize: 12
-            text: modelData
+            text: ci
             color: index === list.currentIndex ? "red" : "black"
             anchors.centerIn: parent
         }

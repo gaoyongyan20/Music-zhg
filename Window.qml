@@ -9,7 +9,7 @@ import QtQuick.Layouts
 import "freemusic.js" as Controller
 
 ApplicationWindow {
-
+    property int x
     width: 640
     height: 480
     visible: true
@@ -113,6 +113,13 @@ ApplicationWindow {
         playProgressSlider.value: content.playmusic.position
         playProgressSlider.onMoved: {
             content.playmusic.position = playProgressSlider.value
+            console.log(content.playmusic.position)
+            if((x=content.lyric.getIndexByKey(content.playmusic.position))!==-1){
+                 // console.log("")
+                 content.playlistshow.list.currentIndex=x
+                // content.playlistshow.list.
+             }
+             else console.log("aa")
         }
 
         //进度条起点-文本
@@ -265,5 +272,15 @@ ApplicationWindow {
             textalubm = filesModel.get(listview.currentIndex).title
             textauthor = filesModel.get(listview.currentIndex).author
         }
+        onExchangepath: {
+           lyric.lyricsFile=Controller.getlrcpath()
+        }
+        Connections{
+            target: content.lyric
+            function onLyricsFileChanged(){
+                Controller.setlrcmodel(content.lyric.getAllLyrice())
+            }
+        }
+
     }
 }
