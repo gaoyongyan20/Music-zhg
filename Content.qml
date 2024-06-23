@@ -222,9 +222,10 @@ Frame {
                             required property string author
                             required property url filePath
                             required property int index
+
+                            height: 30
+                            width: _multipath.width
                             RowLayout {
-                                height: 30
-                                width: _multipath.width
                                 RowLayout {
                                     Button {
                                         id: _addnext
@@ -254,16 +255,16 @@ Frame {
                                                             de, newIndex, 1)
                                             console.log(de)
                                         }
-                                        Text {
-                                            text: title
-                                            font.bold: true
-                                            color: songRoot.ListView.isCurrentItem ? "red" : "black"
-                                        }
-                                        Text {
-                                            text: author
-                                            font.bold: true
-                                            color: songRoot.ListView.isCurrentItem ? "red" : "black"
-                                        }
+                                    }
+                                    Text {
+                                        text: title
+                                        font.bold: true
+                                        color: songRoot.ListView.isCurrentItem ? "red" : "black"
+                                    }
+                                    Text {
+                                        text: author
+                                        font.bold: true
+                                        color: songRoot.ListView.isCurrentItem ? "red" : "black"
                                     }
 
                                     TapHandler {
