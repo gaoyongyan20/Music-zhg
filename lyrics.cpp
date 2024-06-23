@@ -34,6 +34,14 @@ int Lyrics::getIndexByKey(int key)
 {
     // 当找不到对应的键时，第二个参数表示返回的值为-1
     return m_keyIndexMap.value(key, -1);
+
+    // for (const auto &data : m_keyIndexMap) {
+    //     if (key < data.first() && data.first() < key + 52) {
+    //         return data.value(); // 注意QMap使用value()而不是second
+    //         break;
+    //     } else
+    //         return -1;
+    // }
 }
 
 void Lyrics::setLyrics()

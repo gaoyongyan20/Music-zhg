@@ -60,15 +60,6 @@ function setBackwardMusic() {
         return
     }
     // 顺序播放
-    if (currentMusicIndex === 0) {
-        content.playmusic.source = arguments[0][arguments[0].length - 1]
-        content.listview.currentIndex = arguments[0].length - 1
-        content.filesModel.move(content.listview.currentIndex, 0, 1)
-    } else {
-        content.playmusic.source = arguments[0][currentMusicIndex - 1]
-        content.listview.currentIndex = currentMusicIndex - 1
-        content.filesModel.move(content.listview.currentIndex, 0, 1)
-    }
     if (content.listview.currentIndex >0) {
                 content.listview.currentIndex -= 1
             } else {
