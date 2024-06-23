@@ -69,13 +69,14 @@ function setBackwardMusic() {
         content.listview.currentIndex = currentMusicIndex - 1
         content.filesModel.move(content.listview.currentIndex, 0, 1)
     }
-    if (content.listview.currentIndex >0) {
-                content.listview.currentIndex -= 1
-            } else {
-                content.listview.currentIndex = content.filesModel.count - 1
-            }
-    var nextFilePath = content.filesModel.get(content.listview.currentIndex).filePath
-            content.playmusic.source = nextFilePath
+    if (content.listview.currentIndex > 0) {
+        content.listview.currentIndex -= 1
+    } else {
+        content.listview.currentIndex = content.filesModel.count - 1
+    }
+    var nextFilePath = content.filesModel.get(
+                content.listview.currentIndex).filePath
+    content.playmusic.source = nextFilePath
     content.changeinformation()
     content.exchangepath()
     content.playmusic.play()
@@ -130,10 +131,10 @@ function setForwardMusic() {
 
 //将时间毫秒转化为00：00格式
 function formatTime(milliseconds) {
+
     //Math.floor（）向下取整，返回小于等于给定值的最大值
     //1秒等于1000毫秒
     //给定值一共多少秒
-
     var seconds = Math.floor(milliseconds / 1000)
     //分钟
     var minutes = Math.floor(seconds / 60)
@@ -146,6 +147,20 @@ function formatTime(milliseconds) {
     return formattedTime
 }
 
+// function formatTime2(milliseconds) {
+
+//     var minutes = Math.floor(milliseconds / 60000)
+//     var seconds = Math.floor((milliseconds % 60000) / 1000)
+//     var millisecond = Math.ceil((milliseconds % 1000) / 10)
+//     // var seconds = Math.floor(milliseconds / 1000)
+//     // var millisecond = Math.floor(milliseconds % 1000)
+//     // var minutes = Math.floor(seconds / 60)
+//     // var remainingSeconds = seconds % 60
+//     var formattedTime = minutes.toString(
+//                 ).padStart(2, '0') + ":" + seconds.toString().padStart(
+//                 2, '0') + "." + millisecond.toString().padStart(2, '0')
+//     return formattedTime
+// }
 function getRandomIndex(min, max) {
     // floor函数是向下取整
     // Math.random()函数生成一个0到1之间的随机数（不包括1）
@@ -153,35 +168,35 @@ function getRandomIndex(min, max) {
 }
 
 //获取歌词文件路径
-function getlrcpath(){
-    var songpath=content.filesModel.get(content.listview.currentIndex).filePath
-    var extension=songpath.toString().substring(7);
-    var lastDotIndex=extension.toString().lastIndexOf(".");
+function getlrcpath() {
+    var songpath = content.filesModel.get(
+                content.listview.currentIndex).filePath
+    var extension = songpath.toString().substring(7)
+    var lastDotIndex = extension.toString().lastIndexOf(".")
     //找到了后缀点号
-    if(lastDotIndex!==-1){
+    if (lastDotIndex !== -1) {
         // var extension=songpath.toString().substring(lastDotIndex+1)
-        var extensions=extension.toString().substring(lastDotIndex+1);
-        var newsongpath=extension.toString().replace(extensions,"lrc");
+        var extensions = extension.toString().substring(lastDotIndex + 1)
+        var newsongpath = extension.toString().replace(extensions, "lrc")
         console.log(newsongpath)
-        return newsongpath;
+        return newsongpath
     }
 }
 
-function setlrcmodel(){
+function setlrcmodel() {
 
     content.playlistshow.lrcmodel.clear()
 
-    var allLyrics = content.lyric.getAllLyrice();
+    var allLyrics = content.lyric.getAllLyrics()
     for (var i = 0; i < allLyrics.length; ++i) {
 
         var ci = allLyrics[i]
-        var da={"ci":ci}
-         content.playlistshow.lrcmodel.append(da)
-        console.log(allLyrics[i]);
-
+        var da = {
+            "ci": ci
+        }
+        content.playlistshow.lrcmodel.append(da)
+        // console.log(allLyrics[i])
     }
-    content.playlistshow.list.model=content.playlistshow.lrcmodel
-    content.playlistshow.list.currentIndex=0
+    content.playlistshow.list.model = content.playlistshow.lrcmodel
+    content.playlistshow.list.currentIndex = 0
 }
-
-

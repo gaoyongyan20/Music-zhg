@@ -11,7 +11,6 @@ Frame {
     property alias backgrondImage: _backgrondImage
     property alias filesModel: _filesModel
     property alias listview: _multipath
-    property alias player: _playmusic
     property alias dialogs: _dialogs
     property alias audio: _audio
     property alias playmusic: _playmusic
@@ -33,18 +32,6 @@ Frame {
 
     Lyrics {
         id: _lyrics
-        // lyricsFile: "hello"
-        // Component.onCompleted: {
-        //     console.log(lyrics.lyricsFile)
-        //     console.log(lyrics.test())
-        // }
-        // Connections {
-        //     target: _lyrics
-        //     function onLyricsFileChanged() {
-        //         // 这里是信号的处理逻辑
-        //         console.log("Signal received from C++!")
-        //     }
-        // }
     }
 
     Image {
