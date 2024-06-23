@@ -38,6 +38,7 @@ function setBackwardMusic() {
     if (arguments[0]) {
         content.playmusic.source = content.filesModel.get(content.listview.currentIndex).filePath
         content.changeinformation()
+        content.exchangepath()
         content.playmusic.play()
         return
     }
@@ -54,6 +55,7 @@ function setBackwardMusic() {
         }
         content.playmusic.source = content.filesModel.get(index).filePath
         content.changeinformation()
+        content.exchangepath()
         content.playmusic.play()
         return
     }
@@ -67,6 +69,7 @@ function setBackwardMusic() {
     var nextFilePath = content.filesModel.get(content.listview.currentIndex).filePath
             content.playmusic.source = nextFilePath
     content.changeinformation()
+    content.exchangepath()
     content.playmusic.play()
 
 }
@@ -81,6 +84,7 @@ function setForwardMusic() {
     if (arguments[0]) {
         content.playmusic.source = content.filesModel.get(content.listview.currentIndex).filePath
         content.changeinformation()
+        content.exchangepath()
         content.playmusic.play()
         return
     }
@@ -97,6 +101,7 @@ function setForwardMusic() {
         }
         content.playmusic.source = content.filesModel.get(index).filePath
         content.changeinformation()
+        content.exchangepath()
         content.playmusic.play()
         return
     }
@@ -110,6 +115,7 @@ function setForwardMusic() {
     var nextFilePath = content.filesModel.get(content.listview.currentIndex).filePath
             content.playmusic.source = nextFilePath
     content.changeinformation()
+    content.exchangepath()
     content.playmusic.play()
 }
 
@@ -136,6 +142,7 @@ function getRandomIndex(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
+//获取歌词文件路径
 function getlrcpath(){
     var songpath=content.filesModel.get(content.listview.currentIndex).filePath
     var lastDotIndex=songpath.toString().lastIndexOf(".");
@@ -149,8 +156,8 @@ function getlrcpath(){
 }
 
 function setlrcmodel(){
-    content.playlistshow.lrcmodel.clear()
 
+    content.playlistshow.lrcmodel.clear()
     for(var data in arguments[0])
     {
         var ci = data
