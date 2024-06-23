@@ -5,6 +5,7 @@ Rectangle {
 
     property alias lrcmodel: _lrcmodel
     property alias list: _list
+    signal changep
     id: lyricView
     // anchors.fill: parent
     clip: true
@@ -62,6 +63,7 @@ Rectangle {
                 list.currentIndex = index
                 console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaddfgerg",
                             list.currentIndex)
+                   changep()
             }
         }
 

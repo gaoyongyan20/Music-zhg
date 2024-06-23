@@ -307,5 +307,11 @@ ApplicationWindow {
                 content.playlistshow.list.currentIndex = index
             }
         }
+
+        playlistshow.onChangep:{
+                    if(lyric.getTimeByIndex(content.playlistshow.list.currentIndex)!==-1){
+                        playmusic.position=lyric.getTimeByIndex(content.playlistshow.list.currentIndex)
+                    }
+                }
     }
 }

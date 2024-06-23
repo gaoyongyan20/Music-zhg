@@ -121,7 +121,7 @@ function setForwardMusic() {
 }
 
 //将时间毫秒转化为00：00格式
-function formatTime1(milliseconds) {
+function formatTime(milliseconds) {
     //Math.floor（）向下取整，返回小于等于给定值的最大值
     //1秒等于1000毫秒
     //给定值一共多少秒

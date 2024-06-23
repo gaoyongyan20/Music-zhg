@@ -53,6 +53,12 @@ int Lyrics::getIndexByKey(QString key)
     // }
 }
 
+int Lyrics::getTimeByIndex(int key)
+{
+    //查找到相应的索引时就返回相应的时间
+    return m_reverseTimeMap.value(key, -1);
+}
+
 // QVector<int> Lyrics::getAllTimes()
 // {
 //     return m_times;
@@ -91,10 +97,15 @@ void Lyrics::setLyrics()
                 qDebug() << "lyrics count:" << m_lyrics.size();
                 // 调用改变时间戳表现形式的函数，得到最终的时间戳
 
-                // int timestamp = changeTimeShow(str_timestamp);
-                QString timestamp = changeTimeShow(str_timestamp);
-                qDebug() << timestamp;
+                int timestamp = changeTimeShow(str_timestamp);
+
+                qDebug() << "newIndex" << m_lyrics.size() - 1;
+                qDebug() << "newtime" << timestamp;
+
                 m_keyIndexMap.insert(str_timestamp, m_lyrics.size() - 1);
+                m_reverseTimeMap.insert(m_lyrics.size() - 1, timestamp);
+
+                qDebug() << m_reverseTimeMap.value(4, -1);
             }
         }
     }
@@ -104,13 +115,12 @@ void Lyrics::setLyrics()
 }
 
 //00:00    00:00.00
-QString Lyrics::changeTimeShow(QString timestamp)
+int Lyrics::changeTimeShow(QString timestamp)
 {
     QString leftString, midString, rightString;
     int leftInt, midInt, rightInt;
     bool o, k, n;
     int totalMillisecond;
-    QString totalTimestamp;
 
     //find the last one to appear index of'.'
     int index = timestamp.QString::lastIndexOf('.');
@@ -128,13 +138,12 @@ QString Lyrics::changeTimeShow(QString timestamp)
             rightInt = rightString.toInt(&k, 10);
             if (k) {
                 totalMillisecond = (leftInt * 60 + rightInt) * 1000;
-                totalTimestamp = QString::number(totalMillisecond);
-                return totalTimestamp;
+                return totalMillisecond;
             } else {
-                return "";
+                return -1;
             }
         } else {
-            return "";
+            return -1;
         }
     } else {
         //"."apperear in the timestamp
@@ -152,15 +161,14 @@ QString Lyrics::changeTimeShow(QString timestamp)
                 midInt = midString.toInt(&n, 10);
                 if (n) {
                     totalMillisecond = (leftInt * 60 + midInt) * 1000 + rightInt;
-                    totalTimestamp = QString::number(totalMillisecond);
-                    return totalTimestamp;
+                    return totalMillisecond;
                 }
             } else {
-                return "";
+                return -1;
             }
         } else {
-            return "";
+            return -1;
         }
     }
-    return "";
+    return -1;
 }
