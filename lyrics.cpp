@@ -14,14 +14,23 @@ void Lyrics::setLyricsFile(QString &file)
 {
     if (file != m_lyricsFile) {
         m_lyricsFile = file;
+
         setLyrics();
+
         emit lyricsFileChanged();
     }
 }
 
+QVector<QString> Lyrics::getAllLyrice()
 
+{
+    for (auto data : m_lyrics) {
+        qDebug() << data;
+    }
+    return m_lyrics;
+}
 
-int Lyrics::getIndexByKey(QString key)
+int Lyrics::getIndexByKey(int key)
 {
     // 当找不到对应的键时，第二个参数表示返回的值为-1
     return m_keyIndexMap.value(key, -1);
@@ -47,27 +56,35 @@ void Lyrics::setLyrics()
             auto pos = line.indexOf(']');
             // mid类似于substring,从指定位置提取n个字符串
             QString str_timestamp = line.mid(1, pos - 1);
+            // qDebug() << str_timestamp;
 
             QString str_lyrics = line.mid(pos + 1);
+
+            // qDebug() << str_lyrics;
             if (!str_lyrics.isEmpty()) {
                 // 将提取的歌词放进歌词容器
                 m_lyrics.append(str_lyrics);
                 // 调用改变时间戳表现形式的函数，得到最终的时间戳
 
-                QString timestamp = changeTimeShow(str_timestamp);
+                int timestamp = changeTimeShow(str_timestamp);
+                qDebug() << timestamp;
                 m_keyIndexMap.insert(timestamp, m_lyrics.size() - 1);
             }
         }
     }
+    // for (auto data : m_lyrics) {
+    //     qDebug() << data;
+    // }
 }
 
 //00:00    00:00.00
-QString Lyrics::changeTimeShow(QString  timestamp) {
+int Lyrics::changeTimeShow(QString timestamp)
+{
     QString leftString, midString, rightString;
     int leftInt, midInt, rightInt;
     bool o, k, n;
     int totalMillisecond;
-    QString totalTimestamp;
+    // QString totalTimestamp;
 
     //find the last one to appear index of'.'
     int index = timestamp.QString::lastIndexOf('.');
@@ -85,13 +102,13 @@ QString Lyrics::changeTimeShow(QString  timestamp) {
             rightInt = rightString.toInt(&k, 10);
             if (k) {
                 totalMillisecond = (leftInt * 60 + rightInt) * 1000;
-                totalTimestamp = QString::number(totalMillisecond);
-                return totalTimestamp;
+                // totalTimestamp = QString::number(totalMillisecond);
+                return totalMillisecond;
             } else {
-                return "k false";
+                return -1;
             }
         } else {
-            return "o false";
+            return -1;
         }
     } else {
         //"."apperear in the timestamp
@@ -109,14 +126,15 @@ QString Lyrics::changeTimeShow(QString  timestamp) {
                 midInt = midString.toInt(&n, 10);
                 if (n) {
                     totalMillisecond = (leftInt * 60 + midInt) * 1000 + rightInt;
-                    totalTimestamp = QString::number(totalMillisecond);
-                    return totalTimestamp;
+                    // totalTimestamp = QString::number(totalMillisecond);
+                    return totalMillisecond;
                 }
             } else {
-                return "k false";
+                return -1;
             }
         } else {
-            return "o false";
+            return -1;
         }
     }
+    return -1;
 }

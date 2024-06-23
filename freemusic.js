@@ -38,6 +38,7 @@ function setBackwardMusic() {
         content.playmusic.source = content.filesModel.get(
                     content.listview.currentIndex).filePath
         content.changeinformation()
+        content.exchangepath()
         content.playmusic.play()
         return
     }
@@ -54,6 +55,7 @@ function setBackwardMusic() {
         }
         content.playmusic.source = content.filesModel.get(index).filePath
         content.changeinformation()
+        content.exchangepath()
         content.playmusic.play()
         return
     }
@@ -75,6 +77,7 @@ function setBackwardMusic() {
     var nextFilePath = content.filesModel.get(content.listview.currentIndex).filePath
             content.playmusic.source = nextFilePath
     content.changeinformation()
+    content.exchangepath()
     content.playmusic.play()
 }
 
@@ -89,6 +92,7 @@ function setForwardMusic() {
         content.playmusic.source = content.filesModel.get(
                     content.listview.currentIndex).filePath
         content.changeinformation()
+        content.exchangepath()
         content.playmusic.play()
         return
     }
@@ -105,6 +109,7 @@ function setForwardMusic() {
         }
         content.playmusic.source = content.filesModel.get(index).filePath
         content.changeinformation()
+        content.exchangepath()
         content.playmusic.play()
         return
     }
@@ -119,6 +124,7 @@ function setForwardMusic() {
                 content.listview.currentIndex).filePath
     content.playmusic.source = nextFilePath
     content.changeinformation()
+    content.exchangepath()
     content.playmusic.play()
 }
 
@@ -145,8 +151,36 @@ function getRandomIndex(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-function setLyricsModel() {
-    for (var data in arguments[0]) {
-        content.lyrics.model.append(data)
+//获取歌词文件路径
+function getlrcpath(){
+    var songpath=content.filesModel.get(content.listview.currentIndex).filePath
+    var extension=songpath.toString().substring(7);
+    var lastDotIndex=extension.toString().lastIndexOf(".");
+    //找到了后缀点号
+    if(lastDotIndex!==-1){
+        // var extension=songpath.toString().substring(lastDotIndex+1)
+        var extensions=extension.toString().substring(lastDotIndex+1);
+        var newsongpath=extension.toString().replace(extensions,"lrc");
+        console.log(newsongpath)
+        return newsongpath;
     }
 }
+
+function setlrcmodel(){
+
+    content.playlistshow.lrcmodel.clear()
+
+    var allLyrics = content.lyric.getAllLyrice();
+    for (var i = 0; i < allLyrics.length; ++i) {
+
+        var ci = allLyrics[i]
+        var da={"ci":ci}
+         content.playlistshow.lrcmodel.append(da)
+        console.log(allLyrics[i]);
+
+    }
+    content.playlistshow.list.model=content.playlistshow.lrcmodel
+    content.playlistshow.list.currentIndex=0
+}
+
+

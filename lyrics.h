@@ -6,7 +6,6 @@ class Lyrics : public QObject
     Q_OBJECT
     QML_ELEMENT
     Q_PROPERTY(QString lyricsFile READ lyricsFile WRITE setLyricsFile NOTIFY lyricsFileChanged)
-    // Q_PROPERTY(QVector lyrics READ setLyrics WRITE lyrics NOTIFY lyricsChanged FINAL)
 
 public:
     explicit Lyrics(QObject *parent = NULL);
@@ -15,18 +14,11 @@ public:
     QString lyricsFile() const;
     void setLyricsFile(QString &file);
 
-    // //获取歌词数组
-    // QVector<QString> lyrics() const;
-    // void setLyrics(QString &lyrics);
-    //获取歌词数组
-    QVector<QString> lyrics() const;
-    void setLyrics(QString &lyrics);
-
     //得到存储歌词的容器，可以在qml中使用这个函数
-    Q_INVOKABLE QVector<QString> getAllLyrice() {}
+    Q_INVOKABLE QVector<QString> getAllLyrice();
 
     //通过键（时间戳）查找索引（歌词所在视图的索引）
-    Q_INVOKABLE int getIndexByKey(QString key);
+    Q_INVOKABLE int getIndexByKey(int key);
 
 signals:
     Q_SIGNAL void lyricsFileChanged();
@@ -42,13 +34,10 @@ private:
     QVector<QString> m_lyrics;
 
     //到索引的映射
-    QMap<QString, int> m_keyIndexMap;
-
-    //分割字符串（时间戳和歌词）
-    void spiltLyrics();
+    QMap<int, int> m_keyIndexMap;
 
     //改变时间戳的格式（00：00->毫秒）
-    QString changeTimeShow(QString timestamp);
+    int changeTimeShow(QString timestamp);
 
     void setLyrics();
 };

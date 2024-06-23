@@ -21,11 +21,13 @@ Frame {
     property alias faceImage: _faceImage
     property alias information: _information
     property alias rowlayout: _rowlayout
+    property alias lyric: _lyric
     property string textauthor: "author"
     property string textalubm: "album"
 
     signal changeIcon
     signal changeinformation
+    signal exchangepath
 
     property alias lyrics: _lyrics
 
@@ -98,8 +100,55 @@ Frame {
     MediaPlayer {
         id: _playmusic
 
+        // seekable:true
         audioOutput: AudioOutput {
             id: _audio
+        }
+        // onPositionChanged: {
+        //     // console.log(_playmusic.position)
+        //     console.log(_playmusic.position)
+        //     console.log(lyric.getIndexByKey(_playmusic.position))
+        //     if ((x = lyric.getIndexByKey(_playmusic.position)) !== -1) {
+        //         // console.log("")
+        //         playlistshow.list.currentIndex = x
+        //         // content.playlistshow.list.
+        //     } else
+        //         playlistshow.list.currentIndex = playlistshow.list.currentIndex - 1
+        // }
+        // onPositionChanged: {
+        //     // console.log(_playmusic.position)
+        //     console.log(_playmusic.position)
+        //     console.log(lyric.getIndexByKey(_playmusic.position))
+        //     var currentIndex = playlistshow.list.currentIndex
+        //     // 保存当前索引
+        //     var index = lyric.getIndexByKey(_playmusic.position)
+        //     if (index !== -1) {
+        //         // 如果找到了对应的索引，更新列表的当前索引
+        //         playlistshow.list.currentIndex = index
+        //     } else {
+        //         // 如果没有找到对应的索引，回到上一个索引
+        //         playlistshow.list.currentIndex = currentIndex
+        //     }
+        // }
+    }
+
+    Timer {
+        id: timer
+        interval: 1 // 设置定时器的间隔时间，例如1000毫秒（1秒）
+        running: true // 启动定时器
+        repeat: true // 重复执行
+        onTriggered: {
+            // 检查MediaPlayer是否处于可播放状态
+            if (playmusic.state === MediaPlayer.PlayingState
+                    && playmusic.duration > playmusic.position) {
+                // 计算新的播放位置，例如增加1秒
+                let newPosition = playmusic.position + 1
+                // 更新MediaPlayer的播放位置
+                playmusic.seek(newPosition)
+            } else {
+                // 如果MediaPlayer不可播放或已达到文件末尾，停止定时器
+                timer.stop()
+            }
         }
     }
 
@@ -127,6 +176,7 @@ Frame {
         metaDataReader.mediaStatusChanged.connect(f)
     }
 
+    // function getfile() {}
     RowLayout {
         id: _rowlayout
         anchors.fill: parent
@@ -179,14 +229,21 @@ Frame {
                 }
             }
         }
+
+        Lyrics {
+            id: _lyric
+        }
+
         ScrollLyrics {
             color: "transparent"
+
             anchors.left: information.right
             id: _playlistshow
             width: 440
             height: 1000
             Layout.fillWidth: true
             Layout.fillHeight: true
+
             Rectangle {
                 id: _songRect
                 opacity: 0.7
@@ -226,57 +283,55 @@ Frame {
                             height: 30
                             width: _multipath.width
                             RowLayout {
-                                RowLayout {
-                                    Button {
-                                        id: _addnext
-                                        width: 20
-                                        height: 20
-                                        icon.name: "bqm-add"
-                                        //添加一首歌曲为下一首播放
-                                        onClicked: {
-                                            var de = index
-                                            var newIndex = _multipath.currentIndex + 1
-                                            //判断选择的下一首歌曲是否为当前正在播放的歌曲
-                                            if (_multipath.currentIndex === de) {
-                                                return
-                                            }
-                                            //判断当前播放歌曲是否为列表的最后一首，是：变成第一首，选择的歌曲变成第二首
-                                            if (_multipath.currentIndex === filesModel.count - 1) {
-                                                content.filesModel.move(de, 0,
-                                                                        1)
-                                                content.filesModel.move(
-                                                            _multipath.currentIndex,
-                                                            0, 1)
-                                                console.log(de)
-                                                console.log(_multipath.currentIndex)
-                                            } else
-                                                //不是最后一首，将其变为第一首即可
-                                                content.filesModel.move(
-                                                            de, newIndex, 1)
+                                Button {
+                                    id: _addnext
+                                    width: 20
+                                    height: 20
+                                    icon.name: "bqm-add"
+                                    //添加一首歌曲为下一首播放
+                                    onClicked: {
+                                        var de = index
+                                        var newIndex = _multipath.currentIndex + 1
+                                        //判断选择的下一首歌曲是否为当前正在播放的歌曲
+                                        if (_multipath.currentIndex === de) {
+                                            return
+                                        }
+                                        //判断当前播放歌曲是否为列表的最后一首，是：变成第一首，选择的歌曲变成第二首
+                                        if (_multipath.currentIndex === filesModel.count - 1) {
+                                            content.filesModel.move(de, 0, 1)
+                                            content.filesModel.move(
+                                                        _multipath.currentIndex,
+                                                        0, 1)
                                             console.log(de)
-                                        }
+                                            console.log(_multipath.currentIndex)
+                                        } else
+                                            //不是最后一首，将其变为第一首即可
+                                            content.filesModel.move(de,
+                                                                    newIndex, 1)
+                                        console.log(de)
                                     }
-                                    Text {
-                                        text: title
-                                        font.bold: true
-                                        color: songRoot.ListView.isCurrentItem ? "red" : "black"
-                                    }
-                                    Text {
-                                        text: author
-                                        font.bold: true
-                                        color: songRoot.ListView.isCurrentItem ? "red" : "black"
-                                    }
+                                }
+                                Text {
+                                    text: title
+                                    font.bold: true
+                                    color: songRoot.ListView.isCurrentItem ? "red" : "black"
+                                }
+                                Text {
+                                    text: author
+                                    font.bold: true
+                                    color: songRoot.ListView.isCurrentItem ? "red" : "black"
+                                }
+                            }
 
-                                    TapHandler {
-                                        parent: songRoot
-                                        onTapped: {
-                                            _multipath.currentIndex = index
-                                            _playmusic.source = filePath
-                                            _playmusic.play()
-                                            changeinformation()
-                                            changeIcon()
-                                        }
-                                    }
+                            TapHandler {
+                                parent: songRoot
+                                onTapped: {
+                                    _multipath.currentIndex = index
+                                    _playmusic.source = filePath
+                                    _playmusic.play()
+                                    changeinformation()
+                                    changeIcon()
+                                    exchangepath()
                                 }
                             }
                         }

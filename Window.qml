@@ -10,7 +10,7 @@ import "freemusic.js" as Controller
 import Lyrics
 
 ApplicationWindow {
-
+    property int x
     width: 640
     height: 480
     visible: true
@@ -280,5 +280,20 @@ ApplicationWindow {
             textalubm = filesModel.get(listview.currentIndex).title
             textauthor = filesModel.get(listview.currentIndex).author
         }
+        onExchangepath: {
+           lyric.lyricsFile=Controller.getlrcpath()
+        }
+        Connections{
+            target: content.lyric
+            function onLyricsFileChanged(){
+                    var allLyrics = content.lyric.getAllLyrice();
+                    for (var i = 0; i < allLyrics.length; ++i) {
+                        // console.log(allLyrics[i]);
+                    }
+
+                Controller.setlrcmodel()
+            }
+        }
+
     }
 }
