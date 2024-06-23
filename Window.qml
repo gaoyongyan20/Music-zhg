@@ -127,9 +127,9 @@ ApplicationWindow {
         }
 
         //进度条起点-文本
-        textOrigin.text: Controller.formatTime(content.playmusic.position)
+        textOrigin.text: Controller.formatTime1(content.playmusic.position)
         //进度条终点-文本
-        textTerminus.text: Controller.formatTime(content.playmusic.duration)
+        textTerminus.text: Controller.formatTime1(content.playmusic.duration)
         //播放列表显示
         playlist.onClicked: {
             if (content.songRect.width === 0 && content.songRect.height === 0) {
@@ -273,9 +273,6 @@ ApplicationWindow {
             }
         }
 
-        // onLyricsFileChanged: {
-        //     console.log(lyrics.test())
-        // }
         onChangeinformation: {
             textalubm = filesModel.get(listview.currentIndex).title
             textauthor = filesModel.get(listview.currentIndex).author
