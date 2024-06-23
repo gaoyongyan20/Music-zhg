@@ -7,6 +7,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "freemusic.js" as Controller
+import Lyrics
 
 ApplicationWindow {
     property int x
@@ -45,6 +46,16 @@ ApplicationWindow {
             }
             MenuItem {
                 action: actions.timingoff
+            }
+        }
+
+        Menu {
+            title: qsTr("local_music")
+            MenuItem {
+                action: actions.song1
+            }
+            MenuItem {
+                action: actions.about
             }
         }
 
@@ -113,13 +124,6 @@ ApplicationWindow {
         playProgressSlider.value: content.playmusic.position
         playProgressSlider.onMoved: {
             content.playmusic.position = playProgressSlider.value
-            console.log(content.playmusic.position)
-            if((x=content.lyric.getIndexByKey(content.playmusic.position))!==-1){
-                 // console.log("")
-                 content.playlistshow.list.currentIndex=x
-                // content.playlistshow.list.
-             }
-             else console.log("aa")
         }
 
         //进度条起点-文本
@@ -268,6 +272,10 @@ ApplicationWindow {
                                            actions.isLoop, actions.isRandom)
             }
         }
+
+        // onLyricsFileChanged: {
+        //     console.log(lyrics.test())
+        // }
         onChangeinformation: {
             textalubm = filesModel.get(listview.currentIndex).title
             textauthor = filesModel.get(listview.currentIndex).author
@@ -278,7 +286,12 @@ ApplicationWindow {
         Connections{
             target: content.lyric
             function onLyricsFileChanged(){
-                Controller.setlrcmodel(content.lyric.getAllLyrice())
+                    var allLyrics = content.lyric.getAllLyrice();
+                    for (var i = 0; i < allLyrics.length; ++i) {
+                        // console.log(allLyrics[i]);
+                    }
+
+                Controller.setlrcmodel()
             }
         }
 

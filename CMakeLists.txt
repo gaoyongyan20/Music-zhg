@@ -7,7 +7,7 @@ project(
 
 find_package(Qt6 6.5 REQUIRED COMPONENTS Quick)
 
-qt_standard_project_setup()
+qt_standard_project_setup(REQUIRES 6.6)
 
 qt_add_executable(appMusicPlayer main.cpp)
 
@@ -17,9 +17,11 @@ qt_add_qml_module(
   Lyrics
   VERSION
   1.0
+  SOURCES
+  lyrics.h
+  lyrics.cpp
   QML_FILES
   Window.qml
-  SOURCES
   QML_FILES
   Actions.qml
   QML_FILES
@@ -33,12 +35,16 @@ qt_add_qml_module(
   RESOURCES
   resources.qrc
   QML_FILES
-  ScrollLrics.qml
+  ScrollLyrics.qml
   SOURCES
   lyrics.cpp
   SOURCES
   lyrics.h)
 
+# qt_add_qml_module( appMusicPlayer URI Lyric VERSION 1.0 SOURCES lyric.cpp
+# SOURCES lyric.h QML_FILES Main.qml)
+
+# qt_add_qml_module( URI MusicPlayer VERSION 1.0 SOURCES lyric.cpp lyric.h )
 target_compile_features(appMusicPlayer PRIVATE cxx_std_20)
 
 set_target_properties(
