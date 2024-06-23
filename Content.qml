@@ -247,7 +247,7 @@ Frame {
             Rectangle {
                 id: _songRect
                 opacity: 0.7
-                width: 200
+                width: 300
                 height: 200
                 visible: false
                 anchors.bottom: parent.bottom
@@ -283,7 +283,7 @@ Frame {
                             height: 30
                             width: _multipath.width
                             RowLayout {
-                                Button {
+                                RoundButton {
                                     id: _addnext
                                     width: 20
                                     height: 20

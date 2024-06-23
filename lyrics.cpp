@@ -30,14 +30,25 @@ QVector<QString> Lyrics::getAllLyrice()
     return m_lyrics;
 }
 
-int Lyrics::getIndexByKey(int key)
+int Lyrics::getIndexByKey(QString key)
+// int Lyrics::getIndexByKey(int key)
 {
-    // 当找不到对应的键时，第二个参数表示返回的值为-1
+    // // 当找不到对应的键时，第二个参数表示返回的值为-1
+    // for (QMap<int, int>::iterator it = m_keyIndexMap.begin(); it != m_keyIndexMap.end(); ++it) {
+    //     if (key < it.key() < key + 52) {
+    //         return it.value();
+    //     } else {
+    //         return -1;
+    //     }
+    // }
+
     return m_keyIndexMap.value(key, -1);
 }
 
 void Lyrics::setLyrics()
 {
+    m_lyrics.clear();
+    m_keyIndexMap.clear();
     // 打开歌词文件
     QFile file(m_lyricsFile);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -64,11 +75,13 @@ void Lyrics::setLyrics()
             if (!str_lyrics.isEmpty()) {
                 // 将提取的歌词放进歌词容器
                 m_lyrics.append(str_lyrics);
+                qDebug() << "lyrics count:" << m_lyrics.size();
                 // 调用改变时间戳表现形式的函数，得到最终的时间戳
 
-                int timestamp = changeTimeShow(str_timestamp);
+                // int timestamp = changeTimeShow(str_timestamp);
+                QString timestamp = changeTimeShow(str_timestamp);
                 qDebug() << timestamp;
-                m_keyIndexMap.insert(timestamp, m_lyrics.size() - 1);
+                m_keyIndexMap.insert(str_timestamp, m_lyrics.size() - 1);
             }
         }
     }
@@ -78,13 +91,13 @@ void Lyrics::setLyrics()
 }
 
 //00:00    00:00.00
-int Lyrics::changeTimeShow(QString timestamp)
+QString Lyrics::changeTimeShow(QString timestamp)
 {
     QString leftString, midString, rightString;
     int leftInt, midInt, rightInt;
     bool o, k, n;
     int totalMillisecond;
-    // QString totalTimestamp;
+    QString totalTimestamp;
 
     //find the last one to appear index of'.'
     int index = timestamp.QString::lastIndexOf('.');
@@ -102,13 +115,13 @@ int Lyrics::changeTimeShow(QString timestamp)
             rightInt = rightString.toInt(&k, 10);
             if (k) {
                 totalMillisecond = (leftInt * 60 + rightInt) * 1000;
-                // totalTimestamp = QString::number(totalMillisecond);
-                return totalMillisecond;
+                totalTimestamp = QString::number(totalMillisecond);
+                return totalTimestamp;
             } else {
-                return -1;
+                return "";
             }
         } else {
-            return -1;
+            return "";
         }
     } else {
         //"."apperear in the timestamp
@@ -126,15 +139,15 @@ int Lyrics::changeTimeShow(QString timestamp)
                 midInt = midString.toInt(&n, 10);
                 if (n) {
                     totalMillisecond = (leftInt * 60 + midInt) * 1000 + rightInt;
-                    // totalTimestamp = QString::number(totalMillisecond);
-                    return totalMillisecond;
+                    totalTimestamp = QString::number(totalMillisecond);
+                    return totalTimestamp;
                 }
             } else {
-                return -1;
+                return "";
             }
         } else {
-            return -1;
+            return "";
         }
     }
-    return -1;
+    return "";
 }

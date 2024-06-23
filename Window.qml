@@ -281,19 +281,34 @@ ApplicationWindow {
             textauthor = filesModel.get(listview.currentIndex).author
         }
         onExchangepath: {
-           lyric.lyricsFile=Controller.getlrcpath()
+            lyric.lyricsFile = Controller.getlrcpath()
         }
-        Connections{
+        Connections {
             target: content.lyric
-            function onLyricsFileChanged(){
-                    var allLyrics = content.lyric.getAllLyrice();
-                    for (var i = 0; i < allLyrics.length; ++i) {
-                        // console.log(allLyrics[i]);
-                    }
+            function onLyricsFileChanged() {
+                var allLyrics = content.lyric.getAllLyrice()
+                for (var i = 0; i < allLyrics.length; ++i) {
+
+                    // console.log(allLyrics[i]);
+                }
 
                 Controller.setlrcmodel()
             }
         }
 
+        player.onPositionChanged: {
+            // console.log(_playmusic.position)
+            console.log(playmusic.position)
+            console.log(lyric.getIndexByKey(Controller.formatTime(
+                                                playmusic.position)))
+            var currentIndex = content.playlistshow.currentIndex
+            // 保存当前索引
+            var index = content.lyric.getIndexByKey(Controller.formatTime(
+                                                        playmusic.position))
+            if (index !== -1) {
+                // 如果找到了对应的索引，更新列表的当前索引
+                content.playlistshow.list.currentIndex = index
+            }
+        }
     }
 }
