@@ -24,9 +24,9 @@ void Lyrics::setLyricsFile(QString &file)
 QVector<QString> Lyrics::getAllLyrice()
 
 {
-    for (auto data : m_lyrics) {
-        qDebug() << data;
-    }
+    // for (auto data : m_lyrics) {
+    //     qDebug() << data;
+    // }
     return m_lyrics;
 }
 
@@ -35,6 +35,11 @@ int Lyrics::getIndexByKey(int key)
     // 当找不到对应的键时，第二个参数表示返回的值为-1
     return m_keyIndexMap.value(key, -1);
 }
+
+// QVector<int> Lyrics::getAllTimes()
+// {
+//     return m_times;
+// }
 
 void Lyrics::setLyrics()
 {
@@ -67,7 +72,10 @@ void Lyrics::setLyrics()
                 // 调用改变时间戳表现形式的函数，得到最终的时间戳
 
                 int timestamp = changeTimeShow(str_timestamp);
-                qDebug() << timestamp;
+                //把时间戳加入数组
+                // m_times.append(timestamp);
+
+                // qDebug() << timestamp;
                 m_keyIndexMap.insert(timestamp, m_lyrics.size() - 1);
             }
         }

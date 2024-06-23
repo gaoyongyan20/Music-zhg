@@ -20,6 +20,8 @@ public:
     //通过键（时间戳）查找索引（歌词所在视图的索引）
     Q_INVOKABLE int getIndexByKey(int key);
 
+    //所有时间戳数组
+    // Q_INVOKABLE QVector<int> getAllTimes();
 signals:
     Q_SIGNAL void lyricsFileChanged();
     // Q_SIGNAL void lyricsChanged();
@@ -35,6 +37,9 @@ private:
 
     //到索引的映射
     QMap<int, int> m_keyIndexMap;
+
+    //时间戳数组
+    // QVector<int> m_times;
 
     //改变时间戳的格式（00：00->毫秒）
     int changeTimeShow(QString timestamp);
