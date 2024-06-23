@@ -11,6 +11,7 @@ Item {
     property alias timingoffDialog: _timingoffDialog
     property alias text: _text
     property alias button: _button
+    property alias failToOpen: _failToOpen
     FileDialog {
         id: _fileOpen
         title: "Select some song files"
@@ -31,7 +32,7 @@ Item {
         id: _failToOpen
         modality: Qt.WindowModal
         buttons: MessageDialog.Ok
-        text: "Fail to save the file!"
+        text: "Fail to open the file (.lrc)!"
     }
     Dialog {
         id: _timingoffDialog

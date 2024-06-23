@@ -11,7 +11,6 @@ Frame {
     property alias backgrondImage: _backgrondImage
     property alias filesModel: _filesModel
     property alias listview: _multipath
-    property alias player: _playmusic
     property alias dialogs: _dialogs
     property alias audio: _audio
     property alias playmusic: _playmusic
@@ -24,32 +23,11 @@ Frame {
     property alias lyric: _lyric
     property string textauthor: "author"
     property string textalubm: "album"
-
     signal changeIcon
     signal changeinformation
     signal exchangepath
-
-    property alias lyrics: _lyrics
-
-    Lyrics {
-        id: _lyrics
-        // lyricsFile: "hello"
-        // Component.onCompleted: {
-        //     console.log(lyrics.lyricsFile)
-        //     console.log(lyrics.test())
-        // }
-        // Connections {
-        //     target: _lyrics
-        //     function onLyricsFileChanged() {
-        //         // 这里是信号的处理逻辑
-        //         console.log("Signal received from C++!")
-        //     }
-        // }
-    }
-
     Image {
         id: _backgrondImage
-
         z: -1111
         width: root.width - 20
         height: root.height - 20
@@ -59,23 +37,18 @@ Frame {
         onSourceChanged: {
             update()
         }
-        Connections {
-            target: _lyrics
-            function onLyricsFileChanged() {
-                // 这里是信号的处理逻辑
-                console.log("Signal received from C++!")
-            }
-        }
     }
 
     Dialogs {
         id: _dialogs
+
         Dialog {
             id: _imageDialog
             title: "select background"
             width: 300
             height: 200
             GridView {
+
                 anchors.fill: parent
                 model: ["myimage1.png", "myimage2.png"]
                 delegate: Rectangle {
@@ -97,6 +70,7 @@ Frame {
             }
         }
     }
+
     MediaPlayer {
         id: _playmusic
 
@@ -104,32 +78,6 @@ Frame {
         audioOutput: AudioOutput {
             id: _audio
         }
-        // onPositionChanged: {
-        //     // console.log(_playmusic.position)
-        //     console.log(_playmusic.position)
-        //     console.log(lyric.getIndexByKey(_playmusic.position))
-        //     if ((x = lyric.getIndexByKey(_playmusic.position)) !== -1) {
-        //         // console.log("")
-        //         playlistshow.list.currentIndex = x
-        //         // content.playlistshow.list.
-        //     } else
-        //         playlistshow.list.currentIndex = playlistshow.list.currentIndex - 1
-        // }
-        // onPositionChanged: {
-        //     // console.log(_playmusic.position)
-        //     console.log(_playmusic.position)
-        //     console.log(lyric.getIndexByKey(_playmusic.position))
-        //     var currentIndex = playlistshow.list.currentIndex
-        //     // 保存当前索引
-        //     var index = lyric.getIndexByKey(_playmusic.position)
-        //     if (index !== -1) {
-        //         // 如果找到了对应的索引，更新列表的当前索引
-        //         playlistshow.list.currentIndex = index
-        //     } else {
-        //         // 如果没有找到对应的索引，回到上一个索引
-        //         playlistshow.list.currentIndex = currentIndex
-        //     }
-        // }
     }
 
     Timer {
@@ -175,11 +123,10 @@ Frame {
         }
         metaDataReader.mediaStatusChanged.connect(f)
     }
-
-    // function getfile() {}
     RowLayout {
         id: _rowlayout
         anchors.fill: parent
+
         Rectangle {
             id: _information
             width: 200
@@ -188,13 +135,17 @@ Frame {
             clip: true
             Layout.fillHeight: true
             Layout.fillWidth: true
+
+            // ColumnLayout {
             Rectangle {
                 id: a
+
                 width: 100
                 height: 100
                 border.color: "black"
                 border.width: 8
                 anchors.centerIn: parent
+
                 Image {
                     width: parent.width - 4
                     height: parent.height - 4
@@ -228,35 +179,40 @@ Frame {
                     anchors.centerIn: parent
                 }
             }
+            // }
         }
-
         Lyrics {
             id: _lyric
         }
 
         ScrollLyrics {
-            color: "transparent"
-
             anchors.left: information.right
             id: _playlistshow
             width: 440
             height: 1000
+            color: "transparent"
             Layout.fillWidth: true
             Layout.fillHeight: true
 
             Rectangle {
                 id: _songRect
                 opacity: 0.7
-                width: 200
+                width: 300
                 height: 200
                 visible: false
+                // color: "blue"
                 anchors.bottom: parent.bottom
                 anchors.right: parent.right
+
+                // visible: false
+                // z: -1
                 ScrollView {
+
                     id: _scorllView
                     anchors.fill: parent
                     ScrollBar.horizontal.policy: ScrollBar.AsNeeded
                     ScrollBar.vertical.policy: ScrollBar.AsNeeded
+
                     ColumnLayout {
                         // 存放音频文件的视图
                         ListView {
@@ -273,6 +229,7 @@ Frame {
                             }
                             delegate: MyDelegate {}
                         }
+
                         component MyDelegate: Rectangle {
                             id: songRoot
                             required property string title
@@ -280,10 +237,13 @@ Frame {
                             required property url filePath
                             required property int index
 
+                            // color: "red"
                             height: 30
                             width: _multipath.width
+
                             RowLayout {
-                                Button {
+
+                                RoundButton {
                                     id: _addnext
                                     width: 20
                                     height: 20
