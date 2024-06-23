@@ -20,23 +20,18 @@ Frame {
     property alias faceImage: _faceImage
     property alias information: _information
     property alias rowlayout: _rowlayout
-    property alias lyric: _lyric
+    property alias lyrics: _lyrics
     property string textauthor: "author"
     property string textalubm: "album"
-
     signal changeIcon
     signal changeinformation
     signal exchangepath
 
-    property alias lyrics: _lyrics
-
     Lyrics {
         id: _lyrics
     }
-
     Image {
         id: _backgrondImage
-
         z: -1111
         width: root.width - 20
         height: root.height - 20
@@ -46,23 +41,18 @@ Frame {
         onSourceChanged: {
             update()
         }
-        Connections {
-            target: _lyrics
-            function onLyricsFileChanged() {
-                // 这里是信号的处理逻辑
-                console.log("Signal received from C++!")
-            }
-        }
     }
 
     Dialogs {
         id: _dialogs
+
         Dialog {
             id: _imageDialog
             title: "select background"
             width: 300
             height: 200
             GridView {
+
                 anchors.fill: parent
                 model: ["myimage1.png", "myimage2.png"]
                 delegate: Rectangle {
@@ -84,58 +74,13 @@ Frame {
             }
         }
     }
+
     MediaPlayer {
         id: _playmusic
 
         // seekable:true
         audioOutput: AudioOutput {
             id: _audio
-        }
-        // onPositionChanged: {
-        //     // console.log(_playmusic.position)
-        //     console.log(_playmusic.position)
-        //     console.log(lyric.getIndexByKey(_playmusic.position))
-        //     if ((x = lyric.getIndexByKey(_playmusic.position)) !== -1) {
-        //         // console.log("")
-        //         playlistshow.list.currentIndex = x
-        //         // content.playlistshow.list.
-        //     } else
-        //         playlistshow.list.currentIndex = playlistshow.list.currentIndex - 1
-        // }
-        // onPositionChanged: {
-        //     // console.log(_playmusic.position)
-        //     console.log(_playmusic.position)
-        //     console.log(lyric.getIndexByKey(_playmusic.position))
-        //     var currentIndex = playlistshow.list.currentIndex
-        //     // 保存当前索引
-        //     var index = lyric.getIndexByKey(_playmusic.position)
-        //     if (index !== -1) {
-        //         // 如果找到了对应的索引，更新列表的当前索引
-        //         playlistshow.list.currentIndex = index
-        //     } else {
-        //         // 如果没有找到对应的索引，回到上一个索引
-        //         playlistshow.list.currentIndex = currentIndex
-        //     }
-        // }
-    }
-
-    Timer {
-        id: timer
-        interval: 1 // 设置定时器的间隔时间，例如1000毫秒（1秒）
-        running: true // 启动定时器
-        repeat: true // 重复执行
-        onTriggered: {
-            // 检查MediaPlayer是否处于可播放状态
-            if (playmusic.state === MediaPlayer.PlayingState
-                    && playmusic.duration > playmusic.position) {
-                // 计算新的播放位置，例如增加1秒
-                let newPosition = playmusic.position + 1
-                // 更新MediaPlayer的播放位置
-                playmusic.seek(newPosition)
-            } else {
-                // 如果MediaPlayer不可播放或已达到文件末尾，停止定时器
-                timer.stop()
-            }
         }
     }
 
@@ -162,11 +107,10 @@ Frame {
         }
         metaDataReader.mediaStatusChanged.connect(f)
     }
-
-    // function getfile() {}
     RowLayout {
         id: _rowlayout
         anchors.fill: parent
+
         Rectangle {
             id: _information
             width: 200
@@ -175,13 +119,17 @@ Frame {
             clip: true
             Layout.fillHeight: true
             Layout.fillWidth: true
+
+            // ColumnLayout {
             Rectangle {
                 id: a
+
                 width: 100
                 height: 100
                 border.color: "black"
                 border.width: 8
                 anchors.centerIn: parent
+
                 Image {
                     width: parent.width - 4
                     height: parent.height - 4
@@ -215,19 +163,14 @@ Frame {
                     anchors.centerIn: parent
                 }
             }
+            // }
         }
-
-        Lyrics {
-            id: _lyric
-        }
-
         ScrollLyrics {
-            color: "transparent"
-
             anchors.left: information.right
             id: _playlistshow
             width: 440
             height: 1000
+            color: "transparent"
             Layout.fillWidth: true
             Layout.fillHeight: true
 
@@ -237,13 +180,19 @@ Frame {
                 width: 300
                 height: 200
                 visible: false
+                // color: "blue"
                 anchors.bottom: parent.bottom
                 anchors.right: parent.right
+
+                // visible: false
+                // z: -1
                 ScrollView {
+
                     id: _scorllView
                     anchors.fill: parent
                     ScrollBar.horizontal.policy: ScrollBar.AsNeeded
                     ScrollBar.vertical.policy: ScrollBar.AsNeeded
+
                     ColumnLayout {
                         // 存放音频文件的视图
                         ListView {
@@ -260,6 +209,7 @@ Frame {
                             }
                             delegate: MyDelegate {}
                         }
+
                         component MyDelegate: Rectangle {
                             id: songRoot
                             required property string title
@@ -267,9 +217,12 @@ Frame {
                             required property url filePath
                             required property int index
 
-                            height: 30
+                            // color: "red"
+                            height: 40
                             width: _multipath.width
+
                             RowLayout {
+
                                 RoundButton {
                                     id: _addnext
                                     width: 20

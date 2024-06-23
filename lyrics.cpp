@@ -38,6 +38,12 @@ int Lyrics::getIndexByKey(QString key)
     return m_keyIndexMap.value(key, -1);
 }
 
+int Lyrics::getTimeByIndex(int key)
+{
+    //查找到相应的索引时就返回相应的时间
+    return m_reverseTimeMap.value(key, -1);
+}
+
 void Lyrics::setLyrics()
 {
     // 清除上一首歌曲所占用的容器空间
@@ -88,7 +94,14 @@ void Lyrics::setLyrics()
                 // qDebug() << timestamp;
 
                 // 存取时间戳对应索引的映射
+
+                int timestamp = changeTimeShow(str_timestamp);
+
+
                 m_keyIndexMap.insert(str_timestamp, m_lyrics.size() - 1);
+                m_reverseTimeMap.insert(m_lyrics.size() - 1, timestamp);
+
+               // qDebug() << m_reverseTimeMap.value(4, -1);
             }
         }
     }
@@ -97,15 +110,15 @@ void Lyrics::setLyrics()
     // }
 }
 
-//时间戳的两种表示方法： 00:00    00:00.00
 
-QString Lyrics::changeTimeShow(QString timestamp)
+//时间戳的两种表示方法： 00:00    00:00.00
+//00:00    00:00.00
+int Lyrics::changeTimeShow(QString timestamp)
 {
     QString leftString, midString, rightString;
     int leftInt, midInt, rightInt;
     bool o, k, n;
     int totalMillisecond;
-    QString totalTimestamp;
 
     //find the last one to appear index of'.'
     int index = timestamp.QString::lastIndexOf('.');
@@ -123,13 +136,12 @@ QString Lyrics::changeTimeShow(QString timestamp)
             rightInt = rightString.toInt(&k, 10);
             if (k) {
                 totalMillisecond = (leftInt * 60 + rightInt) * 1000;
-                totalTimestamp = QString::number(totalMillisecond);
-                return totalTimestamp;
+                return totalMillisecond;
             } else {
-                return "";
+                return -1;
             }
         } else {
-            return "";
+            return -1;
         }
     } else {
         //"."apperear in the timestamp
@@ -147,15 +159,14 @@ QString Lyrics::changeTimeShow(QString timestamp)
                 midInt = midString.toInt(&n, 10);
                 if (n) {
                     totalMillisecond = (leftInt * 60 + midInt) * 1000 + rightInt;
-                    totalTimestamp = QString::number(totalMillisecond);
-                    return totalTimestamp;
+                    return totalMillisecond;
                 }
             } else {
-                return "";
+                return -1;
             }
         } else {
-            return "";
+            return -1;
         }
     }
-    return "";
+    return -1;
 }

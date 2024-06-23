@@ -59,16 +59,17 @@ function setBackwardMusic() {
         content.playmusic.play()
         return
     }
+
     // 顺序播放
-    if (currentMusicIndex === 0) {
-        content.playmusic.source = arguments[0][arguments[0].length - 1]
-        content.listview.currentIndex = arguments[0].length - 1
-        content.filesModel.move(content.listview.currentIndex, 0, 1)
-    } else {
-        content.playmusic.source = arguments[0][currentMusicIndex - 1]
-        content.listview.currentIndex = currentMusicIndex - 1
-        content.filesModel.move(content.listview.currentIndex, 0, 1)
-    }
+    // if (currentMusicIndex === 0) {
+    //     content.playmusic.source = arguments[0][arguments[0].length - 1]
+    //     content.listview.currentIndex = arguments[0].length - 1
+    //     content.filesModel.move(content.listview.currentIndex, 0, 1)
+    // } else {
+    //     content.playmusic.source = arguments[0][currentMusicIndex - 1]
+    //     content.listview.currentIndex = currentMusicIndex - 1
+    //     content.filesModel.move(content.listview.currentIndex, 0, 1)
+    // }
     if (content.listview.currentIndex > 0) {
         content.listview.currentIndex -= 1
     } else {
@@ -77,6 +78,7 @@ function setBackwardMusic() {
     var nextFilePath = content.filesModel.get(
                 content.listview.currentIndex).filePath
     content.playmusic.source = nextFilePath
+
     content.changeinformation()
     content.exchangepath()
     content.playmusic.play()
@@ -147,20 +149,6 @@ function formatTime(milliseconds) {
     return formattedTime
 }
 
-// function formatTime2(milliseconds) {
-
-//     var minutes = Math.floor(milliseconds / 60000)
-//     var seconds = Math.floor((milliseconds % 60000) / 1000)
-//     var millisecond = Math.ceil((milliseconds % 1000) / 10)
-//     // var seconds = Math.floor(milliseconds / 1000)
-//     // var millisecond = Math.floor(milliseconds % 1000)
-//     // var minutes = Math.floor(seconds / 60)
-//     // var remainingSeconds = seconds % 60
-//     var formattedTime = minutes.toString(
-//                 ).padStart(2, '0') + ":" + seconds.toString().padStart(
-//                 2, '0') + "." + millisecond.toString().padStart(2, '0')
-//     return formattedTime
-// }
 function getRandomIndex(min, max) {
     // floor函数是向下取整
     // Math.random()函数生成一个0到1之间的随机数（不包括1）
@@ -187,7 +175,8 @@ function setlrcmodel() {
 
     content.playlistshow.lrcmodel.clear()
 
-    var allLyrics = content.lyric.getAllLyrics()
+    var allLyrics = content.lyrics.getAllLyrics()
+
     for (var i = 0; i < allLyrics.length; ++i) {
 
         var ci = allLyrics[i]
@@ -195,7 +184,6 @@ function setlrcmodel() {
             "ci": ci
         }
         content.playlistshow.lrcmodel.append(da)
-        // console.log(allLyrics[i])
     }
     content.playlistshow.list.model = content.playlistshow.lrcmodel
     content.playlistshow.list.currentIndex = 0

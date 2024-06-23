@@ -157,10 +157,10 @@ ApplicationWindow {
 
         // 当按下播放/暂停按钮时
         onChangePause: {
-            content.player.pause()
+            content.playmusic.pause()
         }
         onChangePlay: {
-            content.player.play()
+            content.playmusic.play()
         }
 
 
@@ -269,40 +269,45 @@ ApplicationWindow {
         playmusic.onPlaybackStateChanged: {
             // 歌曲播放完毕的标志：
             if (playmusic.position >= playmusic.duration) {
-                Controller.setForwardMusic(dialogs.fileOpen.selectedFiles,
-                                           actions.isLoop, actions.isRandom)
+                Controller.setForwardMusic(actions.isLoop, actions.isRandom)
             }
         }
 
-        // onLyricsFileChanged: {
-        //     console.log(lyrics.test())
-        // }
         onChangeinformation: {
             textalubm = filesModel.get(listview.currentIndex).title
             textauthor = filesModel.get(listview.currentIndex).author
         }
+
         onExchangepath: {
-            lyric.lyricsFile = Controller.getlrcpath()
+            lyrics.lyricsFile = Controller.getlrcpath()
         }
         Connections {
-            target: content.lyric
+            target: content.lyrics
             function onLyricsFileChanged() {
                 Controller.setlrcmodel()
             }
         }
-
         playmusic.onPositionChanged: {
+            // console.log(_playmusic.position)
             // console.log(playmusic.position)
             // console.log(lyric.getIndexByKey(Controller.formatTime(
             //                                     playmusic.position)))
             var currentIndex = content.playlistshow.currentIndex
 
-            var index = content.lyric.getIndexByKey(Controller.formatTime(
-                                                        playmusic.position))
+            var index = content.lyrics.getIndexByKey(Controller.formatTime(
+                                                         playmusic.position))
 
             if (index !== -1) {
                 // 如果找到了对应的索引，更新列表的当前索引
                 content.playlistshow.list.currentIndex = index
+            }
+        }
+
+        playlistshow.onChangep: {
+            if (lyrics.getTimeByIndex(
+                        content.playlistshow.list.currentIndex) !== -1) {
+                playmusic.position = lyrics.getTimeByIndex(
+                            content.playlistshow.list.currentIndex)
             }
         }
     }
