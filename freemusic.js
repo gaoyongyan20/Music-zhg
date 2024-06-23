@@ -134,6 +134,7 @@ function formatTime1(milliseconds) {
     //Math.floor（）向下取整，返回小于等于给定值的最大值
     //1秒等于1000毫秒
     //给定值一共多少秒
+
     var seconds = Math.floor(milliseconds / 1000)
     //分钟
     var minutes = Math.floor(seconds / 60)

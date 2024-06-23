@@ -11,7 +11,6 @@ Frame {
     property alias backgrondImage: _backgrondImage
     property alias filesModel: _filesModel
     property alias listview: _multipath
-    property alias player: _playmusic
     property alias dialogs: _dialogs
     property alias audio: _audio
     property alias playmusic: _playmusic
@@ -21,13 +20,12 @@ Frame {
     property alias faceImage: _faceImage
     property alias information: _information
     property alias rowlayout: _rowlayout
+    property alias lyric: _lyric
     property string textauthor: "author"
     property string textalubm: "album"
     signal changeIcon
     signal changeinformation
-
-    Lyrics {}
-
+    signal exchangepath
     Image {
         id: _backgrondImage
         z: -1111
@@ -76,8 +74,29 @@ Frame {
     MediaPlayer {
         id: _playmusic
 
+        // seekable:true
         audioOutput: AudioOutput {
             id: _audio
+        }
+    }
+
+    Timer {
+        id: timer
+        interval: 1 // 设置定时器的间隔时间，例如1000毫秒（1秒）
+        running: true // 启动定时器
+        repeat: true // 重复执行
+        onTriggered: {
+            // 检查MediaPlayer是否处于可播放状态
+            if (playmusic.state === MediaPlayer.PlayingState
+                    && playmusic.duration > playmusic.position) {
+                // 计算新的播放位置，例如增加1秒
+                let newPosition = playmusic.position + 1
+                // 更新MediaPlayer的播放位置
+                playmusic.seek(newPosition)
+            } else {
+                // 如果MediaPlayer不可播放或已达到文件末尾，停止定时器
+                timer.stop()
+            }
         }
     }
 
@@ -104,9 +123,6 @@ Frame {
         }
         metaDataReader.mediaStatusChanged.connect(f)
     }
-
-    function getfile() {}
-
     RowLayout {
         id: _rowlayout
         anchors.fill: parent
@@ -165,6 +181,10 @@ Frame {
             }
             // }
         }
+        Lyrics {
+            id: _lyric
+        }
+
         ScrollLyrics {
             anchors.left: information.right
             id: _playlistshow
@@ -177,7 +197,7 @@ Frame {
             Rectangle {
                 id: _songRect
                 opacity: 0.7
-                width: 200
+                width: 300
                 height: 200
                 visible: false
                 // color: "blue"
@@ -223,12 +243,11 @@ Frame {
 
                             RowLayout {
 
-                                Button {
+                                RoundButton {
                                     id: _addnext
                                     width: 20
                                     height: 20
                                     icon.name: "bqm-add"
-
                                     //添加一首歌曲为下一首播放
                                     onClicked: {
                                         var de = index
@@ -272,6 +291,7 @@ Frame {
                                     _playmusic.play()
                                     changeinformation()
                                     changeIcon()
+                                    exchangepath()
                                 }
                             }
                         }

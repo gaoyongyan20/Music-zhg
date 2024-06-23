@@ -127,9 +127,9 @@ ApplicationWindow {
         }
 
         //进度条起点-文本
-        textOrigin.text: Controller.formatTime1(content.playmusic.position)
+        textOrigin.text: Controller.formatTime(content.playmusic.position)
         //进度条终点-文本
-        textTerminus.text: Controller.formatTime1(content.playmusic.duration)
+        textTerminus.text: Controller.formatTime(content.playmusic.duration)
         //播放列表显示
         playlist.onClicked: {
             if (content.songRect.width === 0 && content.songRect.height === 0) {
@@ -277,9 +277,10 @@ ApplicationWindow {
             textalubm = filesModel.get(listview.currentIndex).title
             textauthor = filesModel.get(listview.currentIndex).author
         }
-        // onExchangepath: {
-        //     lyric.lyricsFile = Controller.getlrcpath()
-        // }
+
+        onExchangepath: {
+            lyric.lyricsFile = Controller.getlrcpath()
+        }
         Connections {
             target: content.lyric
             function onLyricsFileChanged() {
@@ -290,6 +291,20 @@ ApplicationWindow {
                 }
 
                 Controller.setlrcmodel()
+            }
+        }
+        playmusic.onPositionChanged: {
+            // console.log(_playmusic.position)
+            console.log(playmusic.position)
+            console.log(lyric.getIndexByKey(Controller.formatTime(
+                                                playmusic.position)))
+            var currentIndex = content.playlistshow.currentIndex
+            // 保存当前索引
+            var index = content.lyric.getIndexByKey(Controller.formatTime(
+                                                        playmusic.position))
+            if (index !== -1) {
+                // 如果找到了对应的索引，更新列表的当前索引
+                content.playlistshow.list.currentIndex = index
             }
         }
     }
