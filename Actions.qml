@@ -35,18 +35,21 @@ Item {
         id: _random
         text: qsTr("Random")
         icon.name: "media-playlist-shuffle"
+        icon.color: "black"
     }
 
     Action {
         id: _sequence
         text: qsTr("Sequence")
         icon.name: "media-playlist-normal-symbolic"
+        icon.color: "red"
     }
 
     Action {
         id: _background
         text: qsTr("Backgrond")
         icon.name: "games-config-theme-symbolic"
+        icon.color: "black"
     }
 
     Action {

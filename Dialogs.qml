@@ -12,6 +12,7 @@ Item {
     property alias text: _text
     property alias button: _button
     property alias failToOpen: _failToOpen
+    property alias buttonRoutine: _buttonRoutine
     FileDialog {
         id: _fileOpen
         title: "Select some song files"
@@ -35,29 +36,36 @@ Item {
         text: "Fail to open the file (.lrc)!"
     }
     Dialog {
-        id: _timingoffDialog
-        title: "select timingoff"
-        width: 300
-        height: 200
-        ColumnLayout {
-            anchors.fill: parent
-            TextField {
-                id: _text
-                Layout.fillWidth: true
-                placeholderText: "Please enter your timing(minutes)"
-                validator: RegularExpressionValidator {
-                    regularExpression: /^[1-9]\d{0,3}$/
+            id: _timingoffDialog
+            title: "select timingoff"
+            width: 300
+            height: 200
+            ColumnLayout {
+                anchors.fill: parent
+                TextField {
+                    id: _text
+                    Layout.fillWidth: true
+                    placeholderText: "Please enter your timing(minutes)"
+                    validator: RegularExpressionValidator {
+                        regularExpression: /^[1-9]\d{0,3}$/
+                    }
+                    onTextChanged: {
+                        button.enabled = _text.text !== ""
+                        _buttonRoutine.enabled = _text.text !== ""
+                    }
                 }
-                onTextChanged: {
-                    button.enabled = text.text !== ""
+                Button {
+                    id: _button
+                    Layout.fillWidth: true
+                    text: "ColseMusic"
+                    enabled: false
                 }
-            }
-            Button {
-                id: _button
-                Layout.fillWidth: true
-                text: "Confirm"
-                enabled: false
+                Button {
+                    id: _buttonRoutine
+                    Layout.fillWidth: true
+                    text: "ColseRoutine"
+                    enabled: false
+                }
             }
         }
-    }
 }

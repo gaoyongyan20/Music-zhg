@@ -53,11 +53,13 @@ Rectangle {
         required property int index
         Text {
             id: recText
-            font.pixelSize: 12
+            font.bold: true
+            font.pixelSize: 13
             text: ci
             color: list.currentIndex === index ? "red" : "black"
             anchors.centerIn: parent
         }
+        // FocusScope {
         TapHandler {
             onTapped: {
                 list.currentIndex = index
@@ -66,6 +68,7 @@ Rectangle {
                    changep()
             }
         }
+        // }
 
         states: State {
             when: delegateItem.ListView.isCurrentItem
@@ -84,3 +87,4 @@ Rectangle {
         }
     }
 }
+

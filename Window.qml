@@ -48,17 +48,6 @@ ApplicationWindow {
                 action: actions.timingoff
             }
         }
-
-        Menu {
-            title: qsTr("local_music")
-            MenuItem {
-                action: actions.song1
-            }
-            MenuItem {
-                action: actions.about
-            }
-        }
-
         Menu {
             title: qsTr("local_music")
             MenuItem {
@@ -157,10 +146,16 @@ ApplicationWindow {
 
         // 当按下播放/暂停按钮时
         onChangePause: {
-            content.player.pause()
+            content.playmusic.pause()
+            content.faceImage.currentRotation = content.faceImage.rotation;
+            content.rotationAnimation.pause()
         }
         onChangePlay: {
-            content.player.play()
+            content.playmusic.play()
+            if (!content.rotationAnimation.running) { // 如果动画没有运行
+                   content.rotationAnimation.from = content.faceImage.currentRotation; // 设置起始角度为保存的角度
+               }
+               content.rotationAnimation.resume()
         }
 
 
@@ -194,6 +189,7 @@ ApplicationWindow {
     Actions {
         id: actions
         property alias timingoffTimer: _timingoffTimer
+        property alias timingProgram:_timingProgram
         property bool isLoop: false
         property bool isRandom: false
 
@@ -214,20 +210,32 @@ ApplicationWindow {
         background.onTriggered: content.imageDialog.open()
         about.onTriggered: content.dialogs.about.open()
         timingoff.onTriggered: {
-            content.dialogs.timingoffDialog.open()
-        }
-        Timer {
-            id: _timingoffTimer
-            onTriggered: {
-                content.playmusic.pause()
-            }
-        }
+              content.dialogs.timingoffDialog.open()
+          }
+          Timer {
+              id: _timingoffTimer
+              onTriggered: {
+                  content.playmusic.pause()
+                  foot.play_button.icon.name = "media-playback-start-symbolic"
+              }
+          }
+
+          Timer {
+              id: _timingProgram
+              onTriggered: {
+                  Qt.quit()
+              }
+          }
+
         loop.onTriggered: {
             console.log("loop play now")
             if (isRandom) {
                 isRandom = false
             } // 若最终没有按下顺序播放，顺序/循环只能有一个状态
             isLoop = true
+            loop.icon.color= "red"
+            random.icon.color="black"
+            sequence.icon.color="black"
         }
         sequence.onTriggered: {
             console.log("sequence play now")
@@ -238,6 +246,9 @@ ApplicationWindow {
             if (isRandom) {
                 isRandom = false
             }
+            loop.icon.color= "black"
+            random.icon.color="black"
+            sequence.icon.color="red"
         }
         random.onTriggered: {
             console.log("random play now")
@@ -245,22 +256,39 @@ ApplicationWindow {
                 isLoop = false
             }
             isRandom = true
+            loop.icon.color= "black"
+            random.icon.color="red"
+            sequence.icon.color="black"
         }
     }
 
     Content {
         id: content
         //自定义定时后，点击确认按钮
-        dialogs.button.onClicked: {
-            var number = parseInt(dialogs.text.text)
-            if (isNaN(number)) {
-                console.log("Invalid input")
-            } else {
-                console.log("The number is:", number)
-                actions.timingoffTimer.interval = number * 60000
-                actions.timingoffTimer.running = true
-            }
-        }
+                dialogs.button.onClicked: {
+                    var number = parseInt(dialogs.text.text)
+                    if (isNaN(number)) {
+                        console.log("Invalid input")
+                    } else {
+                        console.log("The number is:", number)
+                        actions.timingoffTimer.interval = number * 60000
+                        actions.timingoffTimer.running = true
+                    }
+                }
+
+                //定时关闭应用程序
+                dialogs.buttonRoutine.onClicked: {
+                    var number = parseInt(dialogs.text.text)
+                    if (isNaN(number)) {
+                        console.log("Invalid input")
+                    } else {
+                        console.log("The number is:", number)
+                        playmusic.play()
+                        foot.play_button.icon.name = "media-playback-pause-symbolic"
+                        actions.timingProgram.interval = number * 60000
+                        actions.timingProgram.running = true
+                    }
+                }
         onChangeIcon: {
             foot.play_button.icon.name = "media-playback-pause-symbolic"
         }
@@ -306,6 +334,12 @@ ApplicationWindow {
                 // 如果找到了对应的索引，更新列表的当前索引
                 content.playlistshow.list.currentIndex = index
             }
+        }
+        playmusic.onPlayingChanged:{
+            if(playmusic.PlayingState){
+                foot.play_button.icon.name === "media-playback-pause-symbolic"
+            }else{
+            foot.play_button.icon.name = "media-playback-start-symbolic"}
         }
 
         playlistshow.onChangep:{

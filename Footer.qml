@@ -18,22 +18,25 @@ Item {
     signal changePlay
     // 当按下播放按钮时发出的信号
     signal changePause
+    id:footerroot
 
     RowLayout {
         id: layout
         anchors.bottom: parent.bottom
         spacing: 6
+        width: footerroot.width
 
         RoundButton {
             id: _backward_button
             icon.name: "media-seek-backward"
+
         }
 
         RoundButton {
             id: _play_button
             icon.name: "media-playback-start-symbolic"
             TapHandler {
-                onTapped: {
+                  onTapped: {
                     if (_play_button.icon.name === "media-playback-pause-symbolic") {
                         changePause()
                         _play_button.icon.name = "media-playback-start-symbolic"

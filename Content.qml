@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import QtMultimedia
 import Lyrics
+import Qt5Compat.GraphicalEffects
 
 Frame {
 
@@ -21,19 +22,25 @@ Frame {
     property alias information: _information
     property alias rowlayout: _rowlayout
     property alias lyric: _lyric
+    property alias rotationAnimation:_rotationAnimation
     property string textauthor: "author"
     property string textalubm: "album"
     signal changeIcon
     signal changeinformation
     signal exchangepath
+signal changePlayIcons
+    function rotate(){
+        rotationAnimation.start()
+    }
+
     Image {
         id: _backgrondImage
         z: -1111
         width: root.width - 20
         height: root.height - 20
-        opacity: 0.9
+        opacity: 0.7
         Layout.alignment: Qt.AlignCenter
-        source: "qrc:/myimage1.png"
+        source: "qrc:/myimage4.png"
         onSourceChanged: {
             update()
         }
@@ -45,12 +52,14 @@ Frame {
         Dialog {
             id: _imageDialog
             title: "select background"
-            width: 300
+            width: 315
             height: 200
-            GridView {
+            clip: true
 
+            GridView {
                 anchors.fill: parent
-                model: ["myimage1.png", "myimage2.png"]
+                model: ["myimage1.png", "myimage2.png","myimage3.png","myimage4.png","myimage5.png",
+                    "myimage6.png","myimage7.png","myimage8.png","myimage9.png","myimage10.png"]
                 delegate: Rectangle {
                     width: 50
                     height: 50
@@ -62,7 +71,6 @@ Frame {
                             onTapped: {
                                 // 将点击的图片设置为程序的背景
                                 backgrondImage.source = "qrc:/" + modelData
-                                faceImage.source = "qrc:/" + modelData
                             }
                         }
                     }
@@ -77,26 +85,6 @@ Frame {
         // seekable:true
         audioOutput: AudioOutput {
             id: _audio
-        }
-    }
-
-    Timer {
-        id: timer
-        interval: 1 // 设置定时器的间隔时间，例如1000毫秒（1秒）
-        running: true // 启动定时器
-        repeat: true // 重复执行
-        onTriggered: {
-            // 检查MediaPlayer是否处于可播放状态
-            if (playmusic.state === MediaPlayer.PlayingState
-                    && playmusic.duration > playmusic.position) {
-                // 计算新的播放位置，例如增加1秒
-                let newPosition = playmusic.position + 1
-                // 更新MediaPlayer的播放位置
-                playmusic.seek(newPosition)
-            } else {
-                // 如果MediaPlayer不可播放或已达到文件末尾，停止定时器
-                timer.stop()
-            }
         }
     }
 
@@ -139,21 +127,32 @@ Frame {
             // ColumnLayout {
             Rectangle {
                 id: a
-
-                width: 100
-                height: 100
+                width: 150
+                height: 150
                 border.color: "black"
                 border.width: 8
                 anchors.centerIn: parent
-
+                radius: 75
+                clip: true
                 Image {
-                    width: parent.width - 4
-                    height: parent.height - 4
+                    width: parent.width-4
+                    height: parent.height-4
                     id: _faceImage
                     anchors.centerIn: parent
-                    source: "qrc:/myimage1.png"
+                    source: "qrc:/faceimage.png"
+                    property real currentRotation: 0
                 }
+                RotationAnimation {
+                        id:_rotationAnimation
+                        target: _faceImage
+                        property: "rotation"
+                        from: 0
+                        to: 360
+                        duration: 5000 // 旋转一周所需的时间，单位毫秒
+                        loops: Animation.Infinite // 无限循环
+                    }
             }
+
             Rectangle {
                 id: b
                 width: 150
@@ -163,6 +162,7 @@ Frame {
                 anchors.horizontalCenter: parent.horizontalCenter
                 Text {
                     text: textalubm
+                    font.bold: true
                     anchors.centerIn: parent
                 }
             }
@@ -176,6 +176,7 @@ Frame {
 
                 Text {
                     text: textauthor
+                    font.bold: true
                     anchors.centerIn: parent
                 }
             }
@@ -193,19 +194,16 @@ Frame {
             color: "transparent"
             Layout.fillWidth: true
             Layout.fillHeight: true
-
             Rectangle {
                 id: _songRect
                 opacity: 0.7
-                width: 300
+                width: 200
                 height: 200
                 visible: false
-                // color: "blue"
+
                 anchors.bottom: parent.bottom
                 anchors.right: parent.right
 
-                // visible: false
-                // z: -1
                 ScrollView {
 
                     id: _scorllView
@@ -219,7 +217,8 @@ Frame {
                             // anchors.fill: parent
                             interactive: true
                             id: _multipath
-                            Layout.preferredWidth: 400
+                            width: 800
+                            // Layout.preferredWidth: 400
                             Layout.preferredHeight: 200
                             Layout.fillHeight: true
                             Layout.fillWidth: true
@@ -236,15 +235,13 @@ Frame {
                             required property string author
                             required property url filePath
                             required property int index
-
-                            // color: "red"
                             height: 30
                             width: _multipath.width
 
                             RowLayout {
 
                                 RoundButton {
-                                    id: _addnext
+                                    id: addnext
                                     width: 20
                                     height: 20
                                     icon.name: "bqm-add"
@@ -258,19 +255,45 @@ Frame {
                                         }
                                         //判断当前播放歌曲是否为列表的最后一首，是：变成第一首，选择的歌曲变成第二首
                                         if (_multipath.currentIndex === filesModel.count - 1) {
-                                            content.filesModel.move(de, 0, 1)
-                                            content.filesModel.move(
+                                            filesModel.move(de, 0, 1)
+                                            filesModel.move(
                                                         _multipath.currentIndex,
                                                         0, 1)
                                             console.log(de)
                                             console.log(_multipath.currentIndex)
                                         } else
                                             //不是最后一首，将其变为第一首即可
-                                            content.filesModel.move(de,
+                                            filesModel.move(de,
                                                                     newIndex, 1)
                                         console.log(de)
                                     }
                                 }
+                                RoundButton{
+                                    id:_deletesongs
+                                    icon.name:"delete"
+                                    icon.color: "black"
+                                    onClicked: {
+                                        if(filesModel.count===1){
+                                            filesModel.clear()
+                                            _playlistshow.lrcmodel.clear()
+                                           textauthor= "author"
+                                           textalubm="album"
+                                           playmusic.pause()
+                                            faceImage.currentRotation = content.faceImage.rotation;
+                                            rotationAnimation.pause()
+                                           changePlayIcons()
+
+                                        }else{
+                                            filesModel.remove(index,1)
+                                            playmusic.source = filesModel.get(_multipath.currentIndex).filePath
+                                            changeinformation()
+                                            exchangepath()
+                                            playmusic.play()
+
+                                        }
+                                    }
+                                }
+
                                 Text {
                                     text: title
                                     font.bold: true
@@ -292,6 +315,7 @@ Frame {
                                     changeinformation()
                                     changeIcon()
                                     exchangepath()
+                                    rotate()
                                 }
                             }
                         }
