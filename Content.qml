@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import QtMultimedia
 import Lyrics
+import Qt5Compat.GraphicalEffects
 
 Frame {
 
@@ -11,7 +12,6 @@ Frame {
     property alias backgrondImage: _backgrondImage
     property alias filesModel: _filesModel
     property alias listview: _multipath
-    property alias player: _playmusic
     property alias dialogs: _dialogs
     property alias audio: _audio
     property alias playmusic: _playmusic
@@ -21,61 +21,53 @@ Frame {
     property alias faceImage: _faceImage
     property alias information: _information
     property alias rowlayout: _rowlayout
-    property string textauthor: "author"
-    property string textalubm: "album"
+
+    property alias rotationAnimation: _rotationAnimation
 
     property alias lyrics: _lyrics
 
-    Lyrics {
-        id: _lyrics
-        // lyricsFile: "hello"
-        // Component.onCompleted: {
-        //     console.log(lyrics.lyricsFile)
-        //     console.log(lyrics.test())
-        // }
-        // Connections {
-        //     target: _lyrics
-        //     function onLyricsFileChanged() {
-        //         // 这里是信号的处理逻辑
-        //         console.log("Signal received from C++!")
-        //     }
-        // }
-    }
+    property string textauthor: "author"
+    property string textalubm: "album"
 
     signal changeIcon
     signal changeinformation
+    signal exchangepath
+    signal changePlayIcons
+
+    function rotate() {
+        rotationAnimation.start()
+    }
+
+    Lyrics {
+        id: _lyrics
+    }
 
     Image {
         id: _backgrondImage
-
         z: -1111
         width: root.width - 20
         height: root.height - 20
-        opacity: 0.9
+        opacity: 0.7
         Layout.alignment: Qt.AlignCenter
-        source: "qrc:/myimage1.png"
+        source: "qrc:/myimage4.png"
         onSourceChanged: {
             update()
-        }
-        Connections {
-            target: _lyrics
-            function onLyricsFileChanged() {
-                // 这里是信号的处理逻辑
-                console.log("Signal received from C++!")
-            }
         }
     }
 
     Dialogs {
         id: _dialogs
+
         Dialog {
             id: _imageDialog
             title: "select background"
-            width: 300
+            width: 315
             height: 200
+            clip: true
+
             GridView {
                 anchors.fill: parent
-                model: ["myimage1.png", "myimage2.png"]
+                model: ["myimage1.png", "myimage2.png", "myimage3.png", "myimage4.png", "myimage5.png", "myimage6.png", "myimage7.png", "myimage8.png", "myimage9.png", "myimage10.png"]
                 delegate: Rectangle {
                     width: 50
                     height: 50
@@ -87,7 +79,6 @@ Frame {
                             onTapped: {
                                 // 将点击的图片设置为程序的背景
                                 backgrondImage.source = "qrc:/" + modelData
-                                faceImage.source = "qrc:/" + modelData
                             }
                         }
                     }
@@ -95,9 +86,11 @@ Frame {
             }
         }
     }
+
     MediaPlayer {
         id: _playmusic
 
+        // seekable:true
         audioOutput: AudioOutput {
             id: _audio
         }
@@ -126,10 +119,10 @@ Frame {
         }
         metaDataReader.mediaStatusChanged.connect(f)
     }
-
     RowLayout {
         id: _rowlayout
         anchors.fill: parent
+
         Rectangle {
             id: _information
             width: 200
@@ -138,21 +131,36 @@ Frame {
             clip: true
             Layout.fillHeight: true
             Layout.fillWidth: true
+
+            // ColumnLayout {
             Rectangle {
                 id: a
-                width: 100
-                height: 100
+                width: 150
+                height: 150
                 border.color: "black"
                 border.width: 8
                 anchors.centerIn: parent
+                radius: 75
+                clip: true
                 Image {
                     width: parent.width - 4
                     height: parent.height - 4
                     id: _faceImage
                     anchors.centerIn: parent
-                    source: "qrc:/myimage1.png"
+                    source: "qrc:/faceimage.png"
+                    property real currentRotation: 0
+                }
+                RotationAnimation {
+                    id: _rotationAnimation
+                    target: _faceImage
+                    property: "rotation"
+                    from: 0
+                    to: 360
+                    duration: 5000 // 旋转一周所需的时间，单位毫秒
+                    loops: Animation.Infinite // 无限循环
                 }
             }
+
             Rectangle {
                 id: b
                 width: 150
@@ -162,6 +170,7 @@ Frame {
                 anchors.horizontalCenter: parent.horizontalCenter
                 Text {
                     text: textalubm
+                    font.bold: true
                     anchors.centerIn: parent
                 }
             }
@@ -175,121 +184,158 @@ Frame {
 
                 Text {
                     text: textauthor
+                    font.bold: true
                     anchors.centerIn: parent
                 }
             }
+            // }
         }
         ScrollLyrics {
+            anchors.left: information.right
+            id: _playlistshow
+            width: 440
+            height: 1000
             color: "transparent"
+            Layout.fillWidth: true
+            Layout.fillHeight: true
             Rectangle {
-                anchors.left: information.right
-                id: _playlistshow
-                width: 440
-                height: 1000
-                color: "transparent"
-                Layout.fillWidth: true
-                Layout.fillHeight: true
+                id: _songRect
+                opacity: 0.7
+                width: 200
+                height: 200
+                visible: false
 
-                Rectangle {
-                    id: _songRect
-                    opacity: 0.7
-                    width: 200
-                    height: 200
-                    visible: false
-                    // color: "blue"
-                    anchors.bottom: parent.bottom
-                    anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.right: parent.right
 
-                    // visible: false
-                    // z: -1
-                    ScrollView {
+                ScrollView {
 
-                        id: _scorllView
-                        anchors.fill: parent
-                        ScrollBar.horizontal.policy: ScrollBar.AsNeeded
-                        ScrollBar.vertical.policy: ScrollBar.AsNeeded
+                    id: _scorllView
+                    anchors.fill: parent
+                    ScrollBar.horizontal.policy: ScrollBar.AsNeeded
+                    ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
-                        ColumnLayout {
-                            // 存放音频文件的视图
-                            ListView {
-                                // anchors.fill: parent
-                                interactive: true
-                                id: _multipath
-                                Layout.preferredWidth: 400
-                                Layout.preferredHeight: 200
-                                Layout.fillHeight: true
-                                Layout.fillWidth: true
+                    ColumnLayout {
+                        // 存放音频文件的视图
+                        ListView {
+                            // anchors.fill: parent
+                            interactive: true
+                            id: _multipath
+                            width: 800
+                            // Layout.preferredWidth: 400
+                            Layout.preferredHeight: 200
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
 
-                                ListModel {
-                                    id: _filesModel
-                                }
-                                delegate: MyDelegate {}
+                            ListModel {
+                                id: _filesModel
                             }
+                            delegate: MyDelegate {}
+                        }
 
-                            component MyDelegate: Rectangle {
-                                id: songRoot
+                        component MyDelegate: Rectangle {
+                            id: songRoot
+                            required property string title
+                            required property string author
+                            required property url filePath
+                            required property int index
 
-                                required property string title
-                                required property string author
-                                required property url filePath
-                                required property int index
+                            // color: "red"
+                            height: 40
 
-                                // color: "red"
-                                height: 30
-                                width: _multipath.width
+                            width: _multipath.width
 
-                                RowLayout {
-                                    Button {
-                                        id: _addnext
-                                        width: 20
-                                        height: 20
-                                        icon.name: "bqm-add"
+                            RowLayout {
 
-                                        //添加一首歌曲为下一首播放
-                                        onClicked: {
-                                            var de = index
-                                            var newIndex = _multipath.currentIndex + 1
-                                            //判断选择的下一首歌曲是否为当前正在播放的歌曲
-                                            if (_multipath.currentIndex === de) {
-                                                return
-                                            }
-                                            //判断当前播放歌曲是否为列表的最后一首，是：变成第一首，选择的歌曲变成第二首
-                                            if (_multipath.currentIndex === filesModel.count - 1) {
-                                                content.filesModel.move(de, 0,
-                                                                        1)
-                                                content.filesModel.move(
-                                                            _multipath.currentIndex,
-                                                            0, 1)
-                                                console.log(de)
-                                                console.log(_multipath.currentIndex)
-                                            } else
-                                                //不是最后一首，将其变为第一首即可
-                                                content.filesModel.move(
-                                                            de, newIndex, 1)
+                                RoundButton {
+                                    id: addnext
+                                    width: 20
+                                    height: 20
+                                    icon.name: "bqm-add"
+                                    //添加一首歌曲为下一首播放
+                                    onClicked: {
+                                        var de = index
+                                        var newIndex = _multipath.currentIndex + 1
+                                        //判断选择的下一首歌曲是否为当前正在播放的歌曲
+                                        if (_multipath.currentIndex === de) {
+                                            return
+                                        }
+                                        //判断当前播放歌曲是否为列表的最后一首，是：变成第一首，选择的歌曲变成第二首
+                                        if (_multipath.currentIndex === filesModel.count - 1) {
+                                            filesModel.move(de, 0, 1)
+                                            filesModel.move(
+                                                        _multipath.currentIndex,
+                                                        0, 1)
                                             console.log(de)
+                                            console.log(_multipath.currentIndex)
+                                        } else
+                                            //不是最后一首，将其变为第一首即可
+                                            filesModel.move(de, newIndex, 1)
+                                        console.log(de)
+                                    }
+                                }
+                                RoundButton {
+                                    id: _deletesongs
+                                    icon.name: "delete"
+                                    icon.color: "black"
+                                    onClicked: {
+
+                                        if (filesModel.count === 1) {
+                                            filesModel.clear()
+                                            _playlistshow.lrcmodel.clear()
+                                            textauthor = "author"
+                                            textalubm = "album"
+                                            // 存疑
+                                            playmusic.pause()
+                                            playmusic.source = ""
+                                            playmusic.position = 0
+                                            faceImage.currentRotation = content.faceImage.rotation
+                                            rotationAnimation.pause()
+                                            changePlayIcons()
+                                        } else if (filesModel.count - 1 === index
+                                                   && filesModel.count !== 1) {
+                                            //前两行顺序修改，会导致当前播放歌索引混乱
+                                            _multipath.currentIndex = 0
+                                            filesModel.remove(index, 1)
+                                            playmusic.source = filesModel.get(
+                                                        _multipath.currentIndex).filePath
+                                            changeinformation()
+                                            exchangepath()
+                                            console.log("fewukyfgbcj,sdnckjwenfiuwbgoflnkdjnmeifgoudhiuhqi")
+                                            playmusic.play()
+                                        } else {
+                                            filesModel.remove(index, 1)
+                                            playmusic.source = filesModel.get(
+                                                        _multipath.currentIndex).filePath
+                                            changeinformation()
+                                            exchangepath()
+                                            playmusic.play()
                                         }
                                     }
-                                    Text {
-                                        text: title
-                                        font.bold: true
-                                        color: songRoot.ListView.isCurrentItem ? "red" : "black"
-                                    }
-                                    Text {
-                                        text: author
-                                        font.bold: true
-                                        color: songRoot.ListView.isCurrentItem ? "red" : "black"
-                                    }
                                 }
 
-                                TapHandler {
-                                    parent: songRoot
-                                    onTapped: {
-                                        _multipath.currentIndex = index
-                                        _playmusic.source = filePath
-                                        _playmusic.play()
-                                        changeinformation()
-                                        changeIcon()
-                                    }
+                                Text {
+                                    text: title
+                                    font.bold: true
+                                    color: songRoot.ListView.isCurrentItem ? "red" : "black"
+                                }
+                                Text {
+                                    text: author
+                                    font.bold: true
+                                    color: songRoot.ListView.isCurrentItem ? "red" : "black"
+                                }
+                            }
+
+                            TapHandler {
+                                parent: songRoot
+                                onTapped: {
+                                    _multipath.currentIndex = index
+                                    _playmusic.source = filePath
+                                    _playmusic.play()
+                                    changeinformation()
+                                    changeIcon()
+                                    exchangepath()
+                                    rotate()
                                 }
                             }
                         }

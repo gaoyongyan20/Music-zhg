@@ -2,15 +2,23 @@ import QtQuick
 import QtQuick.Layouts
 
 Rectangle {
+
+    property alias lrcmodel: _lrcmodel
+    property alias list: _list
+    signal changep
     id: lyricView
     // anchors.fill: parent
     clip: true
     ListView {
-        id: list
+        id: _list
         anchors.fill: parent
         width: 440
         height: 20
-        model: ["当前歌词的上一句", "当前歌词", "当前歌词的下一句", "当前歌词的下2句", "当前歌词的下3句"]
+        // model: ["当前歌词的上一句", "当前歌词", "当前歌词的下一句", "当前歌词的下2句", "当前歌词的下3句"]
+        ListModel {
+            id: _lrcmodel
+        }
+
         delegate: ListDelegate {}
         highlight: Rectangle {
             // color: "#7fff00"
@@ -41,13 +49,27 @@ Rectangle {
         id: delegateItem
         width: list.width
         height: 50
+        required property string ci
+        required property int index
         Text {
             id: recText
-            font.pixelSize: 12
-            text: modelData
-            color: index === list.currentIndex ? "red" : "black"
+            font.bold: true
+            font.pixelSize: 13
+            text: ci
+            color: list.currentIndex === index ? "red" : "black"
             anchors.centerIn: parent
         }
+        // FocusScope {
+        TapHandler {
+            onTapped: {
+                list.currentIndex = index
+                //console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaddfgerg",
+                // list.currentIndex)
+                changep()
+            }
+        }
+
+        // }
         states: State {
             when: delegateItem.ListView.isCurrentItem
             name: "currentlyrics"

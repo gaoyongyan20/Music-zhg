@@ -25,7 +25,6 @@ function setFilesModel(selectedFiles) {
                                                   }
                                                   content.listview.model = content.filesModel
                                                   content.listview.currentIndex = 0
-
                                               })
 }
 
@@ -36,8 +35,10 @@ function setBackwardMusic() {
 
     // 判断是否循环播放
     if (arguments[0]) {
-        content.playmusic.source = content.filesModel.get(content.listview.currentIndex).filePath
+        content.playmusic.source = content.filesModel.get(
+                    content.listview.currentIndex).filePath
         content.changeinformation()
+        content.exchangepath()
         content.playmusic.play()
         return
     }
@@ -54,20 +55,33 @@ function setBackwardMusic() {
         }
         content.playmusic.source = content.filesModel.get(index).filePath
         content.changeinformation()
+        content.exchangepath()
         content.playmusic.play()
         return
     }
 
-    if (content.listview.currentIndex >0) {
-                content.listview.currentIndex -= 1
-            } else {
-                content.listview.currentIndex = content.filesModel.count - 1
-            }
-    var nextFilePath = content.filesModel.get(content.listview.currentIndex).filePath
-            content.playmusic.source = nextFilePath
-    content.changeinformation()
-    content.playmusic.play()
+    // 顺序播放
+    // if (currentMusicIndex === 0) {
+    //     content.playmusic.source = arguments[0][arguments[0].length - 1]
+    //     content.listview.currentIndex = arguments[0].length - 1
+    //     content.filesModel.move(content.listview.currentIndex, 0, 1)
+    // } else {
+    //     content.playmusic.source = arguments[0][currentMusicIndex - 1]
+    //     content.listview.currentIndex = currentMusicIndex - 1
+    //     content.filesModel.move(content.listview.currentIndex, 0, 1)
+    // }
+    if (content.listview.currentIndex > 0) {
+        content.listview.currentIndex -= 1
+    } else {
+        content.listview.currentIndex = content.filesModel.count - 1
+    }
+    var nextFilePath = content.filesModel.get(
+                content.listview.currentIndex).filePath
+    content.playmusic.source = nextFilePath
 
+    content.changeinformation()
+    content.exchangepath()
+    content.playmusic.play()
 }
 
 //设置下一首歌
@@ -78,8 +92,10 @@ function setForwardMusic() {
 
     // 判断是否为循环播放
     if (arguments[0]) {
-        content.playmusic.source = content.filesModel.get(content.listview.currentIndex).filePath
+        content.playmusic.source = content.filesModel.get(
+                    content.listview.currentIndex).filePath
         content.changeinformation()
+        content.exchangepath()
         content.playmusic.play()
         return
     }
@@ -96,24 +112,28 @@ function setForwardMusic() {
         }
         content.playmusic.source = content.filesModel.get(index).filePath
         content.changeinformation()
+        content.exchangepath()
         content.playmusic.play()
         return
     }
 
     //判断当前是否为顺序播放
     if (content.listview.currentIndex < content.filesModel.count - 1) {
-                content.listview.currentIndex += 1
-            } else {
-                content.listview.currentIndex = 0
-            }
-    var nextFilePath = content.filesModel.get(content.listview.currentIndex).filePath
-            content.playmusic.source = nextFilePath
+        content.listview.currentIndex += 1
+    } else {
+        content.listview.currentIndex = 0
+    }
+    var nextFilePath = content.filesModel.get(
+                content.listview.currentIndex).filePath
+    content.playmusic.source = nextFilePath
     content.changeinformation()
+    content.exchangepath()
     content.playmusic.play()
 }
 
 //将时间毫秒转化为00：00格式
 function formatTime(milliseconds) {
+
     //Math.floor（）向下取整，返回小于等于给定值的最大值
     //1秒等于1000毫秒
     //给定值一共多少秒
@@ -135,3 +155,36 @@ function getRandomIndex(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
+//获取歌词文件路径
+function getlrcpath() {
+    var songpath = content.filesModel.get(
+                content.listview.currentIndex).filePath
+    var extension = songpath.toString().substring(7)
+    var lastDotIndex = extension.toString().lastIndexOf(".")
+    //找到了后缀点号
+    if (lastDotIndex !== -1) {
+        // var extension=songpath.toString().substring(lastDotIndex+1)
+        var extensions = extension.toString().substring(lastDotIndex + 1)
+        var newsongpath = extension.toString().replace(extensions, "lrc")
+        console.log(newsongpath)
+        return newsongpath
+    }
+}
+
+function setlrcmodel() {
+
+    content.playlistshow.lrcmodel.clear()
+
+    var allLyrics = content.lyrics.getAllLyrics()
+
+    for (var i = 0; i < allLyrics.length; ++i) {
+
+        var ci = allLyrics[i]
+        var da = {
+            "ci": ci
+        }
+        content.playlistshow.lrcmodel.append(da)
+    }
+    content.playlistshow.list.model = content.playlistshow.lrcmodel
+    content.playlistshow.list.currentIndex = 0
+}

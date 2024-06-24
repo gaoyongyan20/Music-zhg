@@ -10,7 +10,7 @@ import "freemusic.js" as Controller
 import Lyrics
 
 ApplicationWindow {
-
+    property int x
     width: 640
     height: 480
     visible: true
@@ -48,18 +48,6 @@ ApplicationWindow {
                 action: actions.timingoff
             }
         }
-
-        Menu {
-            title: qsTr("About")
-            MenuItem {
-                action: actions.about
-            }
-        }
-
-        // Menu {
-        //     title: qsTr("local_music")
-        //     MenuItem {
-        //         action: actions.song1
         Menu {
             title: qsTr("local_music")
             MenuItem {
@@ -147,11 +135,8 @@ ApplicationWindow {
         fullscreen.onClicked: {
             if (content.information.width === 0) {
                 content.information.width = 200
-
                 content.playlistshow.width -= 210
                 fullscreen.icon.name = "gnumeric-row-unhide-symbolic"
-
-                content.playlistshow.width -= 210
             } else {
                 content.information.width = 0
                 content.playlistshow.width = content.playlistshow.width + 210
@@ -161,27 +146,18 @@ ApplicationWindow {
 
         // 当按下播放/暂停按钮时
         onChangePause: {
-            content.player.pause()
+            content.playmusic.pause()
+            content.faceImage.currentRotation = content.faceImage.rotation
+            content.rotationAnimation.pause()
         }
         onChangePlay: {
-            content.player.play()
-        }
-
-
-        /*更新时间戳，存疑
-        Timer {
-            id: timer
-            interval: 1000 // 更新时间戳的频率
-            running: true
-            onTriggered: {
-                // 每秒更新一次文本
-                footer.textOrigin.text = Controller.formatTime(
-                            content.playmusic.position)
-                footer.textTerminus.text = Controller.formatTime(
-                            content.playmusic.duration)
+            content.playmusic.play()
+            if (!content.rotationAnimation.running) {
+                // 如果动画没有运行
+                content.rotationAnimation.from = content.faceImage.currentRotation // 设置起始角度为保存的角度
             }
-        }*/
-
+            content.rotationAnimation.resume()
+        }
         //声音图标
         voiceIcon.onClicked: {
             voiceIcon.state === "playVoice" ? voiceIcon.state
@@ -198,6 +174,7 @@ ApplicationWindow {
     Actions {
         id: actions
         property alias timingoffTimer: _timingoffTimer
+        property alias timingProgram: _timingProgram
         property bool isLoop: false
         property bool isRandom: false
 
@@ -224,14 +201,26 @@ ApplicationWindow {
             id: _timingoffTimer
             onTriggered: {
                 content.playmusic.pause()
+                foot.play_button.icon.name = "media-playback-start-symbolic"
             }
         }
+
+        Timer {
+            id: _timingProgram
+            onTriggered: {
+                Qt.quit()
+            }
+        }
+
         loop.onTriggered: {
             console.log("loop play now")
             if (isRandom) {
                 isRandom = false
             } // 若最终没有按下顺序播放，顺序/循环只能有一个状态
             isLoop = true
+            loop.icon.color = "red"
+            random.icon.color = "black"
+            sequence.icon.color = "black"
         }
         sequence.onTriggered: {
             console.log("sequence play now")
@@ -242,6 +231,9 @@ ApplicationWindow {
             if (isRandom) {
                 isRandom = false
             }
+            loop.icon.color = "black"
+            random.icon.color = "black"
+            sequence.icon.color = "red"
         }
         random.onTriggered: {
             console.log("random play now")
@@ -249,11 +241,15 @@ ApplicationWindow {
                 isLoop = false
             }
             isRandom = true
+            loop.icon.color = "black"
+            random.icon.color = "red"
+            sequence.icon.color = "black"
         }
     }
 
     Content {
         id: content
+        property bool formatHasDot: false
         //自定义定时后，点击确认按钮
         dialogs.button.onClicked: {
             var number = parseInt(dialogs.text.text)
@@ -265,6 +261,20 @@ ApplicationWindow {
                 actions.timingoffTimer.running = true
             }
         }
+
+        //定时关闭应用程序
+        dialogs.buttonRoutine.onClicked: {
+            var number = parseInt(dialogs.text.text)
+            if (isNaN(number)) {
+                console.log("Invalid input")
+            } else {
+                console.log("The number is:", number)
+                playmusic.play()
+                foot.play_button.icon.name = "media-playback-pause-symbolic"
+                actions.timingProgram.interval = number * 60000
+                actions.timingProgram.running = true
+            }
+        }
         onChangeIcon: {
             foot.play_button.icon.name = "media-playback-pause-symbolic"
         }
@@ -272,17 +282,53 @@ ApplicationWindow {
         playmusic.onPlaybackStateChanged: {
             // 歌曲播放完毕的标志：
             if (playmusic.position >= playmusic.duration) {
-                Controller.setForwardMusic(dialogs.fileOpen.selectedFiles,
-                                           actions.isLoop, actions.isRandom)
+                Controller.setForwardMusic(actions.isLoop, actions.isRandom)
             }
         }
 
-        // onLyricsFileChanged: {
-        //     console.log(lyrics.test())
-        // }
         onChangeinformation: {
             textalubm = filesModel.get(listview.currentIndex).title
             textauthor = filesModel.get(listview.currentIndex).author
+        }
+
+        onExchangepath: {
+            lyrics.lyricsFile = Controller.getlrcpath()
+        }
+        Connections {
+            target: content.lyrics
+            function onLyricsFileChanged() {
+                Controller.setlrcmodel()
+            }
+        }
+        playmusic.onPositionChanged: {
+            // console.log(_playmusic.position)
+            // console.log(playmusic.position)
+            // console.log(lyric.getIndexByKey(Controller.formatTime(
+            //                                     playmusic.position)))
+            var currentIndex = content.playlistshow.currentIndex
+
+            var index = content.lyrics.getIndexByKey(Controller.formatTime(
+                                                         playmusic.position))
+
+            if (index !== -1) {
+                // 如果找到了对应的索引，更新列表的当前索引
+                content.playlistshow.list.currentIndex = index
+            }
+        }
+        playmusic.onPlayingChanged: {
+            if (playmusic.PlayingState) {
+                foot.play_button.icon.name === "media-playback-pause-symbolic"
+            } else {
+                foot.play_button.icon.name = "media-playback-start-symbolic"
+            }
+        }
+
+        playlistshow.onChangep: {
+            if (lyrics.getTimeByIndex(
+                        content.playlistshow.list.currentIndex) !== -1) {
+                playmusic.position = lyrics.getTimeByIndex(
+                            content.playlistshow.list.currentIndex)
+            }
         }
     }
 }

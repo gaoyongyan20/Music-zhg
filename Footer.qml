@@ -18,11 +18,13 @@ Item {
     signal changePlay
     // 当按下播放按钮时发出的信号
     signal changePause
+    id: footerroot
 
     RowLayout {
         id: layout
         anchors.bottom: parent.bottom
         spacing: 6
+        width: footerroot.width
 
         RoundButton {
             id: _backward_button

@@ -11,6 +11,8 @@ Item {
     property alias timingoffDialog: _timingoffDialog
     property alias text: _text
     property alias button: _button
+    property alias failToOpen: _failToOpen
+    property alias buttonRoutine: _buttonRoutine
     FileDialog {
         id: _fileOpen
         title: "Select some song files"
@@ -31,7 +33,7 @@ Item {
         id: _failToOpen
         modality: Qt.WindowModal
         buttons: MessageDialog.Ok
-        text: "Fail to save the file!"
+        text: "Fail to open the file (.lrc)!"
     }
     Dialog {
         id: _timingoffDialog
@@ -48,13 +50,20 @@ Item {
                     regularExpression: /^[1-9]\d{0,3}$/
                 }
                 onTextChanged: {
-                    button.enabled = text.text !== ""
+                    button.enabled = _text.text !== ""
+                    _buttonRoutine.enabled = _text.text !== ""
                 }
             }
             Button {
                 id: _button
                 Layout.fillWidth: true
-                text: "Confirm"
+                text: "ColseMusic"
+                enabled: false
+            }
+            Button {
+                id: _buttonRoutine
+                Layout.fillWidth: true
+                text: "ColseRoutine"
                 enabled: false
             }
         }

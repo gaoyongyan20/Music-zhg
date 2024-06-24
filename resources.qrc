@@ -2,6 +2,16 @@
     <qresource prefix="/">
         <file alias="myimage1.png">images/54481B1631F2F0CC8BD40F3AC4B2C52A.jpg</file>
         <file alias="myimage2.png">images/DD3A5742AF77276B46A6EFD627C18580.jpg</file>
+        <file alias="myimage3.png">images/7CE922856122DB7FFF1B259AD58FBF1D.png</file>
+        <file alias="myimage4.png">images/60A032E0B5BD7233FD13274D9308B521.jpg</file>
+        <file alias="myimage5.png">images/37942A17F939BC1DC1CF651BB9533E69.png</file>
+        <file alias="myimage6.png">images/A2617F48AD3B13F9B09647E59DEE6C2E.jpg</file>
+        <file alias="myimage7.png">images/C88EE12F8EE4C31FCDF049A25C8DEE41.jpg</file>
+        <file alias="myimage8.png">images/D0F8601CB5E78FB5E32FD2F1828C6847.jpg</file>
+        <file alias="myimage9.png">images/E95C4AE6EE8589EA19FAD9A54BD251A3.jpg</file>
+        <file alias="myimage10.png">images/F04606AD51DE9A06049F9613B638B92D.jpg</file>
+        <file alias="faceimage.png">images/110361516EE8B160086F17BD22AC7531.png</file>
+
         <file alias="mysongs1.mp3">songs/海阔天空.mp3</file>
         <file alias="mysongs2.mp3">songs/Valder Fields - Tamas Wells.mp3</file>
     </qresource>

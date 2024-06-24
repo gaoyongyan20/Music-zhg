@@ -17,7 +17,6 @@ Item {
     property alias song2: _song2
     property alias sequence: _sequence
 
-
     Action {
         id: _open
         text: qsTr("&OpenFiles..")
@@ -35,18 +34,21 @@ Item {
         id: _random
         text: qsTr("Random")
         icon.name: "media-playlist-shuffle"
+        icon.color: "black"
     }
 
     Action {
         id: _sequence
         text: qsTr("Sequence")
         icon.name: "media-playlist-normal-symbolic"
+        icon.color: "red"
     }
 
     Action {
         id: _background
         text: qsTr("Backgrond")
         icon.name: "games-config-theme-symbolic"
+        icon.color: "black"
     }
 
     Action {
@@ -77,14 +79,14 @@ Item {
         id: _exit
         icon.name: "application-exit"
     }
-    Action{
-        id:_song1
-        text:qsTr("海阔天空")
+    Action {
+        id: _song1
+        text: qsTr("海阔天空")
         icon.name: "folder-music-symbolic"
     }
-    Action{
-        id:_song2
+    Action {
+        id: _song2
         text: qsTr("Valder Fields")
-         icon.name: "folder-music-symbolic"
+        icon.name: "folder-music-symbolic"
     }
 }
