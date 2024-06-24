@@ -157,22 +157,6 @@ ApplicationWindow {
                }
                content.rotationAnimation.resume()
         }
-
-
-        /*更新时间戳，存疑
-        Timer {
-            id: timer
-            interval: 1000 // 更新时间戳的频率
-            running: true
-            onTriggered: {
-                // 每秒更新一次文本
-                footer.textOrigin.text = Controller.formatTime(
-                            content.playmusic.position)
-                footer.textTerminus.text = Controller.formatTime(
-                            content.playmusic.duration)
-            }
-        }*/
-
         //声音图标
         voiceIcon.onClicked: {
             voiceIcon.state === "playVoice" ? voiceIcon.state
@@ -264,6 +248,7 @@ ApplicationWindow {
 
     Content {
         id: content
+        property bool formatHasDot: false
         //自定义定时后，点击确认按钮
                 dialogs.button.onClicked: {
                     var number = parseInt(dialogs.text.text)
@@ -296,8 +281,7 @@ ApplicationWindow {
         playmusic.onPlaybackStateChanged: {
             // 歌曲播放完毕的标志：
             if (playmusic.position >= playmusic.duration) {
-                Controller.setForwardMusic(dialogs.fileOpen.selectedFiles,
-                                           actions.isLoop, actions.isRandom)
+                Controller.setForwardMusic(actions.isLoop, actions.isRandom)
             }
         }
 
@@ -307,29 +291,24 @@ ApplicationWindow {
         }
 
         onExchangepath: {
-            lyric.lyricsFile = Controller.getlrcpath()
+            lyrics.lyricsFile = Controller.getlrcpath()
         }
         Connections {
-            target: content.lyric
+            target: content.lyrics
             function onLyricsFileChanged() {
-                var allLyrics = content.lyric.getAllLyrice()
-                for (var i = 0; i < allLyrics.length; ++i) {
-
-                    // console.log(allLyrics[i]);
-                }
-
                 Controller.setlrcmodel()
             }
         }
         playmusic.onPositionChanged: {
             // console.log(_playmusic.position)
-            console.log(playmusic.position)
-            console.log(lyric.getIndexByKey(Controller.formatTime(
-                                                playmusic.position)))
+            // console.log(playmusic.position)
+            // console.log(lyric.getIndexByKey(Controller.formatTime(
+            //                                     playmusic.position)))
             var currentIndex = content.playlistshow.currentIndex
-            // 保存当前索引
-            var index = content.lyric.getIndexByKey(Controller.formatTime(
-                                                        playmusic.position))
+
+            var index = content.lyrics.getIndexByKey(Controller.formatTime(
+                                                         playmusic.position))
+
             if (index !== -1) {
                 // 如果找到了对应的索引，更新列表的当前索引
                 content.playlistshow.list.currentIndex = index
@@ -342,10 +321,12 @@ ApplicationWindow {
             foot.play_button.icon.name = "media-playback-start-symbolic"}
         }
 
-        playlistshow.onChangep:{
-                    if(lyric.getTimeByIndex(content.playlistshow.list.currentIndex)!==-1){
-                        playmusic.position=lyric.getTimeByIndex(content.playlistshow.list.currentIndex)
-                    }
-                }
+        playlistshow.onChangep: {
+            if (lyrics.getTimeByIndex(
+                        content.playlistshow.list.currentIndex) !== -1) {
+                playmusic.position = lyrics.getTimeByIndex(
+                            content.playlistshow.list.currentIndex)
+            }
+        }
     }
 }

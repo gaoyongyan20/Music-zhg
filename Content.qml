@@ -21,16 +21,27 @@ Frame {
     property alias faceImage: _faceImage
     property alias information: _information
     property alias rowlayout: _rowlayout
-    property alias lyric: _lyric
+
+
     property alias rotationAnimation:_rotationAnimation
+
+    property alias lyrics: _lyrics
+
     property string textauthor: "author"
     property string textalubm: "album"
     signal changeIcon
     signal changeinformation
     signal exchangepath
+
 signal changePlayIcons
     function rotate(){
         rotationAnimation.start()
+    }
+
+
+
+    Lyrics {
+        id: _lyrics
     }
 
     Image {
@@ -182,10 +193,6 @@ signal changePlayIcons
             }
             // }
         }
-        Lyrics {
-            id: _lyric
-        }
-
         ScrollLyrics {
             anchors.left: information.right
             id: _playlistshow
@@ -235,7 +242,11 @@ signal changePlayIcons
                             required property string author
                             required property url filePath
                             required property int index
-                            height: 30
+
+
+                            // color: "red"
+                            height: 40
+
                             width: _multipath.width
 
                             RowLayout {
@@ -273,7 +284,9 @@ signal changePlayIcons
                                     icon.name:"delete"
                                     icon.color: "black"
                                     onClicked: {
-                                        if(filesModel.count===1){
+
+
+                                         if(filesModel.count===1){
                                             filesModel.clear()
                                             _playlistshow.lrcmodel.clear()
                                            textauthor= "author"
@@ -282,8 +295,17 @@ signal changePlayIcons
                                             faceImage.currentRotation = content.faceImage.rotation;
                                             rotationAnimation.pause()
                                            changePlayIcons()
-
-                                        }else{
+                                        }else if(filesModel.count-1===index){
+                                             //前两行顺序修改，会导致当前播放歌索引混乱
+                                             _multipath.currentIndex=0
+                                             filesModel.remove(index,1)
+                                             playmusic.source = filesModel.get(_multipath.currentIndex).filePath
+                                             changeinformation()
+                                             exchangepath()
+                                             console.log("fewukyfgbcj,sdnckjwenfiuwbgoflnkdjnmeifgoudhiuhqi")
+                                             playmusic.play()
+                                         }
+                                         else{
                                             filesModel.remove(index,1)
                                             playmusic.source = filesModel.get(_multipath.currentIndex).filePath
                                             changeinformation()
@@ -291,7 +313,8 @@ signal changePlayIcons
                                             playmusic.play()
 
                                         }
-                                    }
+                                        }
+
                                 }
 
                                 Text {

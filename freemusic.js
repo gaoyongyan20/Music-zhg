@@ -59,14 +59,25 @@ function setBackwardMusic() {
         content.playmusic.play()
         return
     }
+
     // 顺序播放
-    if (content.listview.currentIndex >0) {
-                content.listview.currentIndex -= 1
-            } else {
-                content.listview.currentIndex = content.filesModel.count - 1
-            }
-    var nextFilePath = content.filesModel.get(content.listview.currentIndex).filePath
-            content.playmusic.source = nextFilePath
+    // if (currentMusicIndex === 0) {
+    //     content.playmusic.source = arguments[0][arguments[0].length - 1]
+    //     content.listview.currentIndex = arguments[0].length - 1
+    //     content.filesModel.move(content.listview.currentIndex, 0, 1)
+    // } else {
+    //     content.playmusic.source = arguments[0][currentMusicIndex - 1]
+    //     content.listview.currentIndex = currentMusicIndex - 1
+    //     content.filesModel.move(content.listview.currentIndex, 0, 1)
+    // }
+    if (content.listview.currentIndex > 0) {
+        content.listview.currentIndex -= 1
+    } else {
+        content.listview.currentIndex = content.filesModel.count - 1
+    }
+    var nextFilePath = content.filesModel.get(
+                content.listview.currentIndex).filePath
+    content.playmusic.source = nextFilePath
 
     content.changeinformation()
     content.exchangepath()
@@ -122,10 +133,10 @@ function setForwardMusic() {
 
 //将时间毫秒转化为00：00格式
 function formatTime(milliseconds) {
+
     //Math.floor（）向下取整，返回小于等于给定值的最大值
     //1秒等于1000毫秒
     //给定值一共多少秒
-
     var seconds = Math.floor(milliseconds / 1000)
     //分钟
     var minutes = Math.floor(seconds / 60)
@@ -135,16 +146,6 @@ function formatTime(milliseconds) {
     //padStart（）在字符串的开始处（左侧）填充指定的字符，直到字符串达到给定的长度，至少有2个字符长度，不足补‘0’
     var formattedTime = minutes.toString().padStart(
                 2, '0') + ":" + remainingSeconds.toString().padStart(2, '0')
-    return formattedTime
-}
-
-function formatTime2(milliseconds) {
-    var minutes = Math.floor(milliseconds / 60000)
-    var seconds = Math.floor((milliseconds % 60000) / 1000)
-    var millisecond = Math.floor((milliseconds % 1000) / 10)
-    var formattedTime = minutes.toString(
-                ).padStart(2, '0') + ":" + seconds.toString().padStart(
-                2, '0') + "." + millisecond.toString().padStart(2, '0')
     return formattedTime
 }
 
@@ -174,7 +175,8 @@ function setlrcmodel() {
 
     content.playlistshow.lrcmodel.clear()
 
-    var allLyrics = content.lyric.getAllLyrice()
+    var allLyrics = content.lyrics.getAllLyrics()
+
     for (var i = 0; i < allLyrics.length; ++i) {
 
         var ci = allLyrics[i]
@@ -182,7 +184,6 @@ function setlrcmodel() {
             "ci": ci
         }
         content.playlistshow.lrcmodel.append(da)
-        console.log(allLyrics[i])
     }
     content.playlistshow.list.model = content.playlistshow.lrcmodel
     content.playlistshow.list.currentIndex = 0
