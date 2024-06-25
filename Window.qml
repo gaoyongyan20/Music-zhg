@@ -15,6 +15,10 @@ ApplicationWindow {
     height: 480
     visible: true
     title: qsTr("Music Player")
+    // minimumWidth: 900
+    // minimumHeight: 700
+    // maximumWidth: 900
+    // maximumHeight: 700
     // color: "red"
 
     // -------设置菜单栏------

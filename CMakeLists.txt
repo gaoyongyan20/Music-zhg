@@ -20,6 +20,8 @@ qt_add_qml_module(
   SOURCES
   lyrics.h
   lyrics.cpp
+  songlist.h
+  songlist.cpp
   QML_FILES
   Window.qml
   QML_FILES
