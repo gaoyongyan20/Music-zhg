@@ -1,3 +1,4 @@
+
 // The implementation of class lyrics.
 // author：何泳珊 周杨康丽 高永艳
 
@@ -24,11 +25,7 @@ void Lyrics::setLyricsFile(QString &file)
 }
 
 QVector<QString> Lyrics::getAllLyrics()
-
 {
-    // for (auto data : m_lyrics) {
-    //     qDebug() << data;
-    // }
     return m_lyrics;
 }
 

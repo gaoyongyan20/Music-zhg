@@ -3,7 +3,6 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import QtMultimedia
 import Lyrics
-import Qt5Compat.GraphicalEffects
 
 Frame {
 
@@ -68,6 +67,7 @@ Frame {
             GridView {
                 anchors.fill: parent
                 model: ["myimage1.png", "myimage2.png", "myimage3.png", "myimage4.png", "myimage5.png", "myimage6.png", "myimage7.png", "myimage8.png", "myimage9.png", "myimage10.png"]
+
                 delegate: Rectangle {
                     width: 50
                     height: 50
@@ -246,13 +246,13 @@ Frame {
                             width: _multipath.width
 
                             RowLayout {
-
                                 RoundButton {
                                     id: addnext
                                     width: 20
                                     height: 20
                                     icon.name: "bqm-add"
-                                    //添加一首歌曲为下一首播放
+                                    // 添加一首歌曲为下一首播放
+                                    // 存疑 （有问题）
                                     onClicked: {
                                         var de = index
                                         var newIndex = _multipath.currentIndex + 1
@@ -324,18 +324,17 @@ Frame {
                                     font.bold: true
                                     color: songRoot.ListView.isCurrentItem ? "red" : "black"
                                 }
-                            }
-
-                            TapHandler {
-                                parent: songRoot
-                                onTapped: {
-                                    _multipath.currentIndex = index
-                                    _playmusic.source = filePath
-                                    _playmusic.play()
-                                    changeinformation()
-                                    changeIcon()
-                                    exchangepath()
-                                    rotate()
+                                TapHandler {
+                                    parent: songRoot
+                                    onTapped: {
+                                        _multipath.currentIndex = index
+                                        _playmusic.source = filePath
+                                        _playmusic.play()
+                                        changeinformation()
+                                        changeIcon()
+                                        exchangepath()
+                                        rotate()
+                                    }
                                 }
                             }
                         }

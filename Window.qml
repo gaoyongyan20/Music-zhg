@@ -285,7 +285,6 @@ ApplicationWindow {
                 Controller.setForwardMusic(actions.isLoop, actions.isRandom)
             }
         }
-
         onChangeinformation: {
             textalubm = filesModel.get(listview.currentIndex).title
             textauthor = filesModel.get(listview.currentIndex).author

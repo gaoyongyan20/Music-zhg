@@ -22,6 +22,10 @@ public:
     //得到存储歌词的容器，可以在qml中使用这个函数获取所有歌词
     Q_INVOKABLE QVector<QString> getAllLyrics();
 
+    //获取歌词数组
+    QVector<QString> lyrics() const;
+    void setLyrics(QString &lyrics);
+
     //通过键（时间戳）查找索引（歌词所在视图的索引）
     Q_INVOKABLE int getIndexByKey(QString key);
 
@@ -29,7 +33,7 @@ public:
     Q_INVOKABLE int getTimeByIndex(int key);
 
 signals:
-    void lyricsFileChanged();
+    Q_SIGNAL void lyricsFileChanged();
 
 private:
     // 当前歌词文件
