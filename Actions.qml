@@ -90,3 +90,4 @@ Item {
         icon.name: "folder-music-symbolic"
     }
 }
+

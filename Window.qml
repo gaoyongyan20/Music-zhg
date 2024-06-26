@@ -25,7 +25,7 @@ ApplicationWindow {
     menuBar: MenuBar {
         Menu {
             title: qsTr("Open")
-            MenuItem {
+          MenuItem {
                 action: actions.open
             }
         }
@@ -151,7 +151,9 @@ ApplicationWindow {
         // 当按下播放/暂停按钮时
         onChangePause: {
             content.playmusic.pause()
+
             content.faceImage.currentRotation = content.faceImage.rotation
+
             content.rotationAnimation.pause()
         }
         onChangePlay: {
@@ -161,6 +163,7 @@ ApplicationWindow {
                 content.rotationAnimation.from = content.faceImage.currentRotation // 设置起始角度为保存的角度
             }
             content.rotationAnimation.resume()
+
         }
         //声音图标
         voiceIcon.onClicked: {
@@ -199,6 +202,7 @@ ApplicationWindow {
         background.onTriggered: content.imageDialog.open()
         about.onTriggered: content.dialogs.about.open()
         timingoff.onTriggered: {
+
             content.dialogs.timingoffDialog.open()
         }
         Timer {
@@ -222,9 +226,11 @@ ApplicationWindow {
                 isRandom = false
             } // 若最终没有按下顺序播放，顺序/循环只能有一个状态
             isLoop = true
+
             loop.icon.color = "red"
             random.icon.color = "black"
             sequence.icon.color = "black"
+
         }
         sequence.onTriggered: {
             console.log("sequence play now")
@@ -235,6 +241,7 @@ ApplicationWindow {
             if (isRandom) {
                 isRandom = false
             }
+
             loop.icon.color = "black"
             random.icon.color = "black"
             sequence.icon.color = "red"
@@ -279,6 +286,7 @@ ApplicationWindow {
                 actions.timingProgram.running = true
             }
         }
+
         onChangeIcon: {
             foot.play_button.icon.name = "media-playback-pause-symbolic"
         }
@@ -289,6 +297,8 @@ ApplicationWindow {
                 Controller.setForwardMusic(actions.isLoop, actions.isRandom)
             }
         }
+
+
         onChangeinformation: {
             textalubm = filesModel.get(listview.currentIndex).title
             textauthor = filesModel.get(listview.currentIndex).author
@@ -318,12 +328,14 @@ ApplicationWindow {
                 content.playlistshow.list.currentIndex = index
             }
         }
+
         playmusic.onPlayingChanged: {
             if (playmusic.PlayingState) {
                 foot.play_button.icon.name === "media-playback-pause-symbolic"
             } else {
                 foot.play_button.icon.name = "media-playback-start-symbolic"
             }
+
         }
 
         playlistshow.onChangep: {
@@ -333,5 +345,14 @@ ApplicationWindow {
                             content.playlistshow.list.currentIndex)
             }
         }
+
+        Connections {
+            target: content.songlist
+            function onSongListNameChanged() {
+                Controller.setplaylistModel()
+            }
+        }
+
     }
 }
+

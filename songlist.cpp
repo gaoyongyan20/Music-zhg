@@ -1,3 +1,5 @@
+
+
 // The implementation of class songlist.
 // author: 何泳珊 高永艳 周杨康丽
 
@@ -28,7 +30,8 @@ void Songlist::setSongListName(QString &name)
 
 QUrl Songlist::getUrlByIndex(int key)
 {
-    // 若没找到对应的键对应的值，返回-1
+    // 若没找到对应的键对应的值，返回..
+    // return m_keyUrlMap.value(key, -1);
     return m_keyUrlMap.value(key, QUrl(""));
 }
 
@@ -47,30 +50,38 @@ void Songlist::setSongList()
     if (m_songListName == "local") {
         getLocalSong("local");
     }
-    songListPath = "/root/tmp/" + m_songListName + ".txt";
+    songListPath = "/root/1/tmp/" + m_songListName + ".txt";
 
+    qDebug() << songListPath;
     // 打开歌单文件，读取歌单中歌曲信息
     QFile file(songListPath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "failed to open songlist file";
+    }
     QTextStream in(&file);
 
     int lineNum = 0;
     // 一行行读歌单文件，将映射关系存入map中
     while (!in.atEnd()) {
         QString line = in.readLine();
-
+        qDebug() << line;
         if (!line.isEmpty()) {
             QUrl url(line);
             m_keyUrlMap.insert(lineNum, url);
             lineNum++;
         }
     }
+    qDebug() << m_keyUrlMap.size();
     file.close();
 }
 
 void Songlist::getLocalSong(QString listName)
 {
     // 指定存储音频文件的目录
-    QDir dir("/root/tmp");
+    QDir dir = QDir::root();
+    dir.cd("root");
+    dir.cd("1");
+    dir.cd("tmp");
 
     // 设置文件名过滤器（只筛选出以.mp3为后缀的）
     // 若后期要添加更多音频文件格式进行过滤，可以直接在filter中写入更多格式
@@ -82,7 +93,9 @@ void Songlist::getLocalSong(QString listName)
     QFileInfoList list = dir.entryInfoList();
 
     // 字符串拼接，获取本地歌单的的文件路径名
-    QFile file(dir.dirName() + "/" + listName + ".txt");
+    // QFile file(dir.dirName() + "/" + listName + ".txt");
+    QFile file(dir.filePath(listName + ".txt"));
+    qDebug() << dir.filePath(listName + ".txt");
     QTextStream out(&file);
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -98,7 +111,7 @@ void Songlist::getLocalSong(QString listName)
         QString fileName = fileInfo.fileName();
 
         // 获取表示每一个url文件路径的字符串
-        QString urlPath = "file://" + dir.dirName() + "/" + fileName;
+        QString urlPath = "file://" + dir.filePath(fileName);
         qDebug() << urlPath;
 
         // 将获取的每一行字符串和换行符写入歌单文件

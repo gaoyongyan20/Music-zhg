@@ -12,6 +12,7 @@ class Songlist : public QObject
     QML_ELEMENT
     Q_PROPERTY(QString songListNmae READ songListName WRITE setSongListName NOTIFY
                    songListNameChanged FINAL)
+
 public:
     explicit Songlist(QObject *parent = nullptr);
 
@@ -38,6 +39,8 @@ private:
     // 设置歌单中的映射关系（在qml中，视图索引对应相应的url）
     void setSongList();
 
+    // 设置本地歌单的映射关系
+    void setLocalSongList();
     // 获取所有本地歌词，并将它写入存取本地歌单的文件中
     void getLocalSong(QString listName);
 };

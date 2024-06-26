@@ -26,6 +26,9 @@ void Lyrics::setLyricsFile(QString &file)
 
 QVector<QString> Lyrics::getAllLyrics()
 {
+    // for (auto data : m_lyrics) {
+    //     qDebug() << data;
+    // }
     return m_lyrics;
 }
 
@@ -93,7 +96,6 @@ void Lyrics::setLyrics()
                 // 存取时间戳对应索引的映射
 
                 int timestamp = changeTimeShow(str_timestamp);
-
                 m_keyIndexMap.insert(str_timestamp, m_lyrics.size() - 1);
                 m_reverseTimeMap.insert(m_lyrics.size() - 1, timestamp);
 

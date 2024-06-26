@@ -1,3 +1,4 @@
+
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
@@ -21,11 +22,9 @@ Frame {
     property alias faceImage: _faceImage
     property alias information: _information
     property alias rowlayout: _rowlayout
-
     property alias rotationAnimation: _rotationAnimation
-
     property alias lyrics: _lyrics
-
+    property alias songlist: _songlist
     property string textauthor: "author"
     property string textalubm: "album"
     signal changeIcon
@@ -37,8 +36,12 @@ Frame {
         rotationAnimation.start()
     }
 
+
     Lyrics {
         id: _lyrics
+    }
+    Songlist{
+        id:_songlist
     }
 
     Image {
@@ -66,7 +69,10 @@ Frame {
 
             GridView {
                 anchors.fill: parent
-                model: ["myimage1.png", "myimage2.png", "myimage3.png", "myimage4.png", "myimage5.png", "myimage6.png", "myimage7.png", "myimage8.png", "myimage9.png", "myimage10.png"]
+                model: ["myimage1.png", "myimage2.png","myimage3.png","myimage4.png","myimage5.png",
+                    "myimage6.png","myimage7.png","myimage8.png","myimage9.png","myimage10.png"]
+
+
                 delegate: Rectangle {
                     width: 50
                     height: 50
@@ -113,6 +119,12 @@ Frame {
                 filesModel.setProperty(i, "author",
                                        metaDataReader.metaData.stringValue(
                                            MediaMetaData.ContributingArtist))
+                filesModel.setProperty(i,"duration",
+                                       metaDataReader.metaData.stringValue(
+                                           MediaMetaData.Duration))
+                filesModel.setProperty(i,"genre",
+                                       metaDataReader.metaData.stringValue(
+                                           MediaMetaData.Genre))
                 metaDataReader.destroy()
             }
         }
@@ -122,6 +134,7 @@ Frame {
         id: _rowlayout
         anchors.fill: parent
 
+
         Rectangle {
             id: _information
             width: 200
@@ -130,6 +143,7 @@ Frame {
             clip: true
             Layout.fillHeight: true
             Layout.fillWidth: true
+
 
             // ColumnLayout {
             Rectangle {
@@ -142,12 +156,13 @@ Frame {
                 radius: 75
                 clip: true
                 Image {
-                    width: parent.width - 4
-                    height: parent.height - 4
+                    width: parent.width-4
+                    height: parent.height-4
                     id: _faceImage
                     anchors.centerIn: parent
                     source: "qrc:/faceimage.png"
                     property real currentRotation: 0
+
                 }
                 RotationAnimation {
                     id: _rotationAnimation
@@ -157,7 +172,9 @@ Frame {
                     to: 360
                     duration: 5000 // 旋转一周所需的时间，单位毫秒
                     loops: Animation.Infinite // 无限循环
+
                 }
+
             }
 
             Rectangle {
@@ -188,7 +205,9 @@ Frame {
                 }
             }
             // }
+
         }
+
         ScrollLyrics {
             anchors.left: information.right
             id: _playlistshow
@@ -238,10 +257,8 @@ Frame {
                             required property string author
                             required property url filePath
                             required property int index
-
                             // color: "red"
                             height: 40
-
                             width: _multipath.width
 
                             RowLayout {
@@ -251,9 +268,14 @@ Frame {
                                     width: 20
                                     height: 20
                                     icon.name: "bqm-add"
+
+
                                     //添加一首歌曲为下一首播放
+
+
                                     onClicked: {
                                         var de = index
+                                         var curr=_multipath.currentIndex
                                         var newIndex = _multipath.currentIndex + 1
                                         //判断选择的下一首歌曲是否为当前正在播放的歌曲
                                         if (_multipath.currentIndex === de) {
@@ -267,47 +289,55 @@ Frame {
                                                         0, 1)
                                             console.log(de)
                                             console.log(_multipath.currentIndex)
-                                        } else
-                                            //不是最后一首，将其变为第一首即可
+
+                                        } else if(de<_multipath.currentIndex){
+                                            filesModel.move(de,curr, 1)
+                                        }else
+                                            //不是最后一首，将其变为当前播放的下一首即可
                                             filesModel.move(de, newIndex, 1)
                                         console.log(de)
                                     }
                                 }
-                                RoundButton {
-                                    id: _deletesongs
-                                    icon.name: "delete"
+                                RoundButton{
+                                    id:_deletesongs
+                                    icon.name:"delete"
                                     icon.color: "black"
                                     onClicked: {
 
-                                        if (filesModel.count === 1) {
+
+                                         if(filesModel.count===1){
                                             filesModel.clear()
                                             _playlistshow.lrcmodel.clear()
-                                            textauthor = "author"
-                                            textalubm = "album"
-                                            playmusic.pause()
-                                            faceImage.currentRotation = content.faceImage.rotation
+
+                                           textauthor= "author"
+                                           textalubm="album"
+                                           playmusic.pause()
+                                            faceImage.currentRotation = content.faceImage.rotation;
                                             rotationAnimation.pause()
-                                            changePlayIcons()
-                                        } else if (filesModel.count - 1 === index) {
-                                            //前两行顺序修改，会导致当前播放歌索引混乱
-                                            _multipath.currentIndex = 0
-                                            filesModel.remove(index, 1)
-                                            playmusic.source = filesModel.get(
-                                                        _multipath.currentIndex).filePath
+                                           changePlayIcons()
+                                        }else if(filesModel.count-1===index){
+                                             //前两行顺序修改，会导致当前播放歌索引混乱
+                                             _multipath.currentIndex=0
+                                             filesModel.remove(index,1)
+                                             playmusic.source = filesModel.get(_multipath.currentIndex).filePath
+                                             changeinformation()
+                                             exchangepath()
+                                             console.log("fewukyfgbcj,sdnckjwenfiuwbgoflnkdjnmeifgoudhiuhqi")
+                                             playmusic.play()
+                                         }
+                                         else{
+                                            filesModel.remove(index,1)
+                                            playmusic.source = filesModel.get(_multipath.currentIndex).filePath
+
                                             changeinformation()
                                             exchangepath()
-                                            console.log("fewukyfgbcj,sdnckjwenfiuwbgoflnkdjnmeifgoudhiuhqi")
                                             playmusic.play()
-                                        } else {
-                                            filesModel.remove(index, 1)
-                                            playmusic.source = filesModel.get(
-                                                        _multipath.currentIndex).filePath
-                                            changeinformation()
-                                            exchangepath()
-                                            playmusic.play()
+
                                         }
-                                    }
+                                        }
+
                                 }
+
 
                                 Text {
                                     text: title
@@ -319,24 +349,27 @@ Frame {
                                     font.bold: true
                                     color: songRoot.ListView.isCurrentItem ? "red" : "black"
                                 }
+
+                                TapHandler {
+                                    parent: songRoot
+                                    onTapped: {
+                                        _multipath.currentIndex = index
+                                        _playmusic.source = filePath
+                                        _playmusic.play()
+                                        changeinformation()
+                                        changeIcon()
+                                        exchangepath()
+                                        rotate()
+                                    }
+
                             }
 
-                            TapHandler {
-                                parent: songRoot
-                                onTapped: {
-                                    _multipath.currentIndex = index
-                                    _playmusic.source = filePath
-                                    _playmusic.play()
-                                    changeinformation()
-                                    changeIcon()
-                                    exchangepath()
-                                    rotate()
+
                                 }
                             }
                         }
                     }
                 }
             }
-        }
+      }
     }
-}

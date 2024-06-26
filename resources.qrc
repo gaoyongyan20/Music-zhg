@@ -11,7 +11,6 @@
         <file alias="myimage9.png">images/E95C4AE6EE8589EA19FAD9A54BD251A3.jpg</file>
         <file alias="myimage10.png">images/F04606AD51DE9A06049F9613B638B92D.jpg</file>
         <file alias="faceimage.png">images/110361516EE8B160086F17BD22AC7531.png</file>
-
         <file alias="mysongs1.mp3">songs/海阔天空.mp3</file>
         <file alias="mysongs2.mp3">songs/Valder Fields - Tamas Wells.mp3</file>
     </qresource>

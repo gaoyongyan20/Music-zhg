@@ -1,8 +1,10 @@
+
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
 Item {
+    id: footerroot
     property alias playProgressSlider: _playProgressSlider
     property alias volumeSlider: _volumeSlider
     property alias textOrigin: _textOrigin
@@ -18,7 +20,8 @@ Item {
     signal changePlay
     // 当按下播放按钮时发出的信号
     signal changePause
-    id: footerroot
+
+
 
     RowLayout {
         id: layout
@@ -29,13 +32,14 @@ Item {
         RoundButton {
             id: _backward_button
             icon.name: "media-seek-backward"
+
         }
 
         RoundButton {
             id: _play_button
             icon.name: "media-playback-start-symbolic"
             TapHandler {
-                onTapped: {
+                  onTapped: {
                     if (_play_button.icon.name === "media-playback-pause-symbolic") {
                         changePause()
                         _play_button.icon.name = "media-playback-start-symbolic"
