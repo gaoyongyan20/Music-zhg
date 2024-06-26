@@ -1,3 +1,5 @@
+
+
 // The interface of class songlist.
 // author: 何泳珊 高永艳 周杨康丽
 
@@ -10,7 +12,7 @@ class Songlist : public QObject
 {
     Q_OBJECT
     QML_ELEMENT
-    Q_PROPERTY(QString songListNmae READ songListName WRITE setSongListName NOTIFY
+    Q_PROPERTY(QString songListName READ songListName WRITE setSongListName NOTIFY
                    songListNameChanged FINAL)
 
 public:
@@ -25,6 +27,8 @@ public:
 
     // 获取所有映射关系
     Q_INVOKABLE QMap<int, QUrl> getAllMap();
+
+    Q_INVOKABLE int getMapCount();
 signals:
     void songListNameChanged();
     void failedToOpenSongList();

@@ -16,6 +16,7 @@ Item {
     property alias song1: _song1
     property alias song2: _song2
     property alias sequence: _sequence
+    property alias close1: _close
 
     Action {
         id: _open
@@ -89,5 +90,8 @@ Item {
         text: qsTr("Valder Fields")
         icon.name: "folder-music-symbolic"
     }
+    Action {
+        id: _close
+        text: qsTr("close")
+    }
 }
-

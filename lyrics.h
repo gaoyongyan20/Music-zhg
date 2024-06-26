@@ -1,3 +1,4 @@
+
 // The interface of class lyrics.
 // author：何泳珊 周杨康丽 高永艳
 

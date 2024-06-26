@@ -40,6 +40,11 @@ QMap<int, QUrl> Songlist::getAllMap()
     return m_keyUrlMap;
 }
 
+int Songlist::getMapCount()
+{
+    return m_keyUrlMap.size();
+}
+
 void Songlist::setSongList()
 {
     if (!m_keyUrlMap.isEmpty()) {

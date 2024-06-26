@@ -1,4 +1,5 @@
 
+
 /* MusicPlayer is a free music player.
  * The file defines the appwindow of musicplayer, and setts up all UI's logic, except the content's.
  * Author: 何泳珊 高永艳 周扬康丽
@@ -11,21 +12,23 @@ import Lyrics
 
 ApplicationWindow {
     property int x
-    width: 640
-    height: 480
+    // width: 640
+    // height: 480
     visible: true
     title: qsTr("Music Player")
-    // minimumWidth: 900
-    // minimumHeight: 700
-    // maximumWidth: 900
-    // maximumHeight: 700
+
+    minimumHeight: 600
+    maximumHeight: 600
+    minimumWidth: 800
+    maximumWidth: 800
+
     // color: "red"
 
     // -------设置菜单栏------
     menuBar: MenuBar {
         Menu {
             title: qsTr("Open")
-          MenuItem {
+            MenuItem {
                 action: actions.open
             }
         }
@@ -51,6 +54,9 @@ ApplicationWindow {
             MenuItem {
                 action: actions.timingoff
             }
+            // MenuItem{
+            //     action: actions.close
+            // }
         }
         Menu {
             title: qsTr("local_music")
@@ -66,6 +72,9 @@ ApplicationWindow {
             title: qsTr("About")
             MenuItem {
                 action: actions.about
+            }
+            MenuItem {
+                action: actions.close1
             }
         }
     }
@@ -94,8 +103,11 @@ ApplicationWindow {
             ToolButton {
                 action: actions.background
             }
+            // ToolButton {
+            //     action: actions.timingoff
+            // }
             ToolButton {
-                action: actions.timingoff
+                action: actions.close1
             }
         }
     }
@@ -163,7 +175,6 @@ ApplicationWindow {
                 content.rotationAnimation.from = content.faceImage.currentRotation // 设置起始角度为保存的角度
             }
             content.rotationAnimation.resume()
-
         }
         //声音图标
         voiceIcon.onClicked: {
@@ -230,7 +241,6 @@ ApplicationWindow {
             loop.icon.color = "red"
             random.icon.color = "black"
             sequence.icon.color = "black"
-
         }
         sequence.onTriggered: {
             console.log("sequence play now")
@@ -255,6 +265,16 @@ ApplicationWindow {
             loop.icon.color = "black"
             random.icon.color = "red"
             sequence.icon.color = "black"
+        }
+        close1.onTriggered: {
+            console.log("tyfqgouwiefhuiqeoguygyexywqsging7")
+            console.log("gt56", content.songListInterface.z)
+            content.musicInterface.visible = true
+            content.musicInterface.z = 3
+            console.log(content.songListInterface.z)
+            content.songListInterface.visible = false
+            content.songListInterface.z = -1
+            console.log(content.songListInterface.visible)
         }
     }
 
@@ -298,7 +318,6 @@ ApplicationWindow {
             }
         }
 
-
         onChangeinformation: {
             textalubm = filesModel.get(listview.currentIndex).title
             textauthor = filesModel.get(listview.currentIndex).author
@@ -335,7 +354,6 @@ ApplicationWindow {
             } else {
                 foot.play_button.icon.name = "media-playback-start-symbolic"
             }
-
         }
 
         playlistshow.onChangep: {
@@ -349,10 +367,12 @@ ApplicationWindow {
         Connections {
             target: content.songlist
             function onSongListNameChanged() {
+                console.log("enter..")
                 Controller.setplaylistModel()
             }
         }
-
+        onAddToPlayList: {
+            Controller.appendsong(mySongData.currentIndex)
+        }
     }
 }
-

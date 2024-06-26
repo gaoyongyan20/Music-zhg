@@ -1,4 +1,3 @@
-
 import QtQuick
 import QtQuick.Layouts
 
@@ -71,7 +70,6 @@ Rectangle {
         }
 
         // }
-
         states: State {
             when: delegateItem.ListView.isCurrentItem
             name: "currentlyrics"
@@ -89,4 +87,3 @@ Rectangle {
         }
     }
 }
-

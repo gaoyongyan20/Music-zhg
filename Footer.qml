@@ -1,4 +1,3 @@
-
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
@@ -21,8 +20,6 @@ Item {
     // 当按下播放按钮时发出的信号
     signal changePause
 
-
-
     RowLayout {
         id: layout
         anchors.bottom: parent.bottom
@@ -32,14 +29,13 @@ Item {
         RoundButton {
             id: _backward_button
             icon.name: "media-seek-backward"
-
         }
 
         RoundButton {
             id: _play_button
             icon.name: "media-playback-start-symbolic"
             TapHandler {
-                  onTapped: {
+                onTapped: {
                     if (_play_button.icon.name === "media-playback-pause-symbolic") {
                         changePause()
                         _play_button.icon.name = "media-playback-start-symbolic"
