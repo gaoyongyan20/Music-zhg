@@ -9,6 +9,7 @@ function setFilesModel(selectedFiles) {
     content.dialogs.fileOpen.accepted.connect(() => {
                                                   console.log("accept")
                                                   content.filesModel.clear()
+
                                                   arguments[0]
                                                   = content.dialogs.fileOpen.selectedFiles
                                                   for (var i = 0; i < arguments[0].length; i++) {
@@ -23,8 +24,18 @@ function setFilesModel(selectedFiles) {
                                                       content.getTitle(
                                                           filePath, i)
                                                   }
+
                                                   content.listview.model = content.filesModel
                                                   content.listview.currentIndex = 0
+                                                  content.playmusic.source=content.filesModel.get(0).filePath
+                                                  // content.textalubm=content.filesModel.get(0).title
+                                                  // content.textauthor=content.filesModel.get(0).author
+                                                  console.log(content.listview.currentIndex)
+                                                  content.changeinformation()
+                                                  content.playmusic.play()
+                                                  content.rotate()
+                                                  content.exchangepath()
+
                                               })
 }
 

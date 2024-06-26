@@ -44,7 +44,13 @@ Frame {
     signal addToPlayList
 
     function rotate() {
-        rotationAnimation.start()
+        if (!rotationAnimation.running) {
+            // 如果动画未运行，开始动画
+            rotationAnimation.start()
+        } else if (rotationAnimation.paused) {
+            // 如果动画已暂停，则恢复运行状态
+                            rotationAnimation.resume()
+        }
     }
 
     Lyrics {
@@ -268,7 +274,6 @@ Frame {
                     anchors.right: parent.right
 
                     ScrollView {
-
                         id: _scorllView
                         anchors.fill: parent
                         ScrollBar.horizontal.policy: ScrollBar.AsNeeded
@@ -289,6 +294,14 @@ Frame {
                                 model: _filesModel
                                 ListModel {
                                     id: _filesModel
+                                }
+                                Connections {
+                                    target: _filesModel
+                                    function onCountChanged(newCount) {
+                                            if(_filesModel.count===0) {
+                                                playmusic.stop();
+                                            }
+                                        }
                                 }
                                 delegate: MyDelegate {}
                             }
@@ -339,14 +352,12 @@ Frame {
                                         icon.name: "delete"
                                         icon.color: "black"
                                         onClicked: {
-
                                             if (filesModel.count === 1) {
                                                 filesModel.clear()
                                                 _playlistshow.lrcmodel.clear()
                                                 textauthor = "author"
                                                 textalubm = "album"
                                                 // 存疑
-                                                playmusic.pause()
                                                 playmusic.source = ""
                                                 playmusic.position = 0
                                                 faceImage.currentRotation
