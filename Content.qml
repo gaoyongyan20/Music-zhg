@@ -388,6 +388,7 @@ Frame {
                                     TapHandler {
                                         parent: songRoot
                                         onTapped: {
+
                                             _multipath.currentIndex = index
                                             _playmusic.source = filePath
                                             _playmusic.play()

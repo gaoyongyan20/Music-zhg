@@ -115,12 +115,38 @@ ApplicationWindow {
     footer: Footer {
         id: foot
         //上一首歌
+        // 当按下暂停按钮时发出的信号
+        signal changePlay
+        // 当按下播放按钮时发出的信号
+        signal changePause
+
         backward_button.onClicked: {
+            play_button.state = "pause"
             Controller.setBackwardMusic(actions.isLoop, actions.isRandom)
+        }
+
+        play_button.onClicked: {
+            play_button.state === "pause" ? play_button.state = "play" : play_button.state = "pause"
+            if (play_button.state === "pause") {
+                play_button.icon.name = "media-playback-start-symbolic"
+                content.playmusic.pause()
+                content.faceImage.currentRotation = content.faceImage.rotation
+                content.rotationAnimation.pause()
+            } else {
+                content.playmusic.play()
+                play_button.icon.name = "media-playback-pause-symbolic"
+                if (!content.rotationAnimation.running) {
+                    // 如果动画没有运行
+                    content.rotationAnimation.from
+                            = content.faceImage.currentRotation // 设置起始角度为保存的角度
+                }
+                content.rotationAnimation.resume()
+            }
         }
 
         //下一首歌
         forward_button.onClicked: {
+            play_button.state = "pause"
             Controller.setForwardMusic(actions.isLoop, actions.isRandom)
         }
 
@@ -160,22 +186,22 @@ ApplicationWindow {
             }
         }
 
-        // 当按下播放/暂停按钮时
-        onChangePause: {
-            content.playmusic.pause()
+        // // 当按下播放/暂停按钮时
+        // onChangePause: {
+        //     content.playmusic.pause()
 
-            content.faceImage.currentRotation = content.faceImage.rotation
+        //     content.faceImage.currentRotation = content.faceImage.rotation
 
-            content.rotationAnimation.pause()
-        }
-        onChangePlay: {
-            content.playmusic.play()
-            if (!content.rotationAnimation.running) {
-                // 如果动画没有运行
-                content.rotationAnimation.from = content.faceImage.currentRotation // 设置起始角度为保存的角度
-            }
-            content.rotationAnimation.resume()
-        }
+        //     content.rotationAnimation.pause()
+        // }
+        // onChangePlay: {
+        //     content.playmusic.play()
+        //     if (!content.rotationAnimation.running) {
+        //         // 如果动画没有运行
+        //         content.rotationAnimation.from = content.faceImage.currentRotation // 设置起始角度为保存的角度
+        //     }
+        //     content.rotationAnimation.resume()
+        // }
         //声音图标
         voiceIcon.onClicked: {
             voiceIcon.state === "playVoice" ? voiceIcon.state
@@ -186,7 +212,10 @@ ApplicationWindow {
         //音量
         volumeSlider.to: 1.0
         volumeSlider.value: content.audio.volume
-        volumeSlider.onMoved: content.audio.volume = volumeSlider.value
+        volumeSlider.onMoved: {
+            voiceIcon.state = "playVoice"
+            content.audio.volume = volumeSlider.value
+        }
     }
 
     Actions {
@@ -220,7 +249,8 @@ ApplicationWindow {
             id: _timingoffTimer
             onTriggered: {
                 content.playmusic.pause()
-                foot.play_button.icon.name = "media-playback-start-symbolic"
+                // foot.play_button.icon.name = "media-playback-start-symbolic"
+                foot.play_button.state = "play"
             }
         }
 
@@ -301,14 +331,16 @@ ApplicationWindow {
             } else {
                 console.log("The number is:", number)
                 playmusic.play()
-                foot.play_button.icon.name = "media-playback-pause-symbolic"
+                // foot.play_button.icon.name = "media-playback-pause-symbolic"
+                foot.play_button.state = "play"
                 actions.timingProgram.interval = number * 60000
                 actions.timingProgram.running = true
             }
         }
 
         onChangeIcon: {
-            foot.play_button.icon.name = "media-playback-pause-symbolic"
+            // foot.play_button.icon.name = "media-playback-pause-symbolic"
+            foot.play_button.state = "play"
         }
 
         playmusic.onPlaybackStateChanged: {
@@ -350,9 +382,11 @@ ApplicationWindow {
 
         playmusic.onPlayingChanged: {
             if (playmusic.PlayingState) {
-                foot.play_button.icon.name === "media-playback-pause-symbolic"
+                // foot.play_button.icon.name === "media-playback-pause-symbolic"
+                foot.play_button.state = "pause"
             } else {
-                foot.play_button.icon.name = "media-playback-start-symbolic"
+                // foot.play_button.icon.name = "media-playback-start-symbolic"
+                foot.play_button.state = "play"
             }
         }
 
@@ -373,6 +407,12 @@ ApplicationWindow {
         }
         onAddToPlayList: {
             Controller.appendsong(mySongData.currentIndex)
+        }
+        Connections {
+            target: content.lyrics
+            function onFailedToOpenLrcFile() {
+                dialogs.failToOpen.open()
+            }
         }
     }
 }
