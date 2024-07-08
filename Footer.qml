@@ -32,37 +32,19 @@ Item {
 
         RoundButton {
             id: _play_button
-            // icon.name: "media-playback-start-symbolic"
-            state: "pause"
+            icon.name: "media-playback-start-symbolic"
             // TapHandler {
             //     onTapped: {
-            //         if (_play_button.icon.name === "media-playback-pause-symbolic") {
-            //             changePause()
-            //             _play_button.icon.name = "media-playback-start-symbolic"
-            //         } else {
-            //             changePlay()
-            //             _play_button.icon.name = "media-playback-pause-symbolic"
-            //         }
+            //         // if (_play_button.icon.name === "media-playback-pause-symbolic") {
+            //         //     changePause()
+            //         //     _play_button.icon.name = "media-playback-start-symbolic"
+            //         // } else {
+            //         //     changePlay()
+            //         //     _play_button.icon.name = "media-playback-pause-symbolic"
+            //         // }
             //     }
             // }
-
             // anchors.left: backward_button.right
-            states: [
-                State {
-                    name: "play"
-                    PropertyChanges {
-                        target: _play_button
-                        icon.name: "media-playback-pause-symbolic"
-                    }
-                },
-                State {
-                    name: "pause"
-                    PropertyChanges {
-                        target: _play_button
-                        icon.name: "media-playback-start-symbolic"
-                    }
-                }
-            ]
         }
 
         RoundButton {
