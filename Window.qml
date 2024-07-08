@@ -128,7 +128,6 @@ ApplicationWindow {
 
         //上一首歌
         backward_button.onClicked: {
-            // play_button.state = "pause"
             play_button.icon.name = "media-playback-pause-symbolic"
             content.playmusic.play()
             if (!content.rotationAnimation.running) {
@@ -262,6 +261,7 @@ ApplicationWindow {
             id: _timingoffTimer
             onTriggered: {
                 content.playmusic.pause()
+                content.rotationAnimation.pause()
                 foot.play_button.icon.name = "media-playback-start-symbolic"
                 // foot.play_button.state = "play"
             }
@@ -421,7 +421,7 @@ ApplicationWindow {
         Connections {
             target: content.lyrics
             function onFailedToOpenLrcFile() {
-                dialogs.failToOpen.open()
+                content.dialogs.failToOpen.open()
             }
         }
     }
