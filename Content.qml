@@ -44,7 +44,13 @@ Frame {
     signal addToPlayList
 
     function rotate() {
-        rotationAnimation.start()
+        if (!rotationAnimation.running) {
+            // 如果动画未运行，开始动画
+            rotationAnimation.start()
+        } else if (rotationAnimation.paused) {
+            // 如果动画已暂停，则恢复运行状态
+            rotationAnimation.resume()
+        }
     }
 
     Lyrics {
@@ -277,7 +283,6 @@ Frame {
                     anchors.bottom: parent.bottom
                     anchors.right: parent.right
                     ScrollView {
-
                         id: _scorllView
                         anchors.fill: parent
                         ScrollBar.horizontal.policy: ScrollBar.AsNeeded
@@ -295,11 +300,22 @@ Frame {
                             Layout.fillHeight: true
                             Layout.fillWidth: true
 
+                            //<<<<<<< HEAD
                             model: _filesModel
                             ListModel {
                                 id: _filesModel
+                                //=======
+                            }
+                            Connections {
+                                target: _filesModel
+                                function onCountChanged(newCount) {
+                                    if (_filesModel.count === 0) {
+                                        playmusic.stop()
+                                    }
+                                }
                             }
                             delegate: MyDelegate {}
+                            //>>>>>>> origin
                         }
 
                         component MyDelegate: Rectangle {
@@ -342,20 +358,20 @@ Frame {
                                             filesModel.move(de, newIndex, 1)
                                         console.log(de)
                                     }
+                                    //<<<<<<< HEAD
                                 }
+                                //=======
                                 RoundButton {
                                     id: _deletesongs
                                     icon.name: "delete"
                                     icon.color: "black"
                                     onClicked: {
-
                                         if (filesModel.count === 1) {
                                             filesModel.clear()
                                             _playlistshow.lrcmodel.clear()
                                             textauthor = "author"
                                             textalubm = "album"
                                             // 存疑
-                                            playmusic.pause()
                                             playmusic.source = ""
                                             playmusic.position = 0
                                             faceImage.currentRotation = content.faceImage.rotation
@@ -383,6 +399,38 @@ Frame {
                                     }
                                 }
 
+                                //                                     Text {
+                                //                                         text: title
+                                //                                         font.bold: true
+                                //                                         color: songRoot.ListView.isCurrentItem ? "red" : "black"
+                                //                                     }
+                                //                                     Text {
+                                //                                         text: author
+                                //                                         font.bold: true
+                                //                                         color: songRoot.ListView.isCurrentItem ? "red" : "black"
+                                //                                     }
+                                //                                     TapHandler {
+                                //                                         parent: songRoot
+                                //                                         onTapped: {
+
+                                //                                             _multipath.currentIndex = index
+                                //                                             _playmusic.source = filePath
+                                //                                             _playmusic.play()
+                                // >>>>>>> origin
+                                //                                             changeinformation()
+                                //                                             exchangepath()
+                                //                                             console.log("fewukyfgbcj,sdnckjwenfiuwbgoflnkdjnmeifgoudhiuhqi")
+                                //                                             playmusic.play()
+                                //                                         } else {
+                                //                                             filesModel.remove(index, 1)
+                                //                                             playmusic.source = filesModel.get(
+                                //                                                         _multipath.currentIndex).filePath
+                                //                                             changeinformation()
+                                //                                             exchangepath()
+                                //                                             playmusic.play()
+                                //                                         }
+                                //                                     }
+                                //                                 }
                                 Text {
                                     text: title
                                     font.bold: true

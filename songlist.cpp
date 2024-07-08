@@ -91,7 +91,6 @@ void Songlist::getLocalSong(QString listName)
             qWarning("Cannot find the \"/tmp\" directory");
         }
     }
-
     // 设置文件名过滤器（只筛选出以.mp3为后缀的）
     // 若后期要添加更多音频文件格式进行过滤，可以直接在filter中写入更多格式
     QStringList filter;

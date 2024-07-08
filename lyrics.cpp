@@ -22,6 +22,7 @@ void Lyrics::setLyricsFile(QString &file)
         setLyrics();
         emit lyricsFileChanged();
     }
+    emit failedToOpenLrcFile();
 }
 
 QVector<QString> Lyrics::getAllLyrics()
