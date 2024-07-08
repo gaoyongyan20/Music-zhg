@@ -12,7 +12,7 @@ Rectangle {
     ListView {
         id: _list
         anchors.fill: parent
-        width: 440
+        width: 600
         height: 20
         // model: ["当前歌词的上一句", "当前歌词", "当前歌词的下一句", "当前歌词的下2句", "当前歌词的下3句"]
         ListModel {
@@ -75,7 +75,7 @@ Rectangle {
             name: "currentlyrics"
             PropertyChanges {
                 target: delegateItem
-                scale: 3
+                scale: 1.8
             }
         }
         FocusScope {

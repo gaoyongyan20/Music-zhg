@@ -11,6 +11,7 @@ import "freemusic.js" as Controller
 import Lyrics
 
 ApplicationWindow {
+    id: window
     property int x
     // width: 640
     // height: 480
@@ -26,6 +27,12 @@ ApplicationWindow {
 
     // -------设置菜单栏------
     menuBar: MenuBar {
+        // background: Rectangle {
+        //     width: parent.width
+        //     height: 30
+        //     opacity: 0.8
+        //     color: "lightblue"
+        // }
         Menu {
             title: qsTr("Open")
             MenuItem {
@@ -73,9 +80,6 @@ ApplicationWindow {
             MenuItem {
                 action: actions.about
             }
-            MenuItem {
-                action: actions.close1
-            }
         }
     }
 
@@ -103,11 +107,13 @@ ApplicationWindow {
             ToolButton {
                 action: actions.background
             }
-            // ToolButton {
-            //     action: actions.timingoff
-            // }
             ToolButton {
-                action: actions.close1
+                action: actions.timingoff
+            }
+
+            ToolSeparator {}
+            ToolButton {
+                action: actions.close
             }
         }
     }
@@ -149,13 +155,14 @@ ApplicationWindow {
 
         //全屏显示歌词板块
         fullscreen.onClicked: {
+            //content.songRect.anchors.right = window.right
             if (content.information.width === 0) {
                 content.information.width = 200
-                content.playlistshow.width -= 210
+                content.playlistshow.width -= 250
                 fullscreen.icon.name = "gnumeric-row-unhide-symbolic"
             } else {
                 content.information.width = 0
-                content.playlistshow.width = content.playlistshow.width + 210
+                content.playlistshow.width = content.playlistshow.width + 250
                 fullscreen.icon.name = "gnumeric-row-hide-symbolic"
             }
         }
@@ -266,7 +273,7 @@ ApplicationWindow {
             random.icon.color = "red"
             sequence.icon.color = "black"
         }
-        close1.onTriggered: {
+        close.onTriggered: {
             console.log("tyfqgouwiefhuiqeoguygyexywqsging7")
             console.log("gt56", content.songListInterface.z)
             content.musicInterface.visible = true

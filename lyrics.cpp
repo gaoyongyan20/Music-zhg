@@ -54,6 +54,7 @@ void Lyrics::setLyrics()
     QFile file(m_lyricsFile);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "failed to open lrc file.";
+        emit failedToOpenLrcFile();
     }
 
     // 创建流对象

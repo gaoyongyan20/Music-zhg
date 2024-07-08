@@ -16,7 +16,7 @@ Item {
     property alias song1: _song1
     property alias song2: _song2
     property alias sequence: _sequence
-    property alias close1: _close
+    property alias close: _close
 
     Action {
         id: _open
@@ -92,6 +92,7 @@ Item {
     }
     Action {
         id: _close
-        text: qsTr("close")
+        text: qsTr("Closesonglist")
+        icon.name: "view-close"
     }
 }

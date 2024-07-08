@@ -192,6 +192,11 @@ Frame {
                     anchors.centerIn: parent
                     radius: 75
                     clip: true
+                    scale: faceImageHover.hovered ? 1.2 : 1
+                    HoverHandler {
+                        id: faceImageHover
+                    }
+
                     Image {
                         width: parent.width - 4
                         height: parent.height - 4
@@ -232,6 +237,8 @@ Frame {
                     Text {
                         text: textalubm
                         font.bold: true
+                        font.pointSize: 15
+
                         anchors.centerIn: parent
                     }
                 }
@@ -246,12 +253,14 @@ Frame {
                     Text {
                         text: textauthor
                         font.bold: true
+                        font.pointSize: 15
                         anchors.centerIn: parent
                     }
                 }
             }
             ScrollLyrics {
                 anchors.left: information.right
+                //anchors.right: parent.left
                 id: _playlistshow
                 width: 440
                 height: parent.height
@@ -264,9 +273,9 @@ Frame {
                     width: 200
                     height: 200
                     visible: false
+
                     anchors.bottom: parent.bottom
                     anchors.right: parent.right
-
                     ScrollView {
 
                         id: _scorllView
@@ -274,132 +283,131 @@ Frame {
                         ScrollBar.horizontal.policy: ScrollBar.AsNeeded
                         ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
-                        ColumnLayout {
-                            // 存放音频文件的视图
-                            ListView {
-                                // anchors.fill: parent
-                                interactive: true
-                                id: _multipath
-                                width: 800
-                                // Layout.preferredWidth: 400
-                                Layout.preferredHeight: 200
-                                Layout.fillHeight: true
-                                Layout.fillWidth: true
+                        // ColumnLayout {
+                        // 存放音频文件的视图
+                        ListView {
+                            // anchors.fill: parent
+                            interactive: true
+                            id: _multipath
+                            width: 800
+                            // Layout.preferredWidth: 400
+                            Layout.preferredHeight: 200
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
 
-                                model: _filesModel
-                                ListModel {
-                                    id: _filesModel
-                                }
-                                delegate: MyDelegate {}
+                            model: _filesModel
+                            ListModel {
+                                id: _filesModel
                             }
+                            delegate: MyDelegate {}
+                        }
 
-                            component MyDelegate: Rectangle {
-                                id: songRoot
-                                required property string title
-                                required property string author
-                                required property url filePath
-                                required property int index
+                        component MyDelegate: Rectangle {
+                            id: songRoot
+                            required property string title
+                            required property string author
+                            required property url filePath
+                            required property int index
 
-                                // color: "red"
-                                height: 40
+                            // color: "red"
+                            height: 40
 
-                                width: _multipath.width
+                            width: _multipath.width
 
-                                RowLayout {
-                                    RoundButton {
-                                        id: addnext
-                                        width: 20
-                                        height: 20
-                                        icon.name: "bqm-add"
-                                        // 添加一首歌曲为下一首播放
-                                        // 存疑 （有问题）
-                                        onClicked: {
-                                            var de = index
-                                            var newIndex = _multipath.currentIndex + 1
-                                            //判断选择的下一首歌曲是否为当前正在播放的歌曲
-                                            if (_multipath.currentIndex === de) {
-                                                return
-                                            }
-                                            //判断当前播放歌曲是否为列表的最后一首，是：变成第一首，选择的歌曲变成第二首
-                                            if (_multipath.currentIndex === filesModel.count - 1) {
-                                                filesModel.move(de, 0, 1)
-                                                filesModel.move(
-                                                            _multipath.currentIndex,
-                                                            0, 1)
-                                                console.log(de)
-                                                console.log(_multipath.currentIndex)
-                                            } else
-                                                //不是最后一首，将其变为第一首即可
-                                                filesModel.move(de, newIndex, 1)
+                            RowLayout {
+                                RoundButton {
+                                    id: addnext
+                                    width: 20
+                                    height: 20
+                                    icon.name: "bqm-add"
+                                    // 添加一首歌曲为下一首播放
+                                    // 存疑 （有问题）
+                                    onClicked: {
+                                        var de = index
+                                        var newIndex = _multipath.currentIndex + 1
+                                        //判断选择的下一首歌曲是否为当前正在播放的歌曲
+                                        if (_multipath.currentIndex === de) {
+                                            return
+                                        }
+                                        //判断当前播放歌曲是否为列表的最后一首，是：变成第一首，选择的歌曲变成第二首
+                                        if (_multipath.currentIndex === filesModel.count - 1) {
+                                            filesModel.move(de, 0, 1)
+                                            filesModel.move(
+                                                        _multipath.currentIndex,
+                                                        0, 1)
                                             console.log(de)
-                                        }
+                                            console.log(_multipath.currentIndex)
+                                        } else
+                                            //不是最后一首，将其变为第一首即可
+                                            filesModel.move(de, newIndex, 1)
+                                        console.log(de)
                                     }
-                                    RoundButton {
-                                        id: _deletesongs
-                                        icon.name: "delete"
-                                        icon.color: "black"
-                                        onClicked: {
+                                }
+                                RoundButton {
+                                    id: _deletesongs
+                                    icon.name: "delete"
+                                    icon.color: "black"
+                                    onClicked: {
 
-                                            if (filesModel.count === 1) {
-                                                filesModel.clear()
-                                                _playlistshow.lrcmodel.clear()
-                                                textauthor = "author"
-                                                textalubm = "album"
-                                                // 存疑
-                                                playmusic.pause()
-                                                playmusic.source = ""
-                                                playmusic.position = 0
-                                                faceImage.currentRotation
-                                                        = content.faceImage.rotation
-                                                rotationAnimation.pause()
-                                                changePlayIcons()
-                                            } else if (filesModel.count - 1 === index
-                                                       && filesModel.count !== 1) {
-                                                //前两行顺序修改，会导致当前播放歌索引混乱
-                                                _multipath.currentIndex = 0
-                                                filesModel.remove(index, 1)
-                                                playmusic.source = filesModel.get(
-                                                            _multipath.currentIndex).filePath
-                                                changeinformation()
-                                                exchangepath()
-                                                console.log("fewukyfgbcj,sdnckjwenfiuwbgoflnkdjnmeifgoudhiuhqi")
-                                                playmusic.play()
-                                            } else {
-                                                filesModel.remove(index, 1)
-                                                playmusic.source = filesModel.get(
-                                                            _multipath.currentIndex).filePath
-                                                changeinformation()
-                                                exchangepath()
-                                                playmusic.play()
-                                            }
-                                        }
-                                    }
-
-                                    Text {
-                                        text: title
-                                        font.bold: true
-                                        color: songRoot.ListView.isCurrentItem ? "red" : "black"
-                                    }
-                                    Text {
-                                        text: author
-                                        font.bold: true
-                                        color: songRoot.ListView.isCurrentItem ? "red" : "black"
-                                    }
-                                    TapHandler {
-                                        parent: songRoot
-                                        onTapped: {
-                                            _multipath.currentIndex = index
-                                            _playmusic.source = filePath
-                                            _playmusic.play()
+                                        if (filesModel.count === 1) {
+                                            filesModel.clear()
+                                            _playlistshow.lrcmodel.clear()
+                                            textauthor = "author"
+                                            textalubm = "album"
+                                            // 存疑
+                                            playmusic.pause()
+                                            playmusic.source = ""
+                                            playmusic.position = 0
+                                            faceImage.currentRotation = content.faceImage.rotation
+                                            rotationAnimation.pause()
+                                            changePlayIcons()
+                                        } else if (filesModel.count - 1 === index
+                                                   && filesModel.count !== 1) {
+                                            //前两行顺序修改，会导致当前播放歌索引混乱
+                                            _multipath.currentIndex = 0
+                                            filesModel.remove(index, 1)
+                                            playmusic.source = filesModel.get(
+                                                        _multipath.currentIndex).filePath
                                             changeinformation()
-                                            changeIcon()
                                             exchangepath()
-                                            rotate()
+                                            console.log("fewukyfgbcj,sdnckjwenfiuwbgoflnkdjnmeifgoudhiuhqi")
+                                            playmusic.play()
+                                        } else {
+                                            filesModel.remove(index, 1)
+                                            playmusic.source = filesModel.get(
+                                                        _multipath.currentIndex).filePath
+                                            changeinformation()
+                                            exchangepath()
+                                            playmusic.play()
                                         }
+                                    }
+                                }
+
+                                Text {
+                                    text: title
+                                    font.bold: true
+                                    color: songRoot.ListView.isCurrentItem ? "red" : "black"
+                                }
+                                Text {
+                                    text: author
+                                    font.bold: true
+                                    color: songRoot.ListView.isCurrentItem ? "red" : "black"
+                                }
+                                TapHandler {
+                                    parent: songRoot
+                                    onTapped: {
+                                        _multipath.currentIndex = index
+                                        _playmusic.source = filePath
+                                        _playmusic.play()
+                                        changeinformation()
+                                        changeIcon()
+                                        exchangepath()
+                                        rotate()
                                     }
                                 }
                             }
                         }
+                        //}
                     }
                 }
             }
@@ -410,7 +418,7 @@ Frame {
         id: songListInterface
         // color: "brown"
         // color: "transparent"
-        opacity: 0.5
+        opacity: 0.8
         width: 800
         height: 600
         visible: false
@@ -428,8 +436,9 @@ Frame {
 
                 Text {
                     id: songListTitle
-                    text: "歌单列表"
-                    font.pointSize: 20
+                    text: "SongList"
+                    font.pointSize: 18
+                    font.bold: true
                     anchors.horizontalCenter: parent.horizontalCenter
                     TapHandler {
                         onTapped: {
@@ -447,9 +456,13 @@ Frame {
                     model: _mySongListModel
                     ListModel {
                         id: _mySongListModel
+                        // 设置默认歌单选项
                         ListElement {
                             songListName: "local"
                         }
+                        // ListElement {
+                        //     songListName: "Mylike"
+                        // }
                     }
                     delegate: MySongList {}
                 }
@@ -458,20 +471,27 @@ Frame {
                     required property int index
                     id: delegateMySongList
                     width: mySongList.width
+                    color: hover1.hovered ? "lightblue" : "transparent"
 
                     height: 40
+
                     Text {
                         id: local
                         font.pointSize: 15
+                        font.italic: true
                         text: songListName
                         anchors.centerIn: parent
-                        color: mySongList.currentIndex === index ? "black" : "red"
+                        //color: mySongList.currentIndex === index ? "red" : "black"
                     }
                     TapHandler {
                         onTapped: {
+                            mySongList.currentIndex = index
                             _songlist.songListName = local.text
                             console.log(mySongList.visible)
                         }
+                    }
+                    HoverHandler {
+                        id: hover1
                     }
                 }
             }
@@ -501,6 +521,13 @@ Frame {
                     id: delegateMyDataList
                     width: mySongData.width
                     height: 40
+
+                    HoverHandler {
+                        id: hover2
+                    }
+
+                    color: hover2.hovered ? "lightblue" : "white"
+
                     RowLayout {
                         RoundButton {
                             id: _addToScorllView
@@ -522,25 +549,33 @@ Frame {
                             id: songTitle
                             font.pixelSize: 13
                             text: title
-                            color: _mySongData.currentIndex === index ? "red" : "black"
+                            // color: _mySongData.currentIndex === index ? "red" : "black"
+                            font.italic: hover2.hovered ? true : false
+                            font.bold: hover2.hovered ? true : false
                         }
                         Text {
                             id: songAuthor
                             font.pixelSize: 13
                             text: author
-                            color: _mySongData.currentIndex === index ? "red" : "black"
+                            //color: _mySongData.currentIndex === index ? "red" : "black"
+                            font.italic: hover2.hovered ? true : false
+                            font.bold: hover2.hovered ? true : false
                         }
                         Text {
                             id: songDuration
                             font.pixelSize: 13
                             text: duration
-                            color: _mySongData.currentIndex === index ? "red" : "black"
+                            //color: _mySongData.currentIndex === index ? "red" : "black"
+                            font.italic: hover2.hovered ? true : false
+                            font.bold: hover2.hovered ? true : false
                         }
                         Text {
                             id: songGenre
                             font.pixelSize: 13
                             text: genre
-                            color: _mySongData.currentIndex === index ? "red" : "black"
+                            //color: _mySongData.currentIndex === index ? "red" : "black"
+                            font.italic: hover2.hovered ? true : false
+                            font.bold: hover2.hovered ? true : false
                         }
                     }
                 }

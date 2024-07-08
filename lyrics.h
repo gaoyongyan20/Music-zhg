@@ -34,6 +34,7 @@ public:
 
 signals:
     Q_SIGNAL void lyricsFileChanged();
+    Q_SIGNAL void failedToOpenLrcFile();
 
 private:
     // 当前歌词文件

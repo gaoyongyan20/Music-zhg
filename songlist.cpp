@@ -55,7 +55,7 @@ void Songlist::setSongList()
     if (m_songListName == "local") {
         getLocalSong("local");
     }
-    songListPath = "/root/1/tmp/" + m_songListName + ".txt";
+    songListPath = "/root/tmp/" + m_songListName + ".txt";
 
     qDebug() << songListPath;
     // 打开歌单文件，读取歌单中歌曲信息
@@ -83,10 +83,14 @@ void Songlist::setSongList()
 void Songlist::getLocalSong(QString listName)
 {
     // 指定存储音频文件的目录
-    QDir dir = QDir::root();
-    dir.cd("root");
-    dir.cd("1");
-    dir.cd("tmp");
+    QDir dir = QDir::root(); // “/”
+    if (!dir.cd("root")) {
+        qWarning("Cannot find the \"/root\" directory");
+    } else {
+        if (!dir.cd("tmp")) {
+            qWarning("Cannot find the \"/tmp\" directory");
+        }
+    }
 
     // 设置文件名过滤器（只筛选出以.mp3为后缀的）
     // 若后期要添加更多音频文件格式进行过滤，可以直接在filter中写入更多格式
@@ -97,8 +101,7 @@ void Songlist::getLocalSong(QString listName)
     // 获取/root/tmp目录下的文件条目列表
     QFileInfoList list = dir.entryInfoList();
 
-    // 字符串拼接，获取本地歌单的的文件路径名
-    // QFile file(dir.dirName() + "/" + listName + ".txt");
+    // 获取本地歌单的的文件路径名
     QFile file(dir.filePath(listName + ".txt"));
     qDebug() << dir.filePath(listName + ".txt");
     QTextStream out(&file);
