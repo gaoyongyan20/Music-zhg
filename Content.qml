@@ -353,9 +353,14 @@ Frame {
                                                         0, 1)
                                             console.log(de)
                                             console.log(_multipath.currentIndex)
-                                        } else
-                                            //不是最后一首，将其变为第一首即可
+                                        } else if (_multipath.currentIndex < de) {
                                             filesModel.move(de, newIndex, 1)
+                                        } else
+                                            //不是最后一首，将其变为当前播放音乐的下一首即可
+                                            filesModel.move(
+                                                        de,
+                                                        _multipath.currentIndex,
+                                                        1)
                                         console.log(de)
                                     }
                                     //<<<<<<< HEAD

@@ -81,6 +81,13 @@ ApplicationWindow {
                 action: actions.about
             }
         }
+
+        Menu {
+            title: qsTr("Closelist")
+            MenuItem {
+                action: actions.close
+            }
+        }
     }
 
     // -------设置工具栏------
