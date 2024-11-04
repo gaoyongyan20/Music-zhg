@@ -62,6 +62,7 @@ void Songlist::setSongList()
     QFile file(songListPath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "failed to open songlist file";
+        return;
     }
     QTextStream in(&file);
 

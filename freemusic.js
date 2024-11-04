@@ -23,19 +23,21 @@ function setFilesModel(selectedFiles) {
                                                           data)
                                                       content.getTitle(
                                                           filePath, i)
+                                                      console.log(filePath)
                                                   }
 
                                                   content.listview.model = content.filesModel
                                                   content.listview.currentIndex = 0
-                                                  content.playmusic.source=content.filesModel.get(0).filePath
+                                                  content.playmusic.source = content.filesModel.get(
+                                                      0).filePath
                                                   // content.textalubm=content.filesModel.get(0).title
                                                   // content.textauthor=content.filesModel.get(0).author
-                                                  console.log(content.listview.currentIndex)
+                                                  console.log(
+                                                      content.listview.currentIndex)
                                                   content.changeinformation()
                                                   content.playmusic.play()
                                                   content.rotate()
                                                   content.exchangepath()
-
                                               })
 }
 
@@ -191,11 +193,27 @@ function setlrcmodel() {
     for (var i = 0; i < allLyrics.length; ++i) {
 
         var ci = allLyrics[i]
+        console.log("if i enter")
+        console.log(ci)
         var da = {
             "ci": ci
         }
         content.playlistshow.lrcmodel.append(da)
     }
+    content.playlistshow.list.model = content.playlistshow.lrcmodel
+    content.playlistshow.list.currentIndex = 0
+}
+
+function setNoLyricsFileModel() {
+    content.playlistshow.lrcmodel.clear()
+    console.log("enter!!")
+
+    var ci = "no lyric file, please enjoy music.."
+    var data = {
+        "ci": ci
+    }
+    content.playlistshow.lrcmodel.append(data)
+
     content.playlistshow.list.model = content.playlistshow.lrcmodel
     content.playlistshow.list.currentIndex = 0
 }
@@ -218,7 +236,8 @@ function setplaylistModel() {
                 "title": "loading",
                 "author": "loading",
                 "duration": "00.00",
-                "genre": "loading"
+                "genre": "loading",
+                "canDelete": "true"
             }
         }
         content.mySongDataModel.append(data)
@@ -237,4 +256,34 @@ function appendsong(cindex) {
         "author": content.mySongDataModel.get(cindex).author
     }
     content.filesModel.append(data)
+}
+
+function deletesong(songIndex) {
+    console.log("enter..")
+}
+
+function disableDeleteButton() {
+    for (var i = 0; i !== content.mySongDataModel.count; i++) {
+        content.mySongDataModel.setProperty(
+                    i, "canDelete", false) // setProperty的作用是将某一位置模型数据项目的对应属性值修改
+        // 这样做的目的是：因为在delegate中button的enabled属性值是绑定在“canDelete”属性的，模型数据中的值发生了改变，
+        // 委托中的数据也发生了改变
+        // 委托中数据的显示关联到模型数据中通过required property的机制实现的，同样的还有filepath,title之类的，只不过他们没有涉及到
+        // 模型中数据的改变
+    }
+}
+
+function appendToList() {
+    // 在歌单列表中我们可以从它的模型数据中获取到播放歌曲的路径，但是别的信息需要调用元数据解析方法获得
+    var filePath = content.filesModel.get(arguments[0]).filePath
+    var data = {
+        "filePath": filePath,
+        "title": "loading",
+        "author": "loading",
+        "duration": "00.00",
+        "genre": "loading",
+        "canDelete": "true"
+    }
+    content.mySongDataModel.append(data)
+    content.getAllData(filePath, arguments[0])
 }

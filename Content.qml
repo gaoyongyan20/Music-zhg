@@ -34,6 +34,11 @@ Frame {
     property alias musicInterface: musicInterface
     property alias songListInterface: songListInterface
 
+    property alias flushButton: _flushButton
+    // property alias deleteSong: _deleteSong fault
+    property alias mySongList: _mySongList
+    property alias closeButton: _closeButton
+
     property string textauthor: "author"
     property string textalubm: "album"
 
@@ -42,6 +47,9 @@ Frame {
     signal exchangepath
     signal changePlayIcons
     signal addToPlayList
+    signal tapInSongListName
+    signal deleteSongInSongList
+    signal addListSongToPlay
 
     function rotate() {
         if (!rotationAnimation.running) {
@@ -183,8 +191,9 @@ Frame {
             anchors.fill: parent
             Rectangle {
                 id: _information
-                width: 200
+                width: 250
                 height: parent.height
+                anchors.left: parent.left
                 color: "transparent"
                 clip: true
                 Layout.fillHeight: true
@@ -265,10 +274,10 @@ Frame {
                 }
             }
             ScrollLyrics {
-                anchors.left: information.right
+                anchors.right: rowlayout.right
                 //anchors.right: parent.left
                 id: _playlistshow
-                width: 440
+                width: 500
                 height: parent.height
                 color: "transparent"
                 Layout.fillWidth: true
@@ -276,15 +285,17 @@ Frame {
                 Rectangle {
                     id: _songRect
                     opacity: 0.7
-                    width: 200
+                    width: 250
+
                     height: 200
+                    color: "white"
                     visible: false
 
-                    anchors.bottom: parent.bottom
-                    anchors.right: parent.right
+                    anchors.bottom: playlistshow.bottom
+                    anchors.right: playlistshow.right
                     ScrollView {
                         id: _scorllView
-                        anchors.fill: parent
+                        anchors.fill: _songRect
                         ScrollBar.horizontal.policy: ScrollBar.AsNeeded
                         ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
@@ -294,9 +305,10 @@ Frame {
                             // anchors.fill: parent
                             interactive: true
                             id: _multipath
-                            width: 800
+                            // width: 800
                             // Layout.preferredWidth: 400
                             Layout.preferredHeight: 200
+                            Layout.preferredWidth: 500
                             Layout.fillHeight: true
                             Layout.fillWidth: true
 
@@ -326,16 +338,22 @@ Frame {
                             required property int index
 
                             // color: "red"
-                            height: 40
+                            height: 30
 
                             width: _multipath.width
-
                             RowLayout {
                                 RoundButton {
                                     id: addnext
-                                    width: 20
-                                    height: 20
+                                    // width: 10
+                                    // height: 10
+                                    background: Rectangle {
+                                        implicitHeight: 5
+                                        implicitWidth: 5
+                                        radius: 50
+                                        color: "lightblue"
+                                    }
                                     icon.name: "bqm-add"
+                                    icon.color: "black"
                                     // 添加一首歌曲为下一首播放
                                     // 存疑 （有问题）
                                     onClicked: {
@@ -358,13 +376,35 @@ Frame {
                                             filesModel.move(de, newIndex, 1)
                                         console.log(de)
                                     }
-                                    //<<<<<<< HEAD
                                 }
-                                //=======
+                                RoundButton {
+                                    id: addSongToList
+                                    icon.name: "media-playlist-append"
+                                    icon.color: "black"
+                                    background: Rectangle {
+                                        implicitHeight: 5
+                                        implicitWidth: 5
+                                        radius: 50
+                                        color: "lightblue"
+                                    }
+                                    TapHandler {
+                                        onTapped: {
+                                            console.log("add song to list..")
+                                            addListSongToPlay()
+                                        }
+                                    }
+                                }
+
                                 RoundButton {
                                     id: _deletesongs
                                     icon.name: "delete"
                                     icon.color: "black"
+                                    background: Rectangle {
+                                        implicitHeight: 5
+                                        implicitWidth: 5
+                                        radius: 50
+                                        color: "lightblue"
+                                    }
                                     onClicked: {
                                         if (filesModel.count === 1) {
                                             filesModel.clear()
@@ -399,38 +439,6 @@ Frame {
                                     }
                                 }
 
-                                //                                     Text {
-                                //                                         text: title
-                                //                                         font.bold: true
-                                //                                         color: songRoot.ListView.isCurrentItem ? "red" : "black"
-                                //                                     }
-                                //                                     Text {
-                                //                                         text: author
-                                //                                         font.bold: true
-                                //                                         color: songRoot.ListView.isCurrentItem ? "red" : "black"
-                                //                                     }
-                                //                                     TapHandler {
-                                //                                         parent: songRoot
-                                //                                         onTapped: {
-
-                                //                                             _multipath.currentIndex = index
-                                //                                             _playmusic.source = filePath
-                                //                                             _playmusic.play()
-                                // >>>>>>> origin
-                                //                                             changeinformation()
-                                //                                             exchangepath()
-                                //                                             console.log("fewukyfgbcj,sdnckjwenfiuwbgoflnkdjnmeifgoudhiuhqi")
-                                //                                             playmusic.play()
-                                //                                         } else {
-                                //                                             filesModel.remove(index, 1)
-                                //                                             playmusic.source = filesModel.get(
-                                //                                                         _multipath.currentIndex).filePath
-                                //                                             changeinformation()
-                                //                                             exchangepath()
-                                //                                             playmusic.play()
-                                //                                         }
-                                //                                     }
-                                //                                 }
                                 Text {
                                     text: title
                                     font.bold: true
@@ -458,7 +466,7 @@ Frame {
                         //}
                     }
                 }
-            }
+            } // --- end of scroIILyrics
         }
     }
     //歌单列表
@@ -467,7 +475,7 @@ Frame {
         // color: "brown"
         // color: "transparent"
         opacity: 0.8
-        width: 800
+        width: 900
         height: 600
         visible: false
         z: -1
@@ -478,39 +486,46 @@ Frame {
             spacing: 10
             Rectangle {
                 id: leftsong
-                width: 250
+                width: 300
                 height: 600
                 color: "transparent"
 
-                Text {
-                    id: songListTitle
-                    text: "SongList"
-                    font.pointSize: 18
-                    font.bold: true
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    TapHandler {
-                        onTapped: {
-                            console.log("tapped")
+                Rectangle {
+                    id: titleLayout
+                    width: 300
+                    height: 40
+                    color: "transparent"
+                    Text {
+                        id: songListTitle
+                        text: "SongList"
+                        font.pointSize: 18
+                        font.bold: true
+                        anchors.centerIn: titleLayout
+                        TapHandler {
+                            onTapped: {
+                                console.log("tapped")
+                            }
                         }
                     }
                 }
 
                 ListView {
-                    id: mySongList
-                    anchors.top: songListTitle.bottom
+                    id: _mySongList
+                    anchors.top: titleLayout.bottom
 
                     width: parent.width
                     height: parent.height
                     model: _mySongListModel
                     ListModel {
                         id: _mySongListModel
-                        // 设置默认歌单选项
+                        // 设置默认歌单选项 1. 本地歌单 2. 我喜欢歌单
                         ListElement {
                             songListName: "local"
                         }
-                        // ListElement {
-                        //     songListName: "Mylike"
-                        // }
+
+                        ListElement {
+                            songListName: "mylike"
+                        }
                     }
                     delegate: MySongList {}
                 }
@@ -536,6 +551,7 @@ Frame {
                             mySongList.currentIndex = index
                             _songlist.songListName = local.text
                             console.log(mySongList.visible)
+                            tapInSongListName()
                         }
                     }
                     HoverHandler {
@@ -543,21 +559,61 @@ Frame {
                     }
                 }
             }
+
             Rectangle {
-                width: 550
+                width: 600
                 height: 600
                 anchors.left: leftsong.right
                 color: "transparent"
-                ListView {
-                    id: _mySongData
-                    anchors.fill: parent
-                    width: parent.width
-                    height: parent.height
-                    ListModel {
-                        id: _mySongDataModel
-                    }
+                id: _songListRight
 
-                    delegate: MySongData {}
+                ColumnLayout {
+                    anchors.fill: parent
+                    Rectangle {
+                        width: parent.width
+                        height: parent.height / 15
+                        id: songListTop
+                        color: "transparent"
+                        RowLayout {
+                            anchors.right: parent.right
+                            anchors.rightMargin: 30
+                            RoundButton {
+                                id: _flushButton
+                                icon.name: "amarok_playlist_refresh-symbolic"
+                                background: Rectangle {
+                                    implicitHeight: 15
+                                    implicitWidth: 15
+                                    radius: 50
+                                    color: "lightblue"
+                                    border.color: "grey"
+                                    opacity: 0.9
+                                }
+                            }
+                            RoundButton {
+                                id: _closeButton
+                                icon.name: "view-close"
+                                background: Rectangle {
+                                    implicitHeight: 15
+                                    implicitWidth: 15
+                                    color: "lightblue"
+                                    border.color: "grey"
+                                    opacity: 0.9
+                                    radius: 50
+                                }
+                            }
+                        }
+                    }
+                    ListView {
+                        id: _mySongData
+                        anchors.top: songListTop.bottom
+                        width: parent.width
+                        height: parent.height - songListTop.height
+                        ListModel {
+                            id: _mySongDataModel
+                        }
+
+                        delegate: MySongData {}
+                    }
                 }
                 component MySongData: Rectangle {
                     required property string title
@@ -566,6 +622,9 @@ Frame {
                     required property string genre
                     required property url playlistPath
                     required property int index
+                    required property bool canDelete
+
+                    // 该property控制deleteSong按钮的enabled属性
                     id: delegateMyDataList
                     width: mySongData.width
                     height: 40
@@ -590,8 +649,16 @@ Frame {
                             }
                         }
                         RoundButton {
-                            id: deletSongList
+                            id: deleteSong
                             icon.name: "edit-delete-remove-symbolic"
+                            visible: canDelete
+                            // 添加删除按钮的taphandler
+                            TapHandler {
+                                onTapped: {
+                                    _mySongData.currentIndex = index
+                                    deleteSongInSongList()
+                                }
+                            }
                         }
                         Text {
                             id: songTitle

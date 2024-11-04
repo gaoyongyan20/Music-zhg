@@ -7,8 +7,8 @@ Rectangle {
     property alias list: _list
     signal changep
     id: lyricView
-    // anchors.fill: parent
     clip: true
+    // visible: true
     ListView {
         id: _list
         anchors.fill: parent
@@ -42,7 +42,7 @@ Rectangle {
         图的中间。此外，无论是否存在突出显示，当前项目索引的行为都会发生。*/
         preferredHighlightBegin: parent.height / 2 - 50
         preferredHighlightEnd: parent.height / 2
-        //高光永远不会超出范围。如果键盘或鼠标操作将导致突出显示移出范围，则当前项将发生更改。
+        //高光永远不会超出范围。如果键盘或鼠标将导致突出显示移出范围，则当前项将发生更改。
         highlightRangeMode: ListView.StrictlyEnforceRange
     }
     component ListDelegate: Item {
@@ -51,6 +51,7 @@ Rectangle {
         height: 50
         required property string ci
         required property int index
+
         Text {
             id: recText
             font.bold: true

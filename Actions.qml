@@ -17,12 +17,19 @@ Item {
     property alias song2: _song2
     property alias sequence: _sequence
     property alias close: _close
+    property alias control: _control
 
     Action {
         id: _open
         text: qsTr("&OpenFiles..")
         icon.name: "document-open"
         shortcut: StandardKey.Open
+    }
+
+    Action {
+        id: _control
+        text: qsTr("Control")
+        icon.name: "media-playlist-normal-symbolic"
     }
 
     Action {

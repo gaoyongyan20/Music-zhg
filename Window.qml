@@ -20,8 +20,8 @@ ApplicationWindow {
 
     minimumHeight: 600
     maximumHeight: 600
-    minimumWidth: 800
-    maximumWidth: 800
+    minimumWidth: 900
+    maximumWidth: 900
 
     // color: "red"
 
@@ -40,19 +40,18 @@ ApplicationWindow {
             }
         }
 
-        Menu {
-            title: qsTr("Mode")
-            MenuItem {
-                action: actions.loop
-            }
-            MenuItem {
-                action: actions.random
-            }
-            MenuItem {
-                action: actions.sequence
-            }
-        }
-
+        // Menu {
+        //     title: qsTr("Mode")
+        //     MenuItem {
+        //         action: actions.loop
+        //     }
+        //     MenuItem {
+        //         action: actions.random
+        //     }
+        //     MenuItem {
+        //         action: actions.sequence
+        //     }
+        // }
         Menu {
             title: qsTr("Setting")
             MenuItem {
@@ -84,40 +83,39 @@ ApplicationWindow {
     }
 
     // -------设置工具栏------
-    header: ToolBar {
-        RowLayout {
-            ToolButton {
-                action: actions.open
-            }
+    // header: ToolBar {
+    //     RowLayout {
+    //         ToolButton {
+    //             action: actions.open
+    //         }
 
-            ToolSeparator {}
+    //         ToolSeparator {}
 
-            ToolButton {
-                action: actions.loop
-            }
-            ToolButton {
-                action: actions.random
-            }
-            ToolButton {
-                action: actions.sequence
-            }
+    //         ToolButton {
+    //             action: actions.loop
+    //         }
+    //         ToolButton {
+    //             action: actions.random
+    //         }
+    //         ToolButton {
+    //             action: actions.sequence
+    //         }
 
-            ToolSeparator {}
+    //         ToolSeparator {}
 
-            ToolButton {
-                action: actions.background
-            }
-            ToolButton {
-                action: actions.timingoff
-            }
+    //         ToolButton {
+    //             action: actions.background
+    //         }
+    //         ToolButton {
+    //             action: actions.timingoff
+    //         }
 
-            ToolSeparator {}
-            ToolButton {
-                action: actions.close
-            }
-        }
-    }
-
+    //         ToolSeparator {}
+    //         ToolButton {
+    //             action: actions.close
+    //         }
+    //     }
+    // }
     footer: Footer {
         id: foot
 
@@ -174,27 +172,46 @@ ApplicationWindow {
         textTerminus.text: Controller.formatTime(content.playmusic.duration)
         //播放列表显示
         playlist.onClicked: {
-            if (content.songRect.width === 0 && content.songRect.height === 0) {
-                content.songRect.width = 200
-                content.songRect.height = 200
+
+            // if (content.songRect.width === 0 && content.songRect.height === 0) {
+            //     content.songRect.width = 200
+            //     content.songRect.height = 200
+            //     content.songRect.visible = true
+            // } else {
+            //     content.songRect.width = 0
+            //     content.songRect.height = 0
+            // }
+            if (content.songRect.visible === false) {
                 content.songRect.visible = true
             } else {
-                content.songRect.width = 0
-                content.songRect.height = 0
+                content.songRect.visible = false
             }
         }
 
         //全屏显示歌词板块
         fullscreen.onClicked: {
+
             //content.songRect.anchors.right = window.right
-            if (content.information.width === 0) {
-                content.information.width = 200
-                content.playlistshow.width -= 250
-                fullscreen.icon.name = "gnumeric-row-unhide-symbolic"
+            // if (content.information.width === 0) {
+            //     content.information.width = 200
+            //     content.playlistshow.width -= 250
+            //     fullscreen.icon.name = "gnumeric-row-unhide-symbolic"
+            // } else {
+            //     content.information.width = 0
+            //     content.playlistshow.width = content.playlistshow.width + 250
+            //     fullscreen.icon.name = "gnumeric-row-hide-symbolic"
+            // }
+            if (content.information.anchors.left == content.rowlayout.left) {
+                content.information.visible = false // 将旋转唱片所在部分进行隐藏
+
+                content.information.anchors.left = content.rowlayout.right // 利用锚线改变旋转唱片所在定位
+                content.playlistshow.anchors.left = content.rowlayout.left // 同上
             } else {
-                content.information.width = 0
-                content.playlistshow.width = content.playlistshow.width + 250
-                fullscreen.icon.name = "gnumeric-row-hide-symbolic"
+                content.information.visible = true // 将旋转唱片显示
+
+                content.information.anchors.left = content.rowlayout.left // 恢复旋转唱片原来的位置
+                content.playlistshow.anchors.left = content.information.right
+                content.playlistshow.anchors.right = content.rowlayout.right // 恢复滚动歌词界面的位置
             }
         }
 
@@ -228,6 +245,11 @@ ApplicationWindow {
             voiceIcon.state = "playVoice"
             content.audio.volume = volumeSlider.value
         }
+
+        // button组件与action进行关联
+        footerControl.onClicked: {
+            actions.control.trigger()
+        }
     }
 
     Actions {
@@ -236,6 +258,7 @@ ApplicationWindow {
         property alias timingProgram: _timingProgram
         property bool isLoop: false
         property bool isRandom: false
+        property bool isSequence: true
 
         song1.onTriggered: {
             content.playmusic.source = "qrc:/mysongs1.mp3"
@@ -274,41 +297,64 @@ ApplicationWindow {
             }
         }
 
-        loop.onTriggered: {
-            console.log("loop play now")
-            if (isRandom) {
-                isRandom = false
-            } // 若最终没有按下顺序播放，顺序/循环只能有一个状态
-            isLoop = true
-
-            loop.icon.color = "red"
-            random.icon.color = "black"
-            sequence.icon.color = "black"
-        }
-        sequence.onTriggered: {
-            console.log("sequence play now")
-            // 在播放途中如果先按了循环/随机，再按下顺序播放，最终状态为顺序播放状态
-            if (isLoop) {
+        control.onTriggered: {
+            // 按照顺序-> 循环 ->随机 -> 顺序 这样的顺序进行变化
+            if (isSequence) // 当前是顺序播放时
+            {
+                isLoop = true
+                isSequence = false
+                foot.footerControl.icon.name = "media-repeat-track-amarok-symbolic"
+                console.log("loop play now...")
+            } else if (isLoop) // 当前是循环播放时
+            {
+                isRandom = true
                 isLoop = false
-            }
-            if (isRandom) {
+                foot.footerControl.icon.name = "media-playlist-shuffle"
+                console.log("random play now...")
+            } else // 当前是随机播放时
+            {
+                isSequence = true
                 isRandom = false
+                foot.footerControl.icon.name = "media-playlist-normal-symbolic"
+                console.log("sequence play now...")
             }
+        }
 
-            loop.icon.color = "black"
-            random.icon.color = "black"
-            sequence.icon.color = "red"
-        }
-        random.onTriggered: {
-            console.log("random play now")
-            if (isLoop) {
-                isLoop = false
-            }
-            isRandom = true
-            loop.icon.color = "black"
-            random.icon.color = "red"
-            sequence.icon.color = "black"
-        }
+        // loop.onTriggered: {
+        //     console.log("loop play now")
+        //     if (isRandom) {
+        //         isRandom = false
+        //     } // 若最终没有按下顺序播放，顺序/循环只能有一个状态
+        //     isLoop = true
+
+        //     loop.icon.color = "red"
+        //     random.icon.color = "black"
+        //     sequence.icon.color = "black"
+        // }
+        // sequence.onTriggered: {
+        //     console.log("sequence play now")
+        //     // 在播放途中如果先按了循环/随机，再按下顺序播放，最终状态为顺序播放状态
+        //     if (isLoop) {
+        //         isLoop = false
+        //     }
+        //     if (isRandom) {
+        //         isRandom = false
+        //     }
+
+        //     loop.icon.color = "black"
+        //     random.icon.color = "black"
+        //     sequence.icon.color = "red"
+        // }
+        // random.onTriggered: {
+        //     console.log("random play now")
+        //     if (isLoop) {
+        //         isLoop = false
+        //     }
+        //     isRandom = true
+        //     loop.icon.color = "black"
+        //     random.icon.color = "red"
+        //     sequence.icon.color = "black"
+        // }
         close.onTriggered: {
             console.log("tyfqgouwiefhuiqeoguygyexywqsging7")
             console.log("gt56", content.songListInterface.z)
@@ -324,6 +370,8 @@ ApplicationWindow {
     Content {
         id: content
         property bool formatHasDot: false
+
+        //songRect.anchors.bottom: foot.top
         //自定义定时后，点击确认按钮
         dialogs.button.onClicked: {
             var number = parseInt(dialogs.text.text)
@@ -380,10 +428,13 @@ ApplicationWindow {
             // console.log(playmusic.position)
             // console.log(lyric.getIndexByKey(Controller.formatTime(
             //                                     playmusic.position)))
-            var currentIndex = content.playlistshow.currentIndex
+            var currentIndex = content.playlistshow.list.currentIndex
+            console.log("now currentIndex :" + currentIndex)
 
+            // console.log(content.lrcmodel.get(currentIndex).ci)
             var index = content.lyrics.getIndexByKey(Controller.formatTime(
                                                          playmusic.position))
+            console.log(index)
 
             if (index !== -1) {
                 // 如果找到了对应的索引，更新列表的当前索引
@@ -391,15 +442,6 @@ ApplicationWindow {
             }
         }
 
-        playmusic.onPlayingChanged: {
-            if (playmusic.PlayingState) {
-                foot.play_button.icon.name === "media-playback-start-symbolic"
-                // foot.play_button.state = "pause"
-            } else {
-                foot.play_button.icon.name = "media-playback-pause-symbolic"
-                // foot.play_button.state = "play"
-            }
-        }
         playlistshow.onChangep: {
             if (lyrics.getTimeByIndex(
                         content.playlistshow.list.currentIndex) !== -1) {
@@ -421,8 +463,33 @@ ApplicationWindow {
         Connections {
             target: content.lyrics
             function onFailedToOpenLrcFile() {
-                content.dialogs.failToOpen.open()
+                // content.dialogs.failToOpen.open() -- 改进
+                Controller.setNoLyricsFileModel()
             }
+        }
+
+        // 刷新按钮的响应
+        flushButton.onClicked: {
+            console.log("clicked")
+        }
+
+        onTapInSongListName: {
+            // 判断歌单列表的当前项是否指向的是第一项（即本地歌单),这样做的目的是确保本地音乐不会被删除
+            if (mySongList.currentIndex === 0) {
+                console.log("enterin list")
+                Controller.disableDeleteButton()
+            }
+            Controller.deletesong(mySongData.currentIndex)
+        }
+
+        // 将歌曲列表的歌曲添加进播放列表
+        onAddListSongToPlay: {
+            Controller.appendToList(filesModel.currentIndex)
+        }
+
+        // 关闭歌单界面的响应
+        closeButton.onClicked: {
+            actions.close.trigger()
         }
     }
 }

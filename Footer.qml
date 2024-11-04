@@ -17,6 +17,7 @@ Rectangle {
     property alias play_button: _play_button
     property alias backward_button: _backward_button
     property alias forward_button: _forward_button
+    property alias footerControl: _footer_control
 
     // // 当按下暂停按钮时发出的信号
     // signal changePlay
@@ -27,7 +28,6 @@ Rectangle {
         anchors.bottom: parent.bottom
         width: footerroot.width
         spacing: 2
-
         RoundButton {
             id: _backward_button
             icon.name: "media-seek-backward"
@@ -144,13 +144,27 @@ Rectangle {
             //implicitWidth: 70
             implicitHeight: 5
             implicitWidth: 100
-            anchors.right: _playlist.left
+            anchors.right: _footer_control.left
             anchors.rightMargin: 15
             background: Rectangle {
                 implicitHeight: 2
                 radius: 5
                 border.color: "grey"
                 color: "lightblue"
+            }
+        }
+
+        RoundButton {
+            id: _footer_control
+            icon.name: "media-playlist-normal-symbolic"
+            anchors.right: _playlist.left
+            anchors.rightMargin: 10
+            background: Rectangle {
+                implicitHeight: 30
+                implicitWidth: 30
+                radius: 50
+                //border.color: "grey"
+                color: "transparent"
             }
         }
 
