@@ -26,13 +26,10 @@ Rectangle {
         id: layout
         anchors.bottom: parent.bottom
         width: footerroot.width
-        spacing: 2
-
+        spacing: 20
         RoundButton {
             id: _backward_button
             icon.name: "media-seek-backward"
-            anchors.left: parent.left
-            anchors.leftMargin: 10
             background: Rectangle {
                 implicitHeight: 30
                 implicitWidth: 30
@@ -46,8 +43,6 @@ Rectangle {
         RoundButton {
             id: _play_button
             icon.name: "media-playback-start-symbolic"
-            anchors.left: _backward_button.right
-            anchors.leftMargin: 15
             background: Rectangle {
                 implicitHeight: 32
                 implicitWidth: 32
@@ -61,8 +56,6 @@ Rectangle {
         RoundButton {
             id: _forward_button
             icon.name: "media-seek-forward"
-            anchors.left: _play_button.right
-            anchors.leftMargin: 15
             background: Rectangle {
                 implicitHeight: 30
                 implicitWidth: 30
@@ -76,16 +69,12 @@ Rectangle {
         Text {
             id: _textOrigin
             text: "00:00"
-            anchors.left: _forward_button.right
-            anchors.leftMargin: 20
         }
 
         Slider {
             id: _playProgressSlider
             implicitHeight: 5
             implicitWidth: 300
-            anchors.left: _textOrigin.right
-            anchors.leftMargin: 15
             background: Rectangle {
                 implicitHeight: 2
                 radius: 5
@@ -96,23 +85,19 @@ Rectangle {
 
         Text {
             id: _textTerminus
-            anchors.left: _playProgressSlider.right
-            anchors.leftMargin: 20
         }
 
         RoundButton {
             id: _voiceIcon
-            anchors.right: _volumeSlider.left
-            anchors.rightMargin: 5
             background: Rectangle {
                 implicitHeight: 30
                 implicitWidth: 30
                 radius: 50
-                // border.color: "grey"
                 color: "transparent"
                 opacity: 0.9
             }
             state: "playVoice"
+
             states: [
                 State {
                     name: "playVoice"
@@ -141,11 +126,8 @@ Rectangle {
 
         Slider {
             id: _volumeSlider
-            //implicitWidth: 70
             implicitHeight: 5
             implicitWidth: 100
-            anchors.right: _playlist.left
-            anchors.rightMargin: 15
             background: Rectangle {
                 implicitHeight: 2
                 radius: 5
@@ -157,13 +139,10 @@ Rectangle {
         RoundButton {
             id: _playlist
             icon.name: "amarok_playlist-symbolic"
-            anchors.right: _fullscreen.left
-            anchors.rightMargin: 10
             background: Rectangle {
                 implicitHeight: 30
                 implicitWidth: 30
                 radius: 50
-                //border.color: "grey"
                 color: "transparent"
             }
         }
@@ -175,7 +154,6 @@ Rectangle {
                 implicitHeight: 30
                 implicitWidth: 30
                 radius: 50
-                //border.color: "grey"
                 color: "transparent"
             }
         }

@@ -27,15 +27,16 @@ function setFilesModel(selectedFiles) {
 
                                                   content.listview.model = content.filesModel
                                                   content.listview.currentIndex = 0
-                                                  content.playmusic.source=content.filesModel.get(0).filePath
+                                                  content.playmusic.source = content.filesModel.get(
+                                                      0).filePath
                                                   // content.textalubm=content.filesModel.get(0).title
                                                   // content.textauthor=content.filesModel.get(0).author
-                                                  console.log(content.listview.currentIndex)
+                                                  console.log(
+                                                      content.listview.currentIndex)
                                                   content.changeinformation()
                                                   content.playmusic.play()
                                                   content.rotate()
                                                   content.exchangepath()
-
                                               })
 }
 
@@ -196,8 +197,21 @@ function setlrcmodel() {
         }
         content.playlistshow.lrcmodel.append(da)
     }
+
     content.playlistshow.list.model = content.playlistshow.lrcmodel
     content.playlistshow.list.currentIndex = 0
+}
+function havenotLrcFile() {
+
+    content.playlistshow.lrcmodel.clear()
+    var ci = "there is no lrc"
+    var da = {
+        "ci": ci
+    }
+    content.playlistshow.lrcmodel.append(da)
+    content.playlistshow.list.model = content.playlistshow.lrcmodel
+    content.playlistshow.list.currentIndex = 0
+    console.log(da.valueOf())
 }
 
 function setplaylistModel() {

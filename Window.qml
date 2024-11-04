@@ -13,8 +13,6 @@ import Lyrics
 ApplicationWindow {
     id: window
     property int x
-    // width: 640
-    // height: 480
     visible: true
     title: qsTr("Music Player")
 
@@ -23,16 +21,8 @@ ApplicationWindow {
     minimumWidth: 800
     maximumWidth: 800
 
-    // color: "red"
-
     // -------设置菜单栏------
     menuBar: MenuBar {
-        // background: Rectangle {
-        //     width: parent.width
-        //     height: 30
-        //     opacity: 0.8
-        //     color: "lightblue"
-        // }
         Menu {
             title: qsTr("Open")
             MenuItem {
@@ -61,10 +51,11 @@ ApplicationWindow {
             MenuItem {
                 action: actions.timingoff
             }
-            // MenuItem{
-            //     action: actions.close
-            // }
+            MenuItem {
+                action: actions.rate
+            }
         }
+
         Menu {
             title: qsTr("local_music")
             MenuItem {
@@ -81,10 +72,19 @@ ApplicationWindow {
                 action: actions.about
             }
         }
+
+        Menu {
+            title: qsTr("Closelist")
+            MenuItem {
+                action: actions.close
+            }
+        }
     }
 
     // -------设置工具栏------
-    header: ToolBar {
+
+
+    /* header: ToolBar {
         RowLayout {
             ToolButton {
                 action: actions.open
@@ -116,8 +116,7 @@ ApplicationWindow {
                 action: actions.close
             }
         }
-    }
-
+    }*/
     footer: Footer {
         id: foot
 
@@ -129,7 +128,7 @@ ApplicationWindow {
         //上一首歌
         backward_button.onClicked: {
             play_button.icon.name = "media-playback-pause-symbolic"
-            content.playmusic.play()
+            // content.playmusic.play()这一行不用写，与下面的函数重复
             if (!content.rotationAnimation.running) {
                 // 如果动画没有运行
                 content.rotationAnimation.from = content.faceImage.currentRotation // 设置起始角度为保存的角度
@@ -150,9 +149,8 @@ ApplicationWindow {
 
         //下一首歌
         forward_button.onClicked: {
-            // play_button.state = "pause"
             play_button.icon.name = "media-playback-pause-symbolic"
-            content.playmusic.play()
+            //content.playmusic.play()这一行不用写，与下面的函数重复
             if (!content.rotationAnimation.running) {
                 // 如果动画没有运行
                 content.rotationAnimation.from = content.faceImage.currentRotation // 设置起始角度为保存的角度
@@ -174,14 +172,17 @@ ApplicationWindow {
         textTerminus.text: Controller.formatTime(content.playmusic.duration)
         //播放列表显示
         playlist.onClicked: {
-            if (content.songRect.width === 0 && content.songRect.height === 0) {
+
+
+            /*if (content.songRect.width === 0 && content.songRect.height === 0) {
                 content.songRect.width = 200
                 content.songRect.height = 200
                 content.songRect.visible = true
             } else {
                 content.songRect.width = 0
                 content.songRect.height = 0
-            }
+            }*/
+            content.songRect.open()
         }
 
         //全屏显示歌词板块
@@ -218,6 +219,7 @@ ApplicationWindow {
         voiceIcon.onClicked: {
             voiceIcon.state === "playVoice" ? voiceIcon.state
                                               = "Slience" : voiceIcon.state = "playVoice"
+
             content.audio.volume = volumeSlider.value
         }
 
@@ -229,11 +231,11 @@ ApplicationWindow {
             content.audio.volume = volumeSlider.value
         }
     }
-
     Actions {
         id: actions
         property alias timingoffTimer: _timingoffTimer
         property alias timingProgram: _timingProgram
+        property alias pomodoroClock: _pomodoroClock
         property bool isLoop: false
         property bool isRandom: false
 
@@ -253,8 +255,10 @@ ApplicationWindow {
         open.onTriggered: Controller.setFilesModel()
         background.onTriggered: content.imageDialog.open()
         about.onTriggered: content.dialogs.about.open()
+        rate.onTriggered: {
+            content.dialogs.rateChangeDialog.open()
+        }
         timingoff.onTriggered: {
-
             content.dialogs.timingoffDialog.open()
         }
         Timer {
@@ -263,7 +267,6 @@ ApplicationWindow {
                 content.playmusic.pause()
                 content.rotationAnimation.pause()
                 foot.play_button.icon.name = "media-playback-start-symbolic"
-                // foot.play_button.state = "play"
             }
         }
 
@@ -271,6 +274,15 @@ ApplicationWindow {
             id: _timingProgram
             onTriggered: {
                 Qt.quit()
+            }
+        }
+
+        Timer {
+            id: _pomodoroClock
+            onTriggered: {
+                content.playmusic.play()
+                content.rotationAnimation.resume()
+                foot.play_button.icon.name = "media-playback-pause-symbolic"
             }
         }
 
@@ -351,6 +363,18 @@ ApplicationWindow {
             }
         }
 
+        //番茄钟
+        dialogs.pomodoroTimer.onClicked: {
+            var number = parseInt(dialogs.text.text)
+            if (isNaN(number)) {
+                console.log("Invalid input")
+            } else {
+                console.log("The number is:", number)
+                actions.pomodoroClock.interval = number * 60000
+                actions.pomodoroClock.running = true
+            }
+        }
+
         onChangeIcon: {
             foot.play_button.icon.name = "media-playback-pause-symbolic"
         }
@@ -390,16 +414,6 @@ ApplicationWindow {
                 content.playlistshow.list.currentIndex = index
             }
         }
-
-        playmusic.onPlayingChanged: {
-            if (playmusic.PlayingState) {
-                foot.play_button.icon.name === "media-playback-start-symbolic"
-                // foot.play_button.state = "pause"
-            } else {
-                foot.play_button.icon.name = "media-playback-pause-symbolic"
-                // foot.play_button.state = "play"
-            }
-        }
         playlistshow.onChangep: {
             if (lyrics.getTimeByIndex(
                         content.playlistshow.list.currentIndex) !== -1) {
@@ -421,7 +435,8 @@ ApplicationWindow {
         Connections {
             target: content.lyrics
             function onFailedToOpenLrcFile() {
-                content.dialogs.failToOpen.open()
+                //content.dialogs.failToOpen.open()
+                Controller.havenotLrcFile()
             }
         }
     }

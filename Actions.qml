@@ -17,6 +17,7 @@ Item {
     property alias song2: _song2
     property alias sequence: _sequence
     property alias close: _close
+    property alias rate: _rate
 
     Action {
         id: _open
@@ -65,34 +66,26 @@ Item {
     }
 
     Action {
-        id: _backward
-        text: qsTr("Backward")
-        icon.name: "media-seek-backward-symbolic"
-    }
-
-    Action {
-        id: _forward
-        text: qsTr("Forward")
-        icon.name: "media-seek-forward-symbolic"
-    }
-
-    Action {
-        id: _exit
-        icon.name: "application-exit"
-    }
-    Action {
         id: _song1
         text: qsTr("海阔天空")
         icon.name: "folder-music-symbolic"
     }
+
     Action {
         id: _song2
         text: qsTr("Valder Fields")
         icon.name: "folder-music-symbolic"
     }
+
     Action {
         id: _close
         text: qsTr("Closesonglist")
+        icon.name: "view-close"
+    }
+
+    Action {
+        id: _rate
+        text: qsTr("rateChange")
         icon.name: "view-close"
     }
 }
