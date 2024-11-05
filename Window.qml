@@ -13,8 +13,6 @@ import Lyrics
 ApplicationWindow {
     id: window
     property int x
-    // width: 640
-    // height: 480
     visible: true
     title: qsTr("Music Player")
 
@@ -23,35 +21,14 @@ ApplicationWindow {
     minimumWidth: 900
     maximumWidth: 900
 
-    // color: "red"
-
     // -------设置菜单栏------
     menuBar: MenuBar {
-        // background: Rectangle {
-        //     width: parent.width
-        //     height: 30
-        //     opacity: 0.8
-        //     color: "lightblue"
-        // }
         Menu {
             title: qsTr("Open")
             MenuItem {
                 action: actions.open
             }
         }
-
-        // Menu {
-        //     title: qsTr("Mode")
-        //     MenuItem {
-        //         action: actions.loop
-        //     }
-        //     MenuItem {
-        //         action: actions.random
-        //     }
-        //     MenuItem {
-        //         action: actions.sequence
-        //     }
-        // }
         Menu {
             title: qsTr("Setting")
             MenuItem {
@@ -60,10 +37,11 @@ ApplicationWindow {
             MenuItem {
                 action: actions.timingoff
             }
-            // MenuItem{
-            //     action: actions.close
-            // }
+            MenuItem {
+                action: actions.rate
+            }
         }
+
         Menu {
             title: qsTr("local_music")
             MenuItem {
@@ -80,42 +58,15 @@ ApplicationWindow {
                 action: actions.about
             }
         }
+
+        Menu {
+            title: qsTr("Closelist")
+            MenuItem {
+                action: actions.close
+            }
+        }
     }
 
-    // -------设置工具栏------
-    // header: ToolBar {
-    //     RowLayout {
-    //         ToolButton {
-    //             action: actions.open
-    //         }
-
-    //         ToolSeparator {}
-
-    //         ToolButton {
-    //             action: actions.loop
-    //         }
-    //         ToolButton {
-    //             action: actions.random
-    //         }
-    //         ToolButton {
-    //             action: actions.sequence
-    //         }
-
-    //         ToolSeparator {}
-
-    //         ToolButton {
-    //             action: actions.background
-    //         }
-    //         ToolButton {
-    //             action: actions.timingoff
-    //         }
-
-    //         ToolSeparator {}
-    //         ToolButton {
-    //             action: actions.close
-    //         }
-    //     }
-    // }
     footer: Footer {
         id: foot
 
@@ -127,7 +78,7 @@ ApplicationWindow {
         //上一首歌
         backward_button.onClicked: {
             play_button.icon.name = "media-playback-pause-symbolic"
-            content.playmusic.play()
+            // content.playmusic.play()这一行不用写，与下面的函数重复
             if (!content.rotationAnimation.running) {
                 // 如果动画没有运行
                 content.rotationAnimation.from = content.faceImage.currentRotation // 设置起始角度为保存的角度
@@ -148,9 +99,8 @@ ApplicationWindow {
 
         //下一首歌
         forward_button.onClicked: {
-            // play_button.state = "pause"
             play_button.icon.name = "media-playback-pause-symbolic"
-            content.playmusic.play()
+            //content.playmusic.play()这一行不用写，与下面的函数重复
             if (!content.rotationAnimation.running) {
                 // 如果动画没有运行
                 content.rotationAnimation.from = content.faceImage.currentRotation // 设置起始角度为保存的角度
@@ -172,46 +122,25 @@ ApplicationWindow {
         textTerminus.text: Controller.formatTime(content.playmusic.duration)
         //播放列表显示
         playlist.onClicked: {
-
-            // if (content.songRect.width === 0 && content.songRect.height === 0) {
-            //     content.songRect.width = 200
-            //     content.songRect.height = 200
-            //     content.songRect.visible = true
-            // } else {
-            //     content.songRect.width = 0
-            //     content.songRect.height = 0
-            // }
-            if (content.songRect.visible === false) {
-                content.songRect.visible = true
-            } else {
-                content.songRect.visible = false
-            }
+            content.songRect.open()
         }
 
         //全屏显示歌词板块
         fullscreen.onClicked: {
 
-            //content.songRect.anchors.right = window.right
-            // if (content.information.width === 0) {
-            //     content.information.width = 200
-            //     content.playlistshow.width -= 250
-            //     fullscreen.icon.name = "gnumeric-row-unhide-symbolic"
-            // } else {
-            //     content.information.width = 0
-            //     content.playlistshow.width = content.playlistshow.width + 250
-            //     fullscreen.icon.name = "gnumeric-row-hide-symbolic"
-            // }
             if (content.information.anchors.left == content.rowlayout.left) {
                 content.information.visible = false // 将旋转唱片所在部分进行隐藏
 
                 content.information.anchors.left = content.rowlayout.right // 利用锚线改变旋转唱片所在定位
                 content.playlistshow.anchors.left = content.rowlayout.left // 同上
+                content.songRect.x = 650
             } else {
                 content.information.visible = true // 将旋转唱片显示
 
                 content.information.anchors.left = content.rowlayout.left // 恢复旋转唱片原来的位置
                 content.playlistshow.anchors.left = content.information.right
                 content.playlistshow.anchors.right = content.rowlayout.right // 恢复滚动歌词界面的位置
+                content.songRect.x = 350
             }
         }
 
@@ -235,6 +164,7 @@ ApplicationWindow {
         voiceIcon.onClicked: {
             voiceIcon.state === "playVoice" ? voiceIcon.state
                                               = "Slience" : voiceIcon.state = "playVoice"
+
             content.audio.volume = volumeSlider.value
         }
 
@@ -251,11 +181,11 @@ ApplicationWindow {
             actions.control.trigger()
         }
     }
-
     Actions {
         id: actions
         property alias timingoffTimer: _timingoffTimer
         property alias timingProgram: _timingProgram
+        property alias pomodoroClock: _pomodoroClock
         property bool isLoop: false
         property bool isRandom: false
         property bool isSequence: true
@@ -276,8 +206,10 @@ ApplicationWindow {
         open.onTriggered: Controller.setFilesModel()
         background.onTriggered: content.imageDialog.open()
         about.onTriggered: content.dialogs.about.open()
+        rate.onTriggered: {
+            content.dialogs.rateChangeDialog.open()
+        }
         timingoff.onTriggered: {
-
             content.dialogs.timingoffDialog.open()
         }
         Timer {
@@ -286,7 +218,6 @@ ApplicationWindow {
                 content.playmusic.pause()
                 content.rotationAnimation.pause()
                 foot.play_button.icon.name = "media-playback-start-symbolic"
-                // foot.play_button.state = "play"
             }
         }
 
@@ -294,6 +225,15 @@ ApplicationWindow {
             id: _timingProgram
             onTriggered: {
                 Qt.quit()
+            }
+        }
+
+        Timer {
+            id: _pomodoroClock
+            onTriggered: {
+                content.playmusic.play()
+                content.rotationAnimation.resume()
+                foot.play_button.icon.name = "media-playback-pause-symbolic"
             }
         }
 
@@ -320,41 +260,6 @@ ApplicationWindow {
             }
         }
 
-        // loop.onTriggered: {
-        //     console.log("loop play now")
-        //     if (isRandom) {
-        //         isRandom = false
-        //     } // 若最终没有按下顺序播放，顺序/循环只能有一个状态
-        //     isLoop = true
-
-        //     loop.icon.color = "red"
-        //     random.icon.color = "black"
-        //     sequence.icon.color = "black"
-        // }
-        // sequence.onTriggered: {
-        //     console.log("sequence play now")
-        //     // 在播放途中如果先按了循环/随机，再按下顺序播放，最终状态为顺序播放状态
-        //     if (isLoop) {
-        //         isLoop = false
-        //     }
-        //     if (isRandom) {
-        //         isRandom = false
-        //     }
-
-        //     loop.icon.color = "black"
-        //     random.icon.color = "black"
-        //     sequence.icon.color = "red"
-        // }
-        // random.onTriggered: {
-        //     console.log("random play now")
-        //     if (isLoop) {
-        //         isLoop = false
-        //     }
-        //     isRandom = true
-        //     loop.icon.color = "black"
-        //     random.icon.color = "red"
-        //     sequence.icon.color = "black"
-        // }
         close.onTriggered: {
             console.log("tyfqgouwiefhuiqeoguygyexywqsging7")
             console.log("gt56", content.songListInterface.z)
@@ -399,6 +304,18 @@ ApplicationWindow {
             }
         }
 
+        //番茄钟
+        dialogs.pomodoroTimer.onClicked: {
+            var number = parseInt(dialogs.text.text)
+            if (isNaN(number)) {
+                console.log("Invalid input")
+            } else {
+                console.log("The number is:", number)
+                actions.pomodoroClock.interval = number * 60000
+                actions.pomodoroClock.running = true
+            }
+        }
+
         onChangeIcon: {
             foot.play_button.icon.name = "media-playback-pause-symbolic"
         }
@@ -424,17 +341,11 @@ ApplicationWindow {
             }
         }
         playmusic.onPositionChanged: {
-            // console.log(_playmusic.position)
-            // console.log(playmusic.position)
-            // console.log(lyric.getIndexByKey(Controller.formatTime(
-            //                                     playmusic.position)))
-            var currentIndex = content.playlistshow.list.currentIndex
-            console.log("now currentIndex :" + currentIndex)
 
-            // console.log(content.lrcmodel.get(currentIndex).ci)
+            var currentIndex = content.playlistshow.list.currentIndex
+
             var index = content.lyrics.getIndexByKey(Controller.formatTime(
                                                          playmusic.position))
-            console.log(index)
 
             if (index !== -1) {
                 // 如果找到了对应的索引，更新列表的当前索引

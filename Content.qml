@@ -4,7 +4,6 @@ import QtQuick.Controls
 import QtMultimedia
 import Lyrics
 
-// import Songlist
 Frame {
 
     id: root
@@ -31,13 +30,12 @@ Frame {
     property alias mySongDataModel: _mySongDataModel
     property alias mySongData: _mySongData
 
-    property alias musicInterface: musicInterface
-    property alias songListInterface: songListInterface
+    property alias musicInterface: _musicInterface
+    property alias songListInterface: _songListInterface
 
-    property alias flushButton: _flushButton
-    // property alias deleteSong: _deleteSong fault
-    property alias mySongList: _mySongList
-    property alias closeButton: _closeButton
+    property alias flushButton: _flushButton // 新加
+    property alias mySongList: _mySongList // 新加
+    property alias closeButton: _closeButton // 新加
 
     property string textauthor: "author"
     property string textalubm: "album"
@@ -49,8 +47,10 @@ Frame {
     signal addToPlayList
     signal tapInSongListName
     signal deleteSongInSongList
+    // 新加
     signal addListSongToPlay
 
+    // 新加
     function rotate() {
         if (!rotationAnimation.running) {
             // 如果动画未运行，开始动画
@@ -110,6 +110,15 @@ Frame {
                     }
                 }
             }
+        }
+
+        rateSlider.from: 0.5
+        rateSlider.to: 2.0
+        rateSlider.value: playmusic.playbackRate
+        rateSlider.stepSize: 0.5
+        rateSlider.snapMode: Slider.SnapAlways
+        rateSlider.onMoved: {
+            playmusic.playbackRate = rateSlider.value
         }
     }
 
@@ -173,9 +182,9 @@ Frame {
         metaDataReader.mediaStatusChanged.connect(f)
     }
 
-    //播放列表界面
+    //播放歌曲界面，以显示歌词
     Rectangle {
-        id: musicInterface
+        id: _musicInterface
         color: "transparent"
         width: root.width
         height: root.height
@@ -189,11 +198,12 @@ Frame {
         RowLayout {
             id: _rowlayout
             anchors.fill: parent
+            //播放歌曲界面左部分，即圆盘，歌曲名字，歌曲作者
             Rectangle {
                 id: _information
                 width: 250
                 height: parent.height
-                anchors.left: parent.left
+                anchors.left: parent.left // +
                 color: "transparent"
                 clip: true
                 Layout.fillHeight: true
@@ -211,7 +221,7 @@ Frame {
                     HoverHandler {
                         id: faceImageHover
                     }
-
+                    //圆盘
                     Image {
                         width: parent.width - 4
                         height: parent.height - 4
@@ -242,6 +252,7 @@ Frame {
                         loops: Animation.Infinite // 无限循环
                     }
                 }
+                //歌曲名字
                 Rectangle {
                     id: b
                     width: 150
@@ -257,6 +268,7 @@ Frame {
                         anchors.centerIn: parent
                     }
                 }
+                //歌曲作者
                 Rectangle {
                     id: c
                     width: 150
@@ -273,50 +285,51 @@ Frame {
                     }
                 }
             }
+            //播放歌曲界面右部分，即歌词显示
             ScrollLyrics {
-                anchors.right: rowlayout.right
-                //anchors.right: parent.left
+                anchors.right: rowlayout.right // 改
+
+                // anchors.left: information.right
                 id: _playlistshow
                 width: 500
                 height: parent.height
                 color: "transparent"
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                Rectangle {
+
+                Popup {
                     id: _songRect
                     opacity: 0.7
                     width: 250
 
-                    height: 200
-                    color: "white"
-                    visible: false
+                    height: 230
 
-                    anchors.bottom: playlistshow.bottom
-                    anchors.right: playlistshow.right
-                    ScrollView {
+                    modal: true
+                    focus: true
+                    x: 350
+                    y: 300
+
+                    contentItem: ScrollView {
                         id: _scorllView
-                        anchors.fill: _songRect
+                        // anchors.fill: _songRect
+                        // anchors.fill: parent // 问题
                         ScrollBar.horizontal.policy: ScrollBar.AsNeeded
                         ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
-                        // ColumnLayout {
                         // 存放音频文件的视图
                         ListView {
-                            // anchors.fill: parent
+
                             interactive: true
                             id: _multipath
-                            // width: 800
-                            // Layout.preferredWidth: 400
+
                             Layout.preferredHeight: 200
-                            Layout.preferredWidth: 500
+
                             Layout.fillHeight: true
                             Layout.fillWidth: true
 
-                            //<<<<<<< HEAD
                             model: _filesModel
                             ListModel {
                                 id: _filesModel
-                                //=======
                             }
                             Connections {
                                 target: _filesModel
@@ -327,7 +340,6 @@ Frame {
                                 }
                             }
                             delegate: MyDelegate {}
-                            //>>>>>>> origin
                         }
 
                         component MyDelegate: Rectangle {
@@ -337,104 +349,145 @@ Frame {
                             required property url filePath
                             required property int index
 
-                            // color: "red"
                             height: 30
 
                             width: _multipath.width
+
                             RowLayout {
                                 RoundButton {
-                                    id: addnext
-                                    // width: 10
-                                    // height: 10
-                                    background: Rectangle {
-                                        implicitHeight: 5
-                                        implicitWidth: 5
-                                        radius: 50
-                                        color: "lightblue"
-                                    }
-                                    icon.name: "bqm-add"
-                                    icon.color: "black"
-                                    // 添加一首歌曲为下一首播放
-                                    // 存疑 （有问题）
-                                    onClicked: {
-                                        var de = index
-                                        var newIndex = _multipath.currentIndex + 1
-                                        //判断选择的下一首歌曲是否为当前正在播放的歌曲
-                                        if (_multipath.currentIndex === de) {
-                                            return
-                                        }
-                                        //判断当前播放歌曲是否为列表的最后一首，是：变成第一首，选择的歌曲变成第二首
-                                        if (_multipath.currentIndex === filesModel.count - 1) {
-                                            filesModel.move(de, 0, 1)
-                                            filesModel.move(
-                                                        _multipath.currentIndex,
-                                                        0, 1)
-                                            console.log(de)
-                                            console.log(_multipath.currentIndex)
-                                        } else
-                                            //不是最后一首，将其变为第一首即可
-                                            filesModel.move(de, newIndex, 1)
-                                        console.log(de)
-                                    }
-                                }
-                                RoundButton {
-                                    id: addSongToList
-                                    icon.name: "media-playlist-append"
-                                    icon.color: "black"
-                                    background: Rectangle {
-                                        implicitHeight: 5
-                                        implicitWidth: 5
-                                        radius: 50
-                                        color: "lightblue"
-                                    }
+                                    width: 20
+                                    height: 20
+                                    icon.name: "application-menu"
                                     TapHandler {
-                                        onTapped: {
-                                            console.log("add song to list..")
-                                            addListSongToPlay()
-                                        }
+                                        acceptedButtons: Qt.RightButton
+                                        onTapped: popup.open()
                                     }
                                 }
+                                Popup {
+                                    id: popup
+                                    x: 20
+                                    y: 30
+                                    modal: true
+                                    focus: true
+                                    ColumnLayout {
+                                        RowLayout {
+                                            RoundButton {
+                                                id: addSongToList
+                                                icon.name: "media-playlist-append"
+                                                icon.color: "black"
+                                                background: Rectangle {
+                                                    implicitHeight: 5
+                                                    implicitWidth: 5
+                                                    radius: 50
+                                                    color: "lightblue"
+                                                }
+                                                TapHandler {
+                                                    onTapped: {
+                                                        console.log("add song to list..")
+                                                        addListSongToPlay()
+                                                    }
+                                                }
+                                            }
+                                            Text {
+                                                text: "addSongToList"
+                                            }
+                                        }
+                                        RowLayout {
+                                            RoundButton {
+                                                id: addnext
+                                                icon.name: "bqm-add"
+                                                // 添加一首歌曲为下一首播放
+                                                // 存疑 （有问题）
+                                                onClicked: {
+                                                    var de = index
+                                                    var newIndex = _multipath.currentIndex + 1
+                                                    //判断选择的下一首歌曲是否为当前正在播放的歌曲
+                                                    if (_multipath.currentIndex === de) {
+                                                        return
+                                                    }
+                                                    //判断当前播放歌曲是否为列表的最后一首，是：变成第一首，选择的歌曲变成第二首
+                                                    if (_multipath.currentIndex
+                                                            === filesModel.count - 1) {
+                                                        filesModel.move(de, 0,
+                                                                        1)
+                                                        filesModel.move(
+                                                                    _multipath.currentIndex,
+                                                                    0, 1)
+                                                        console.log(de)
+                                                        console.log(_multipath.currentIndex)
+                                                    } else if (_multipath.currentIndex < de) {
+                                                        filesModel.move(
+                                                                    de,
+                                                                    newIndex, 1)
+                                                    } else
+                                                        //不是最后一首，将其变为当前播放音乐的下一首即可
+                                                        filesModel.move(
+                                                                    de,
+                                                                    _multipath.currentIndex,
+                                                                    1)
+                                                    console.log(de)
+                                                }
+                                            }
+                                            Text {
+                                                text: "addSongs"
+                                                TapHandler {
+                                                    onTapped: {
+                                                        addnext.clicked()
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        RowLayout {
+                                            RoundButton {
+                                                id: _deletesongs
+                                                icon.name: "delete"
+                                                icon.color: "black"
+                                                onClicked: {
+                                                    if (filesModel.count === 1) {
+                                                        filesModel.clear()
+                                                        _playlistshow.lrcmodel.clear()
+                                                        textauthor = "author"
+                                                        textalubm = "album"
+                                                        // 存疑
+                                                        playmusic.source = ""
+                                                        playmusic.position = 0
+                                                        faceImage.currentRotation
+                                                                = content.faceImage.rotation
+                                                        rotationAnimation.pause(
+                                                                    )
+                                                        changePlayIcons()
+                                                    } else if (filesModel.count - 1 === index
+                                                               && filesModel.count !== 1) {
+                                                        //前两行顺序修改，会导致当前播放歌索引混乱
+                                                        _multipath.currentIndex = 0
+                                                        filesModel.remove(
+                                                                    index, 1)
+                                                        playmusic.source = filesModel.get(
+                                                                    _multipath.currentIndex).filePath
+                                                        changeinformation()
+                                                        exchangepath()
+                                                        console.log("fewukyfgbcj,sdnckjwenfiuwbgoflnkdjnmeifgoudhiuhqi")
+                                                        playmusic.play()
+                                                    } else {
+                                                        filesModel.remove(
+                                                                    index, 1)
+                                                        playmusic.source = filesModel.get(
+                                                                    _multipath.currentIndex).filePath
+                                                        changeinformation()
+                                                        exchangepath()
+                                                        playmusic.play()
+                                                    }
+                                                }
+                                            }
 
-                                RoundButton {
-                                    id: _deletesongs
-                                    icon.name: "delete"
-                                    icon.color: "black"
-                                    background: Rectangle {
-                                        implicitHeight: 5
-                                        implicitWidth: 5
-                                        radius: 50
-                                        color: "lightblue"
-                                    }
-                                    onClicked: {
-                                        if (filesModel.count === 1) {
-                                            filesModel.clear()
-                                            _playlistshow.lrcmodel.clear()
-                                            textauthor = "author"
-                                            textalubm = "album"
-                                            // 存疑
-                                            playmusic.source = ""
-                                            playmusic.position = 0
-                                            faceImage.currentRotation = content.faceImage.rotation
-                                            rotationAnimation.pause()
-                                            changePlayIcons()
-                                        } else if (filesModel.count - 1 === index
-                                                   && filesModel.count !== 1) {
-                                            //前两行顺序修改，会导致当前播放歌索引混乱
-                                            _multipath.currentIndex = 0
-                                            filesModel.remove(index, 1)
-                                            playmusic.source = filesModel.get(
-                                                        _multipath.currentIndex).filePath
-                                            changeinformation()
-                                            exchangepath()
-                                            console.log("fewukyfgbcj,sdnckjwenfiuwbgoflnkdjnmeifgoudhiuhqi")
-                                            playmusic.play()
-                                        } else {
-                                            filesModel.remove(index, 1)
-                                            playmusic.source = filesModel.get(
-                                                        _multipath.currentIndex).filePath
-                                            changeinformation()
-                                            exchangepath()
-                                            playmusic.play()
+                                            Text {
+                                                text: "deleteSongs"
+                                                TapHandler {
+                                                    onTapped: {
+                                                        _deletesongs.clicked()
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -463,17 +516,15 @@ Frame {
                                 }
                             }
                         }
-                        //}
                     }
                 }
-            } // --- end of scroIILyrics
-        }
+            }
+        } // --- end of scroIILyrics
     }
     //歌单列表
     Rectangle {
-        id: songListInterface
-        // color: "brown"
-        // color: "transparent"
+        id: _songListInterface
+
         opacity: 0.8
         width: 900
         height: 600
@@ -490,6 +541,7 @@ Frame {
                 height: 600
                 color: "transparent"
 
+                // 加了外层rectangle,方便加入按钮
                 Rectangle {
                     id: titleLayout
                     width: 300
@@ -544,7 +596,6 @@ Frame {
                         font.italic: true
                         text: songListName
                         anchors.centerIn: parent
-                        //color: mySongList.currentIndex === index ? "red" : "black"
                     }
                     TapHandler {
                         onTapped: {
@@ -563,10 +614,10 @@ Frame {
             Rectangle {
                 width: 600
                 height: 600
-                anchors.left: leftsong.right
                 color: "transparent"
                 id: _songListRight
 
+                // 新加，在歌曲上面加了两个按钮，改变了布局
                 ColumnLayout {
                     anchors.fill: parent
                     Rectangle {
@@ -623,6 +674,7 @@ Frame {
                     required property url playlistPath
                     required property int index
                     required property bool canDelete
+                    // +
 
                     // 该property控制deleteSong按钮的enabled属性
                     id: delegateMyDataList
@@ -637,29 +689,53 @@ Frame {
 
                     RowLayout {
                         RoundButton {
-                            id: _addToScorllView
                             width: 20
                             height: 20
-                            icon.name: "media-playlist-append-symbolic"
+                            icon.name: "application-menu"
                             TapHandler {
-                                onTapped: {
-                                    _mySongData.currentIndex = index
-                                    addToPlayList()
+                                acceptedButtons: Qt.RightButton
+                                onTapped: popup2.open()
+                            }
+                        }
+                        Popup {
+                            id: popup2
+                            x: 20
+                            y: 30
+                            modal: true
+                            focus: true
+                            ColumnLayout {
+                                RowLayout {
+                                    RoundButton {
+                                        id: _addToScorllView
+                                        icon.name: "media-playlist-append-symbolic"
+                                        onClicked: {
+                                            _mySongData.currentIndex = index
+                                            addToPlayList()
+                                        }
+                                    }
+                                    Text {
+                                        text: "addToScorllView"
+                                        TapHandler {
+                                            onTapped: {
+                                                _addToScorllView.clicked()
+                                            }
+                                        }
+                                    }
+                                }
+                                RowLayout {
+                                    RoundButton {
+                                        id: deletSongList
+                                        icon.name: "edit-delete-remove-symbolic"
+                                        visible: canDelete
+                                    }
+                                    Text {
+                                        text: "deletSongList"
+                                        visible: canDelete
+                                    }
                                 }
                             }
                         }
-                        RoundButton {
-                            id: deleteSong
-                            icon.name: "edit-delete-remove-symbolic"
-                            visible: canDelete
-                            // 添加删除按钮的taphandler
-                            TapHandler {
-                                onTapped: {
-                                    _mySongData.currentIndex = index
-                                    deleteSongInSongList()
-                                }
-                            }
-                        }
+
                         Text {
                             id: songTitle
                             font.pixelSize: 13
@@ -688,7 +764,6 @@ Frame {
                             id: songGenre
                             font.pixelSize: 13
                             text: genre
-                            //color: _mySongData.currentIndex === index ? "red" : "black"
                             font.italic: hover2.hovered ? true : false
                             font.bold: hover2.hovered ? true : false
                         }

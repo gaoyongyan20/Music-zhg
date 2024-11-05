@@ -200,8 +200,21 @@ function setlrcmodel() {
         }
         content.playlistshow.lrcmodel.append(da)
     }
+
     content.playlistshow.list.model = content.playlistshow.lrcmodel
     content.playlistshow.list.currentIndex = 0
+}
+function havenotLrcFile() {
+
+    content.playlistshow.lrcmodel.clear()
+    var ci = "there is no lrc"
+    var da = {
+        "ci": ci
+    }
+    content.playlistshow.lrcmodel.append(da)
+    content.playlistshow.list.model = content.playlistshow.lrcmodel
+    content.playlistshow.list.currentIndex = 0
+    console.log(da.valueOf())
 }
 
 function setNoLyricsFileModel() {
