@@ -6,7 +6,7 @@ import QtQuick.Layouts
 
 Item {
     id: dialogroot
-    property alias fileOpen: _fileOpen
+    property alias fileOpen: _fileOpen  //本地文件对话框
     property alias about: _about
     property alias timingoffDialog: _timingoffDialog
     property alias text: _text
@@ -16,6 +16,11 @@ Item {
     property alias rateChangeDialog: _rateChangeDialog
     property alias rateSlider: _rateSlider
     property alias pomodoroTimer: _pomodoroTimer
+    property alias wrightchangeback: _wrightchangeback  //右键点击图片后会触发这个对话框（询问用户是否需要更改选择的图片作为背景）
+    property alias imagefileOpen:_imagefileOpen  //图片文件对话框
+
+    signal ok_changeImage
+
     FileDialog {
         id: _fileOpen
         title: "Select some song files"
@@ -24,6 +29,16 @@ Item {
         fileMode: FileDialog.OpenFiles
         nameFilters: ["audio files (*.mp3)"]
     }
+
+    FileDialog {
+            id: _imagefileOpen
+            title: "Select some image files"
+            currentFolder: StandardPaths.standardLocations(
+                               StandardPaths.DocumentsLocation)[0]
+            fileMode: FileDialog.OpenFiles
+            nameFilters: ["Image Files (*.png *.jpg *.jpeg)"]
+        }
+
     MessageDialog {
         id: _about
         modality: Qt.WindowModal
@@ -38,6 +53,20 @@ Item {
         buttons: MessageDialog.Ok
         text: "Fail to open the file (.lrc)!"
     }
+
+    Dialog{
+            id:_wrightchangeback
+            // anchors.centerIn: dialogroot
+            x:200
+            y:200
+            Text{
+                text: qsTr("Are you sure to change the background picture?")
+            }
+            standardButtons:  MessageDialog.Ok | MessageDialog.Cancel
+            onAccepted: ok_changeImage()
+            onRejected: console.log("Cancel clicked")
+        }
+
     Dialog {
         id: _timingoffDialog
         title: "select timingoff"

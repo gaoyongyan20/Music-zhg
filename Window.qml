@@ -18,8 +18,8 @@ ApplicationWindow {
 
     minimumHeight: 600
     maximumHeight: 600
-    minimumWidth: 900
-    maximumWidth: 900
+    minimumWidth: 1000
+    maximumWidth: 1000
 
     // -------设置菜单栏------
     menuBar: MenuBar {
@@ -204,7 +204,7 @@ ApplicationWindow {
         }
 
         open.onTriggered: Controller.setFilesModel()
-        background.onTriggered: content.imageDialog.open()
+        background.onTriggered: content.imageDialog.open()&Controller.setImageListModel()
         about.onTriggered: content.dialogs.about.open()
         rate.onTriggered: {
             content.dialogs.rateChangeDialog.open()
@@ -402,5 +402,15 @@ ApplicationWindow {
         closeButton.onClicked: {
             actions.close.trigger()
         }
+        //点击从本地相册选取图片的圆形按钮
+        onChangeBackground:{
+                    console.log("点击点击")
+                    Controller.setbackground()
+                }
+        //以前自定义的图片被保存到软件中，右键点击图片将重新设置该图片为背景
+        onRightchangeback:{
+                    console.log("改了改了")
+                    content.dialogs.wrightchangeback.open()
+                }
     }
 }
