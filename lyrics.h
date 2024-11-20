@@ -56,5 +56,5 @@ private:
     int changeTimeShow(QString timestamp);
 
     // 设置歌词
-    void setLyrics();
+    bool setLyrics();
 };

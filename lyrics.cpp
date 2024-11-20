@@ -1,4 +1,3 @@
-
 // The implementation of class lyrics.
 // author：何泳珊 周杨康丽 高永艳
 
@@ -19,10 +18,12 @@ void Lyrics::setLyricsFile(QString &file)
 {
     if (file != m_lyricsFile) {
         m_lyricsFile = file;
-        setLyrics();
-        emit lyricsFileChanged();
+        qDebug() << "now";
+        if (setLyrics()) {
+            emit lyricsFileChanged();
+        }
     }
-    emit failedToOpenLrcFile();
+    // emit failedToOpenLrcFile();
 }
 
 QVector<QString> Lyrics::getAllLyrics()
@@ -45,7 +46,7 @@ int Lyrics::getTimeByIndex(int key)
     return m_reverseTimeMap.value(key, -1);
 }
 
-void Lyrics::setLyrics()
+bool Lyrics::setLyrics()
 {
     // 清除上一首歌曲所占用的容器空间
     m_lyrics.clear();
@@ -56,6 +57,7 @@ void Lyrics::setLyrics()
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "failed to open lrc file.";
         emit failedToOpenLrcFile();
+        return false;
     }
 
     // 创建流对象
@@ -105,6 +107,7 @@ void Lyrics::setLyrics()
             }
         }
     }
+    return true;
     // for (auto data : m_lyrics) {
     //     qDebug() << data;
     // }

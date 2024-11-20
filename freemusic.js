@@ -23,6 +23,7 @@ function setFilesModel(selectedFiles) {
                                                           data)
                                                       content.getTitle(
                                                           filePath, i)
+                                                      console.log(filePath)
                                                   }
 
                                                   content.listview.model = content.filesModel
@@ -38,6 +39,24 @@ function setFilesModel(selectedFiles) {
                                                   content.rotate()
                                                   content.exchangepath()
                                               })
+}
+//打开选择图片的对话框，将选好的图片设置为背景并更新视图
+function setbackground(selectedFile) {
+    content.dialogs.imagefileOpen.open()
+
+    function onAccepted() {
+        content.backgrondImage.source = content.dialogs.imagefileOpen.selectedFile
+        content.imagelist.writeimagepath(
+                    content.dialogs.imagefileOpen.selectedFile)
+        setImageListModel()
+        //在结束后，必须断开信号连接，否则，将会出现：第一次写一张，第二次写两张，第三次三张的情况。
+        content.dialogs.imagefileOpen.accepted.disconnect(onAccepted)
+    }
+
+    content.dialogs.imagefileOpen.rejected.connect(() => {
+                                                       return
+                                                   })
+    content.dialogs.imagefileOpen.accepted.connect(onAccepted)
 }
 
 //设置上一首歌
@@ -192,6 +211,8 @@ function setlrcmodel() {
     for (var i = 0; i < allLyrics.length; ++i) {
 
         var ci = allLyrics[i]
+        console.log("if i enter")
+        console.log(ci)
         var da = {
             "ci": ci
         }
@@ -214,6 +235,19 @@ function havenotLrcFile() {
     console.log(da.valueOf())
 }
 
+function setNoLyricsFileModel() {
+    content.playlistshow.lrcmodel.clear()
+    console.log("enter!!")
+
+    var ci = "no lyric file, please enjoy music.."
+    var data = {
+        "ci": ci
+    }
+    content.playlistshow.lrcmodel.append(data)
+    content.playlistshow.list.model = content.playlistshow.lrcmodel
+    content.playlistshow.list.currentIndex = 0
+}
+
 function setplaylistModel() {
     console.log("accept")
     content.mySongDataModel.clear()
@@ -232,7 +266,8 @@ function setplaylistModel() {
                 "title": "loading",
                 "author": "loading",
                 "duration": "00.00",
-                "genre": "loading"
+                "genre": "loading",
+                "canDelete": "true"
             }
         }
         content.mySongDataModel.append(data)
@@ -261,6 +296,7 @@ function pomdoroClock() {
         foot.play_button.icon.name = "media-playback-pause-symbolic"
     } else if (content.filesModel.count !== 0) {
         content.playmusic.source = content.filesModel.get(0).filePath
+        content.changeinformation()
         content.exchangepath()
         content.playmusic.play()
         content.rotate()
@@ -269,5 +305,57 @@ function pomdoroClock() {
         content.dialogs.playlistIsEmptyDialog.open()
         content.dialogs.playlistIsEmptyDialog.x = 270
         content.dialogs.playlistIsEmptyDialog.y = 230
+    }
+}
+
+function deletesong(songIndex) {
+    console.log("enter..")
+}
+
+function disableDeleteButton() {
+    for (var i = 0; i !== content.mySongDataModel.count; i++) {
+        content.mySongDataModel.setProperty(
+                    i, "canDelete", false) // setProperty的作用是将某一位置模型数据项目的对应属性值修改
+        // 这样做的目的是：因为在delegate中button的enabled属性值是绑定在“canDelete”属性的，模型数据中的值发生了改变，
+        // 委托中的数据也发生了改变
+        // 委托中数据的显示关联到模型数据中通过required property的机制实现的，同样的还有filepath,title之类的，只不过他们没有涉及到
+        // 模型中数据的改变
+    }
+}
+
+function appendToList() {
+    // 在歌单列表中我们可以从它的模型数据中获取到播放歌曲的路径，但是别的信息需要调用元数据解析方法获得
+    var filePath = content.filesModel.get(arguments[0]).filePath
+    var data = {
+        "filePath": filePath,
+        "title": "loading",
+        "author": "loading",
+        "duration": "00.00",
+        "genre": "loading",
+        "canDelete": "true"
+    }
+    content.mySongDataModel.append(data)
+    content.getAllData(filePath, arguments[0])
+}
+
+//图片视图的加载
+function setImageListModel() {
+    console.log("找文件")
+    content.imagelist.openfile()
+    content.background_model.clear()
+
+    var allimages = content.imagelist.getAllMap()
+    var size = content.imagelist.getMapCount()
+    var imagefilePath
+    for (var i = 0; i < size; i++) {
+        if ((imagefilePath = content.imagelist.getUrlByIndex(i)) !== "") {
+            // imagefilePath.
+            var data = {
+                "imagefilePath": imagefilePath
+            }
+        }
+        content.background_model.append(data)
+        content.my_image.model = content.background_model
+        content.my_image.currentIndex = 0
     }
 }

@@ -6,12 +6,12 @@ import QtQuick.Layouts
 
 Item {
     id: dialogroot
-    property alias fileOpen: _fileOpen
+    property alias fileOpen: _fileOpen //本地文件对话框
     property alias about: _about
     property alias timingoffDialog: _timingoffDialog
     property alias timingofftext: _timingofftext
     property alias buttonMusic: _buttonMusic
-    property alias failToOpen: _failToOpen
+    // property alias failToOpen: _failToOpen
     property alias buttonRoutine: _buttonRoutine
     property alias rateChangeDialog: _rateChangeDialog
     property alias rateSlider: _rateSlider
@@ -22,6 +22,12 @@ Item {
     property alias pomodorotimerrepeat: _pomodorotimerrepeat
     property alias yesPomodorotimerRepeat: _yesPomodorotimerRepeat
     property alias noPomodorotimerRepeat: _noPomodorotimerRepeat
+
+    property alias wrightchangeback: _wrightchangeback //右键点击图片后会触发这个对话框（询问用户是否需要更改选择的图片作为背景）
+    property alias imagefileOpen: _imagefileOpen //图片文件对话框
+
+    signal ok_changeImage
+
     FileDialog {
         id: _fileOpen
         title: "Select some song files"
@@ -30,6 +36,16 @@ Item {
         fileMode: FileDialog.OpenFiles
         nameFilters: ["audio files (*.mp3)"]
     }
+
+    FileDialog {
+        id: _imagefileOpen
+        title: "Select some image files"
+        currentFolder: StandardPaths.standardLocations(
+                           StandardPaths.DocumentsLocation)[0]
+        fileMode: FileDialog.OpenFiles
+        nameFilters: ["Image Files (*.png *.jpg *.jpeg)"]
+    }
+
     MessageDialog {
         id: _about
         modality: Qt.WindowModal
@@ -38,12 +54,26 @@ Item {
         informativeText: qsTr("Freemusic is a free software, and you can download its source code from www.open-src.com")
         detailedText: "Copyright©2024  (2026614567@qq.com,3247859095@qq.com,2327014830@qq.com)"
     }
-    MessageDialog {
-        id: _failToOpen
-        modality: Qt.WindowModal
-        buttons: MessageDialog.Ok
-        text: "Fail to open the file (.lrc)!"
+
+    // MessageDialog {
+    //     id: _failToOpen
+    //     modality: Qt.WindowModal
+    //     buttons: MessageDialog.Ok
+    //     text: "Fail to open the file (.lrc)!"
+    // }
+    Dialog {
+        id: _wrightchangeback
+        // anchors.centerIn: dialogroot
+        x: 200
+        y: 200
+        Text {
+            text: qsTr("Are you sure to change the background picture?")
+        }
+        standardButtons: MessageDialog.Ok | MessageDialog.Cancel
+        onAccepted: ok_changeImage()
+        onRejected: console.log("Cancel clicked")
     }
+
     Dialog {
         id: _timingoffDialog
         title: "select timingoff"

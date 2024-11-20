@@ -37,7 +37,11 @@ qt_add_qml_module(
   RESOURCES
   resources.qrc
   QML_FILES
-  ScrollLyrics.qml)
+  ScrollLyrics.qml
+  SOURCES
+  imagelist.h
+  SOURCES
+  imagelist.cpp)
 
 # qt_add_qml_module( appMusicPlayer URI Lyric VERSION 1.0 SOURCES lyric.cpp
 # SOURCES lyric.h QML_FILES Main.qml)

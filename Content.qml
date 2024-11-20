@@ -4,7 +4,6 @@ import QtQuick.Controls
 import QtMultimedia
 import Lyrics
 
-// import Songlist
 Frame {
 
     id: root
@@ -31,8 +30,17 @@ Frame {
     property alias mySongDataModel: _mySongDataModel
     property alias mySongData: _mySongData
 
-    property alias musicInterface: musicInterface
-    property alias songListInterface: songListInterface
+    property alias musicInterface: _musicInterface
+    property alias songListInterface: _songListInterface
+
+    property alias flushButton: _flushButton // 新加
+    property alias mySongList: _mySongList // 新加
+    property alias closeButton: _closeButton // 新加
+
+    property alias own_set_playground: _own_set_playground // 自定义图片的圆形按钮的名字
+    property alias imagelist: _imagelist // c++类（自定义图片）的名字
+    property alias background_model: _background_model
+    property alias my_image: _my_image //图片视图的id--->girdview
 
     property string textauthor: "author"
     property string textalubm: "album"
@@ -42,6 +50,12 @@ Frame {
     signal exchangepath
     signal changePlayIcons
     signal addToPlayList
+    signal tapInSongListName
+    signal deleteSongInSongList
+    signal changeBackground
+    signal rightchangeback
+    // 新加
+    signal addListSongToPlay
 
     function rotate() {
         if (!rotationAnimation.running) {
@@ -59,6 +73,9 @@ Frame {
     Songlist {
         id: _songlist
     }
+    Imagelist {
+        id: _imagelist
+    }
     Image {
         id: _backgrondImage
         z: -1111
@@ -75,28 +92,136 @@ Frame {
     Dialogs {
         id: _dialogs
 
+        onOk_changeImage: {
+            console.log("接受接受")
+            backgrondImage.source = _my_image.model.get(
+                        _my_image.currentIndex).imagefilePath
+        }
+
         Dialog {
             id: _imageDialog
-            title: "select background"
-            width: 315
+            width: 660
             height: 200
             clip: true
+            RowLayout {
+                Rectangle {
+                    width: 300
+                    height: 190
+                    color: "transparent"
 
-            GridView {
-                anchors.fill: parent
-                model: ["myimage1.png", "myimage2.png", "myimage3.png", "myimage4.png", "myimage5.png", "myimage6.png", "myimage7.png", "myimage8.png", "myimage9.png", "myimage10.png"]
+                    Rectangle {
+                        id: title
+                        width: 200
+                        height: 30
+                        color: "transparent"
+                        Text {
+                            text: qsTr("select background")
+                            anchors.centerIn: title
+                        }
+                    }
+                    RoundButton {
+                        id: _own_set_playground
+                        icon.name: "games-config-background-symbolic.svg"
+                        width: 30
+                        height: 30
+                        icon.color: "black"
+                        anchors.left: title.right
+                        onClicked: {
+                            changeBackground()
+                        }
+                    }
 
-                delegate: Rectangle {
-                    width: 50
-                    height: 50
-                    Image {
-                        width: parent.width
-                        height: parent.height
-                        source: "qrc:/" + modelData
-                        TapHandler {
-                            onTapped: {
-                                // 将点击的图片设置为程序的背景
-                                backgrondImage.source = "qrc:/" + modelData
+                    Rectangle {
+                        width: 300
+                        height: 160
+                        anchors.top: title.bottom
+                        color: "transparent"
+                        clip: true
+                        GridView {
+                            anchors.fill: parent
+                            model: ["myimage1.png", "myimage2.png", "myimage3.png", "myimage4.png", "myimage5.png", "myimage6.png", "myimage7.png", "myimage8.png", "myimage9.png", "myimage10.png"]
+
+                            delegate: Rectangle {
+                                width: 50
+                                height: 50
+
+                                Image {
+                                    width: parent.width
+                                    height: parent.height
+                                    source: "qrc:/" + modelData
+                                    TapHandler {
+                                        onTapped: {
+                                            // 将点击的图片设置为程序的背景
+                                            backgrondImage.source = "qrc:/" + modelData
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                //做一个分割线
+                Rectangle {
+                    width: 1 // 设置竖线的宽度
+                    height: 200 // 使Rectangle的高度与其父容器相同
+                    color: "black" // 设置竖线的颜色
+                }
+
+                ColumnLayout {
+                    Rectangle {
+                        id: store_background_show
+                        Text {
+                            text: qsTr("Customize the background picture")
+                        }
+                        width: 330
+                        height: 30
+                        color: "transparent"
+                    }
+
+                    Rectangle {
+                        id: custom_made
+                        width: 330
+                        height: 160
+                        color: "transparent"
+                        clip: true
+                        GridView {
+                            anchors.fill: parent
+                            id: _my_image
+                            ListModel {
+                                id: _background_model
+                            }
+                            delegate: ImageDelegate {}
+                        }
+                        component ImageDelegate: Rectangle {
+                            required property url imagefilePath
+                            required property int index
+
+                            Image {
+                                id: image
+                                width: 50
+                                height: 50
+                                source: imagefilePath
+
+                                MouseArea {
+                                    id: rightchangeback_or_not
+                                    anchors.fill: parent
+                                    acceptedButtons: Qt.RightButton
+                                    onReleased: {
+                                        if (mouse.button == Qt.RightButton) {
+                                            console.log("right button of Button clicked")
+                                            _my_image.currentIndex = index
+                                            rightchangeback()
+                                        }
+                                    }
+                                }
+
+                                //     TapHandler {
+                                //         onTapped: {
+                                //             // 将点击的图片设置为程序的背景
+                                //             _my_image.currentIndex=index
+                                //             backgrondImage.source = _my_image.model.get(_my_image.currentIndex).imagefilePath
+                                //         }
+                                // }
                             }
                         }
                     }
@@ -176,7 +301,7 @@ Frame {
 
     //播放歌曲界面，以显示歌词
     Rectangle {
-        id: musicInterface
+        id: _musicInterface
         color: "transparent"
         width: root.width
         height: root.height
@@ -193,8 +318,9 @@ Frame {
             //播放歌曲界面左部分，即圆盘，歌曲名字，歌曲作者
             Rectangle {
                 id: _information
-                width: 200
+                width: 250
                 height: parent.height
+                anchors.left: parent.left // +
                 color: "transparent"
                 clip: true
                 Layout.fillHeight: true
@@ -278,42 +404,41 @@ Frame {
             }
             //播放歌曲界面右部分，即歌词显示
             ScrollLyrics {
+                anchors.right: rowlayout.right // 改
+
                 // anchors.left: information.right
                 id: _playlistshow
-                width: 440
+                width: 500
                 height: parent.height
                 color: "transparent"
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                // Rectangle {
+
                 Popup {
                     id: _songRect
                     opacity: 0.7
-                    width: 200
-                    height: 200
-                    // visible: false
+                    width: 250
+                    height: 230
                     modal: true
                     focus: true
                     x: 350
                     y: 300
-                    // anchors.bottom: parent.bottom
-                    // anchors.right: parent.right
+
                     contentItem: ScrollView {
                         id: _scorllView
-                        // anchors.fill: parent
                         // anchors.fill: _songRect
+                        // anchors.fill: parent // 问题
                         ScrollBar.horizontal.policy: ScrollBar.AsNeeded
                         ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
-                        // ColumnLayout {
                         // 存放音频文件的视图
                         ListView {
-                            // anchors.fill: parent
+
                             interactive: true
                             id: _multipath
-                            width: 800
-                            // Layout.preferredWidth: 400
+
                             Layout.preferredHeight: 200
+
                             Layout.fillHeight: true
                             Layout.fillWidth: true
 
@@ -338,7 +463,8 @@ Frame {
                             required property string author
                             required property url filePath
                             required property int index
-                            height: 40
+
+                            height: 30
 
                             width: _multipath.width
 
@@ -352,7 +478,6 @@ Frame {
                                         onTapped: popup.open()
                                     }
                                 }
-
                                 Popup {
                                     id: popup
                                     x: 20
@@ -360,6 +485,28 @@ Frame {
                                     modal: true
                                     focus: true
                                     ColumnLayout {
+                                        RowLayout {
+                                            RoundButton {
+                                                id: addSongToList
+                                                icon.name: "media-playlist-append"
+                                                icon.color: "black"
+                                                background: Rectangle {
+                                                    implicitHeight: 5
+                                                    implicitWidth: 5
+                                                    radius: 50
+                                                    color: "lightblue"
+                                                }
+                                                TapHandler {
+                                                    onTapped: {
+                                                        console.log("add song to list..")
+                                                        addListSongToPlay()
+                                                    }
+                                                }
+                                            }
+                                            Text {
+                                                text: "addSongToList"
+                                            }
+                                        }
                                         RowLayout {
                                             RoundButton {
                                                 id: addnext
@@ -487,15 +634,14 @@ Frame {
                     }
                 }
             }
-        }
+        } // --- end of scroIILyrics
     }
     //歌单列表
     Rectangle {
-        id: songListInterface
-        // color: "brown"
-        // color: "transparent"
+        id: _songListInterface
+
         opacity: 0.8
-        width: 800
+        width: 900
         height: 600
         visible: false
         z: -1
@@ -506,39 +652,47 @@ Frame {
             spacing: 10
             Rectangle {
                 id: leftsong
-                width: 250
+                width: 300
                 height: 600
                 color: "transparent"
 
-                Text {
-                    id: songListTitle
-                    text: "SongList"
-                    font.pointSize: 18
-                    font.bold: true
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    TapHandler {
-                        onTapped: {
-                            console.log("tapped")
+                // 加了外层rectangle,方便加入按钮
+                Rectangle {
+                    id: titleLayout
+                    width: 300
+                    height: 40
+                    color: "transparent"
+                    Text {
+                        id: songListTitle
+                        text: "SongList"
+                        font.pointSize: 18
+                        font.bold: true
+                        anchors.centerIn: titleLayout
+                        TapHandler {
+                            onTapped: {
+                                console.log("tapped")
+                            }
                         }
                     }
                 }
 
                 ListView {
-                    id: mySongList
-                    anchors.top: songListTitle.bottom
+                    id: _mySongList
+                    anchors.top: titleLayout.bottom
 
                     width: parent.width
                     height: parent.height
                     model: _mySongListModel
                     ListModel {
                         id: _mySongListModel
-                        // 设置默认歌单选项
+                        // 设置默认歌单选项 1. 本地歌单 2. 我喜欢歌单
                         ListElement {
                             songListName: "local"
                         }
-                        // ListElement {
-                        //     songListName: "Mylike"
-                        // }
+
+                        ListElement {
+                            songListName: "mylike"
+                        }
                     }
                     delegate: MySongList {}
                 }
@@ -557,13 +711,13 @@ Frame {
                         font.italic: true
                         text: songListName
                         anchors.centerIn: parent
-                        //color: mySongList.currentIndex === index ? "red" : "black"
                     }
                     TapHandler {
                         onTapped: {
                             mySongList.currentIndex = index
                             _songlist.songListName = local.text
                             console.log(mySongList.visible)
+                            tapInSongListName()
                         }
                     }
                     HoverHandler {
@@ -571,20 +725,61 @@ Frame {
                     }
                 }
             }
+
             Rectangle {
-                width: 550
+                width: 600
                 height: 600
                 color: "transparent"
-                ListView {
-                    id: _mySongData
-                    anchors.fill: parent
-                    width: parent.width
-                    height: parent.height
-                    ListModel {
-                        id: _mySongDataModel
-                    }
+                id: _songListRight
 
-                    delegate: MySongData {}
+                // 新加，在歌曲上面加了两个按钮，改变了布局
+                ColumnLayout {
+                    anchors.fill: parent
+                    Rectangle {
+                        width: parent.width
+                        height: parent.height / 15
+                        id: songListTop
+                        color: "transparent"
+                        RowLayout {
+                            anchors.right: parent.right
+                            anchors.rightMargin: 30
+                            RoundButton {
+                                id: _flushButton
+                                icon.name: "amarok_playlist_refresh-symbolic"
+                                background: Rectangle {
+                                    implicitHeight: 15
+                                    implicitWidth: 15
+                                    radius: 50
+                                    color: "lightblue"
+                                    border.color: "grey"
+                                    opacity: 0.9
+                                }
+                            }
+                            RoundButton {
+                                id: _closeButton
+                                icon.name: "view-close"
+                                background: Rectangle {
+                                    implicitHeight: 15
+                                    implicitWidth: 15
+                                    color: "lightblue"
+                                    border.color: "grey"
+                                    opacity: 0.9
+                                    radius: 50
+                                }
+                            }
+                        }
+                    }
+                    ListView {
+                        id: _mySongData
+                        anchors.top: songListTop.bottom
+                        width: parent.width
+                        height: parent.height - songListTop.height
+                        ListModel {
+                            id: _mySongDataModel
+                        }
+
+                        delegate: MySongData {}
+                    }
                 }
                 component MySongData: Rectangle {
                     required property string title
@@ -593,6 +788,10 @@ Frame {
                     required property string genre
                     required property url playlistPath
                     required property int index
+                    required property bool canDelete
+                    // +
+
+                    // 该property控制deleteSong按钮的enabled属性
                     id: delegateMyDataList
                     width: mySongData.width
                     height: 40
@@ -604,7 +803,6 @@ Frame {
                     color: hover2.hovered ? "lightblue" : "white"
 
                     RowLayout {
-
                         RoundButton {
                             width: 20
                             height: 20
@@ -643,9 +841,11 @@ Frame {
                                     RoundButton {
                                         id: deletSongList
                                         icon.name: "edit-delete-remove-symbolic"
+                                        visible: canDelete
                                     }
                                     Text {
                                         text: "deletSongList"
+                                        visible: canDelete
                                     }
                                 }
                             }
@@ -679,7 +879,6 @@ Frame {
                             id: songGenre
                             font.pixelSize: 13
                             text: genre
-                            //color: _mySongData.currentIndex === index ? "red" : "black"
                             font.italic: hover2.hovered ? true : false
                             font.bold: hover2.hovered ? true : false
                         }

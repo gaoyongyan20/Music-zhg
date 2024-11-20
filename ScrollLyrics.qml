@@ -7,6 +7,7 @@ Rectangle {
     signal changep
     id: lyricView
     clip: true
+    // visible: true
     ListView {
         id: _list
         anchors.fill: parent
@@ -33,7 +34,7 @@ Rectangle {
         //高亮显示的位置是整个歌词滚动的中间
         preferredHighlightBegin: parent.height / 2 - 50
         preferredHighlightEnd: parent.height / 2
-        //高光永远不会超出范围。如果键盘或鼠标操作将导致突出显示移出范围，则当前项将发生更改。
+        //高光永远不会超出范围。如果键盘或鼠标将导致突出显示移出范围，则当前项将发生更改。
         highlightRangeMode: ListView.StrictlyEnforceRange
     }
     component ListDelegate: Item {
@@ -42,6 +43,7 @@ Rectangle {
         height: 50
         required property string ci
         required property int index
+
         Text {
             id: recText
             font.bold: true

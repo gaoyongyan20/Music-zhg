@@ -17,19 +17,18 @@ Rectangle {
     property alias play_button: _play_button
     property alias backward_button: _backward_button
     property alias forward_button: _forward_button
+    property alias footerControl: _footer_control
 
-    // // 当按下暂停按钮时发出的信号
-    // signal changePlay
-    // // 当按下播放按钮时发出的信号
-    // signal changePause
     RowLayout {
         id: layout
         anchors.bottom: parent.bottom
         width: footerroot.width
-        spacing: 20
+
         RoundButton {
             id: _backward_button
             icon.name: "media-seek-backward"
+            anchors.leftMargin: 20
+            anchors.left: layout.left
             background: Rectangle {
                 implicitHeight: 30
                 implicitWidth: 30
@@ -43,6 +42,8 @@ Rectangle {
         RoundButton {
             id: _play_button
             icon.name: "media-playback-start-symbolic"
+            anchors.left: _backward_button.right
+            anchors.leftMargin: 20
             background: Rectangle {
                 implicitHeight: 32
                 implicitWidth: 32
@@ -56,6 +57,8 @@ Rectangle {
         RoundButton {
             id: _forward_button
             icon.name: "media-seek-forward"
+            anchors.left: _play_button.right
+            anchors.leftMargin: 20
             background: Rectangle {
                 implicitHeight: 30
                 implicitWidth: 30
@@ -69,12 +72,16 @@ Rectangle {
         Text {
             id: _textOrigin
             text: "00:00"
+            anchors.left: _forward_button.right
+            anchors.leftMargin: 20
         }
 
         Slider {
             id: _playProgressSlider
             implicitHeight: 5
             implicitWidth: 300
+            anchors.left: _textOrigin.right
+            anchors.leftMargin: 20
             background: Rectangle {
                 implicitHeight: 2
                 radius: 5
@@ -85,10 +92,17 @@ Rectangle {
 
         Text {
             id: _textTerminus
+            text: "00:00"
+            anchors.left: _playProgressSlider.right
+            anchors.leftMargin: 20
         }
 
         RoundButton {
             id: _voiceIcon
+            anchors.left: _textTerminus.right
+            anchors.leftMargin: 20
+            anchors.right: _volumeSlider.left
+            anchors.rightMargin: 10
             background: Rectangle {
                 implicitHeight: 30
                 implicitWidth: 30
@@ -128,11 +142,28 @@ Rectangle {
             id: _volumeSlider
             implicitHeight: 5
             implicitWidth: 100
+            anchors.right: _footer_control.left
+            anchors.rightMargin: 20
+
             background: Rectangle {
                 implicitHeight: 2
                 radius: 5
                 border.color: "grey"
                 color: "lightblue"
+            }
+        }
+
+        RoundButton {
+            id: _footer_control
+            icon.name: "media-playlist-normal-symbolic"
+            anchors.right: _playlist.left
+            anchors.rightMargin: 20
+            background: Rectangle {
+                implicitHeight: 30
+                implicitWidth: 30
+                radius: 50
+                //border.color: "grey"
+                color: "transparent"
             }
         }
 
