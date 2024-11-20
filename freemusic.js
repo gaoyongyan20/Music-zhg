@@ -252,3 +252,22 @@ function appendsong(cindex) {
     }
     content.filesModel.append(data)
 }
+
+//响应番茄钟
+function pomdoroClock() {
+    if (content.playmusic.pause()) {
+        content.playmusic.play()
+        content.rotate()
+        foot.play_button.icon.name = "media-playback-pause-symbolic"
+    } else if (content.filesModel.count !== 0) {
+        content.playmusic.source = content.filesModel.get(0).filePath
+        content.exchangepath()
+        content.playmusic.play()
+        content.rotate()
+        foot.play_button.icon.name = "media-playback-pause-symbolic"
+    } else {
+        content.dialogs.playlistIsEmptyDialog.open()
+        content.dialogs.playlistIsEmptyDialog.x = 270
+        content.dialogs.playlistIsEmptyDialog.y = 230
+    }
+}

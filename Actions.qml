@@ -18,7 +18,7 @@ Item {
     property alias sequence: _sequence
     property alias close: _close
     property alias rate: _rate
-
+    property alias pomodoroTimer: _pomodoroTimer
     Action {
         id: _open
         text: qsTr("&OpenFiles..")
@@ -87,5 +87,10 @@ Item {
         id: _rate
         text: qsTr("rateChange")
         icon.name: "view-close"
+    }
+    Action {
+        id: _pomodoroTimer
+        text: qsTr("PomodoroTimer")
+        icon.name: "accept_time_event-symboli"
     }
 }

@@ -48,8 +48,15 @@ ApplicationWindow {
             MenuItem {
                 action: actions.background
             }
-            MenuItem {
-                action: actions.timingoff
+            Menu {
+                title: qsTr("Timer")
+                icon.name: "accept_time_event-symbolic"
+                MenuItem {
+                    action: actions.timingoff
+                }
+                MenuItem {
+                    action: actions.pomodoroTimer
+                }
             }
             MenuItem {
                 action: actions.rate
@@ -81,42 +88,6 @@ ApplicationWindow {
         }
     }
 
-    // -------设置工具栏------
-
-
-    /* header: ToolBar {
-        RowLayout {
-            ToolButton {
-                action: actions.open
-            }
-
-            ToolSeparator {}
-
-            ToolButton {
-                action: actions.loop
-            }
-            ToolButton {
-                action: actions.random
-            }
-            ToolButton {
-                action: actions.sequence
-            }
-
-            ToolSeparator {}
-
-            ToolButton {
-                action: actions.background
-            }
-            ToolButton {
-                action: actions.timingoff
-            }
-
-            ToolSeparator {}
-            ToolButton {
-                action: actions.close
-            }
-        }
-    }*/
     footer: Footer {
         id: foot
 
@@ -172,30 +143,22 @@ ApplicationWindow {
         textTerminus.text: Controller.formatTime(content.playmusic.duration)
         //播放列表显示
         playlist.onClicked: {
-
-
-            /*if (content.songRect.width === 0 && content.songRect.height === 0) {
-                content.songRect.width = 200
-                content.songRect.height = 200
-                content.songRect.visible = true
-            } else {
-                content.songRect.width = 0
-                content.songRect.height = 0
-            }*/
             content.songRect.open()
         }
 
         //全屏显示歌词板块
         fullscreen.onClicked: {
-            //content.songRect.anchors.right = window.right
-            if (content.information.width === 0) {
-                content.information.width = 200
-                content.playlistshow.width -= 250
-                fullscreen.icon.name = "gnumeric-row-unhide-symbolic"
+            if (content.information.anchors.left == content.rowlayout.left) {
+                content.information.visible = false // 将旋转唱片所在部分进行隐藏
+
+                content.information.anchors.left = content.rowlayout.right // 利用锚线改变旋转唱片所在定位
+                content.playlistshow.anchors.left = content.rowlayout.left // 同上
             } else {
-                content.information.width = 0
-                content.playlistshow.width = content.playlistshow.width + 250
-                fullscreen.icon.name = "gnumeric-row-hide-symbolic"
+                content.information.visible = true // 将旋转唱片显示
+
+                content.information.anchors.left = content.rowlayout.left // 恢复旋转唱片原来的位置
+                content.playlistshow.anchors.left = content.information.right
+                content.playlistshow.anchors.right = content.rowlayout.right // 恢复滚动歌词界面的位置
             }
         }
 
@@ -236,9 +199,9 @@ ApplicationWindow {
         property alias timingoffTimer: _timingoffTimer
         property alias timingProgram: _timingProgram
         property alias pomodoroClock: _pomodoroClock
+        property alias pomodoroClockstop: _pomodoroClockstop
         property bool isLoop: false
         property bool isRandom: false
-
         song1.onTriggered: {
             content.playmusic.source = "qrc:/mysongs1.mp3"
             content.playmusic.play()
@@ -261,9 +224,14 @@ ApplicationWindow {
         timingoff.onTriggered: {
             content.dialogs.timingoffDialog.open()
         }
+        pomodoroTimer.onTriggered: {
+            content.dialogs.pomodoroTimerDialog.open()
+        }
+
         Timer {
             id: _timingoffTimer
             onTriggered: {
+                content.timingoffDialog.close()
                 content.playmusic.pause()
                 content.rotationAnimation.pause()
                 foot.play_button.icon.name = "media-playback-start-symbolic"
@@ -276,13 +244,23 @@ ApplicationWindow {
                 Qt.quit()
             }
         }
-
+        //番茄钟
         Timer {
             id: _pomodoroClock
             onTriggered: {
-                content.playmusic.play()
-                content.rotationAnimation.resume()
-                foot.play_button.icon.name = "media-playback-pause-symbolic"
+                Controller.pomdoroClock()
+            }
+        }
+        //询问番茄钟是否继续
+        Timer {
+            id: _pomodoroClockstop
+            onTriggered: {
+                content.playmusic.pause()
+                content.rotationAnimation.pause()
+                foot.play_button.icon.name = "media-playback-start-symbolic"
+                content.dialogs.pomodorotimerrepeat.open()
+                content.dialogs.pomodorotimerrepeat.x = 270
+                content.dialogs.pomodorotimerrepeat.y = 230
             }
         }
 
@@ -337,8 +315,8 @@ ApplicationWindow {
         id: content
         property bool formatHasDot: false
         //自定义定时后，点击确认按钮
-        dialogs.button.onClicked: {
-            var number = parseInt(dialogs.text.text)
+        dialogs.buttonMusic.onClicked: {
+            var number = parseInt(dialogs.timingofftext.text)
             if (isNaN(number)) {
                 console.log("Invalid input")
             } else {
@@ -350,7 +328,7 @@ ApplicationWindow {
 
         //定时关闭应用程序
         dialogs.buttonRoutine.onClicked: {
-            var number = parseInt(dialogs.text.text)
+            var number = parseInt(dialogs.timingofftext.text)
             if (isNaN(number)) {
                 console.log("Invalid input")
             } else {
@@ -364,15 +342,29 @@ ApplicationWindow {
         }
 
         //番茄钟
-        dialogs.pomodoroTimer.onClicked: {
-            var number = parseInt(dialogs.text.text)
+        dialogs.pomodoroTimerButton.onClicked: {
+            dialogs.pomodoroTimerDialog.close()
+            var number = parseInt(dialogs.pomodoroTimertext.text)
             if (isNaN(number)) {
                 console.log("Invalid input")
             } else {
                 console.log("The number is:", number)
                 actions.pomodoroClock.interval = number * 60000
                 actions.pomodoroClock.running = true
+                actions.pomodoroClockstop.interval = (number + 1) * 60000
+                actions.pomodoroClockstop.running = true
             }
+        }
+
+        //重复番茄钟
+        dialogs.yesPomodorotimerRepeat.onClicked: {
+            dialogs.pomodorotimerrepeat.close()
+            dialogs.pomodoroTimerButton.clicked()
+        }
+
+        //不重复番茄钟
+        dialogs.noPomodorotimerRepeat.onClicked: {
+            dialogs.pomodorotimerrepeat.close()
         }
 
         onChangeIcon: {
@@ -434,9 +426,8 @@ ApplicationWindow {
         }
         Connections {
             target: content.lyrics
-            function onFailedToOpenLrcFile() {
-                //content.dialogs.failToOpen.open()
-                Controller.havenotLrcFile()
+            function onFailedToOpenLrcFile() {// content.dialogs.failToOpen.open()
+                // Controller.havenotLrcFile()
             }
         }
     }

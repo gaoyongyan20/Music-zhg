@@ -9,13 +9,19 @@ Item {
     property alias fileOpen: _fileOpen
     property alias about: _about
     property alias timingoffDialog: _timingoffDialog
-    property alias text: _text
-    property alias button: _button
+    property alias timingofftext: _timingofftext
+    property alias buttonMusic: _buttonMusic
     property alias failToOpen: _failToOpen
     property alias buttonRoutine: _buttonRoutine
     property alias rateChangeDialog: _rateChangeDialog
     property alias rateSlider: _rateSlider
-    property alias pomodoroTimer: _pomodoroTimer
+    property alias pomodoroTimerDialog: _pomodoroTimerDialog
+    property alias pomodoroTimerButton: _pomodoroTimerButton
+    property alias pomodoroTimertext: _pomodoroTimertext
+    property alias playlistIsEmptyDialog: _playlistIsEmptyDialog
+    property alias pomodorotimerrepeat: _pomodorotimerrepeat
+    property alias yesPomodorotimerRepeat: _yesPomodorotimerRepeat
+    property alias noPomodorotimerRepeat: _noPomodorotimerRepeat
     FileDialog {
         id: _fileOpen
         title: "Select some song files"
@@ -46,7 +52,7 @@ Item {
         ColumnLayout {
             anchors.fill: parent
             TextField {
-                id: _text
+                id: _timingofftext
                 Layout.fillWidth: true
                 placeholderText: qsTr("Please enter your timing(minutes)")
                 placeholderTextColor: "black"
@@ -54,13 +60,13 @@ Item {
                     regularExpression: /^[1-9]\d{0,3}$/
                 }
                 onTextChanged: {
-                    button.enabled = _text.text !== ""
-                    _buttonRoutine.enabled = _text.text !== ""
-                    _pomodoroTimer.enabled = _text.text !== ""
+                    _buttonMusic.enabled = _timingofftext.text !== ""
+                    _buttonRoutine.enabled = _timingofftext.text !== ""
+                    _pomodoroTimer.enabled = _timingofftext.text !== ""
                 }
             }
             Button {
-                id: _button
+                id: _buttonMusic
                 Layout.fillWidth: true
                 text: "ColseMusic"
                 enabled: false
@@ -71,11 +77,60 @@ Item {
                 text: "ColseRoutine"
                 enabled: false
             }
+        }
+    }
+
+    Dialog {
+        id: _pomodoroTimerDialog
+        title: "select timingoff"
+        width: 300
+        height: 200
+        ColumnLayout {
+            anchors.fill: parent
+            TextField {
+                id: _pomodoroTimertext
+                Layout.fillWidth: true
+                placeholderText: qsTr("Please enter your focus time(minutes)")
+                placeholderTextColor: "black"
+                validator: RegularExpressionValidator {
+                    regularExpression: /^[1-9]\d{0,3}$/
+                }
+                onTextChanged: {
+                    _pomodoroTimerButton.enabled = _pomodoroTimertext.text !== ""
+                }
+            }
             Button {
-                id: _pomodoroTimer
+                id: _pomodoroTimerButton
                 Layout.fillWidth: true
                 text: "PomodoroTimer"
                 enabled: false
+            }
+        }
+    }
+    Dialog {
+        id: _playlistIsEmptyDialog
+        width: 300
+        height: 100
+        Text {
+            anchors.centerIn: parent
+            text: "Your playlist is empty."
+        }
+    }
+
+    Dialog {
+        id: _pomodorotimerrepeat
+        title: "Does the Pomodoro timer repeat?"
+        width: 300
+        height: 100
+        RowLayout {
+            anchors.centerIn: parent
+            Button {
+                id: _yesPomodorotimerRepeat
+                text: "Yes"
+            }
+            Button {
+                id: _noPomodorotimerRepeat
+                text: "No"
             }
         }
     }

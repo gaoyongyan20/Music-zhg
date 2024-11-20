@@ -291,16 +291,17 @@ Frame {
                     opacity: 0.7
                     width: 200
                     height: 200
-                    visible: false
+                    // visible: false
                     modal: true
                     focus: true
                     x: 350
                     y: 300
                     // anchors.bottom: parent.bottom
                     // anchors.right: parent.right
-                    ScrollView {
+                    contentItem: ScrollView {
                         id: _scorllView
-                        anchors.fill: parent
+                        // anchors.fill: parent
+                        // anchors.fill: _songRect
                         ScrollBar.horizontal.policy: ScrollBar.AsNeeded
                         ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
