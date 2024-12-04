@@ -395,7 +395,7 @@ ApplicationWindow {
 
         // 将歌曲列表的歌曲添加进播放列表
         onAddListSongToPlay: {
-            Controller.appendToList(filesModel.currentIndex)
+            Controller.appendToList(listview.songIndex)
         }
 
         // 关闭歌单界面的响应

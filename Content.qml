@@ -37,6 +37,8 @@ Frame {
     property alias mySongList: _mySongList // 新加
     property alias closeButton: _closeButton // 新加
 
+    property alias songListInfo: _songListInfo // 新加
+
     property string textauthor: "author"
     property string textalubm: "album"
 
@@ -318,7 +320,7 @@ Frame {
 
                         // 存放音频文件的视图
                         ListView {
-
+                            property int songIndex
                             interactive: true
                             id: _multipath
 
@@ -354,15 +356,7 @@ Frame {
                             width: _multipath.width
 
                             RowLayout {
-                                RoundButton {
-                                    width: 20
-                                    height: 20
-                                    icon.name: "application-menu"
-                                    TapHandler {
-                                        acceptedButtons: Qt.RightButton
-                                        onTapped: popup.open()
-                                    }
-                                }
+                                // 删了一个菜单按钮
                                 Popup {
                                     id: popup
                                     x: 20
@@ -379,17 +373,36 @@ Frame {
                                                     implicitHeight: 5
                                                     implicitWidth: 5
                                                     radius: 50
-                                                    color: "lightblue"
+                                                    color: "transparent"
                                                 }
+                                                enabled: false
                                                 TapHandler {
                                                     onTapped: {
                                                         console.log("add song to list..")
+                                                        _multipath.songIndex = index
+                                                        console.log("歌曲所在位置:"
+                                                                    + _multipath.songIndex)
                                                         addListSongToPlay()
                                                     }
                                                 }
                                             }
                                             Text {
-                                                text: "addSongToList"
+                                                text: "addSongToList" + "  ▶️"
+                                                HoverHandler {
+                                                    id: hoverInPlayList
+                                                    // onHoveredChanged: {
+                                                    //     addToListPopup.open()
+                                                    // }
+                                                }
+                                                // Popup {
+                                                //     id: addToListPopup
+                                                //     x: 50
+                                                //     y: 10
+                                                //     Rectangle {
+                                                //         width: 200
+                                                //         height: 50
+                                                //     }
+                                                // }
                                             }
                                         }
                                         RowLayout {
@@ -398,6 +411,13 @@ Frame {
                                                 icon.name: "bqm-add"
                                                 // 添加一首歌曲为下一首播放
                                                 // 存疑 （有问题）
+                                                icon.color: "black"
+                                                background: Rectangle {
+                                                    implicitHeight: 5
+                                                    implicitWidth: 5
+                                                    radius: 50
+                                                    color: "transparent"
+                                                }
                                                 onClicked: {
                                                     var de = index
                                                     var newIndex = _multipath.currentIndex + 1
@@ -442,6 +462,13 @@ Frame {
                                                 id: _deletesongs
                                                 icon.name: "delete"
                                                 icon.color: "black"
+
+                                                background: Rectangle {
+                                                    implicitHeight: 5
+                                                    implicitWidth: 5
+                                                    radius: 50
+                                                    color: "transparent"
+                                                }
                                                 onClicked: {
                                                     if (filesModel.count === 1) {
                                                         filesModel.clear()
@@ -512,6 +539,13 @@ Frame {
                                         changeIcon()
                                         exchangepath()
                                         rotate()
+                                    }
+                                }
+                                TapHandler {
+                                    parent: songRoot
+                                    acceptedButtons: Qt.RightButton
+                                    onTapped: {
+                                        popup.open()
                                     }
                                 }
                             }
@@ -601,6 +635,7 @@ Frame {
                         onTapped: {
                             mySongList.currentIndex = index
                             _songlist.songListName = local.text
+                            _songListInfo.visible = true
                             console.log(mySongList.visible)
                             tapInSongListName()
                         }
@@ -654,11 +689,62 @@ Frame {
                             }
                         }
                     }
+                    // 新加，在歌单上添加了“音乐标题” “歌手” “时长”信息
+                    Rectangle {
+                        visible: false
+                        width: parent.width
+                        height: 40
+                        id: _songListInfo
+                        color: "transparent"
+                        RowLayout {
+                            anchors.fill: parent
+                            Rectangle {
+                                id: songTitleInfo_rec
+                                height: 40
+                                width: songListInfo.width / 4
+                                color: "transparent"
+                                Text {
+                                    font.pixelSize: 13
+                                    text: "     音乐标题"
+                                    width: songTitleInfo_rec.width
+                                    anchors.horizontalCenter: songTitleInfo_rec.horizontalCenter
+                                    anchors.verticalCenter: songTitleInfo_rec.verticalCenter
+                                }
+                            }
+                            Rectangle {
+                                id: songAuthorInfo_rec
+                                height: 40
+                                width: songListInfo.width / 4
+                                color: "transparent"
+                                Text {
+                                    font.pixelSize: 13
+                                    text: "歌手"
+                                    width: songAuthorInfo_rec.width
+                                    anchors.horizontalCenter: songAuthorInfo_rec.horizontalCenter
+                                    anchors.verticalCenter: songAuthorInfo_rec.verticalCenter
+                                }
+                            }
+                            Rectangle {
+                                id: songDurationInfo_rec
+                                height: 40
+                                width: songListInfo.width / 4
+                                color: "transparent"
+                                Text {
+                                    font.pixelSize: 13
+                                    text: " 时长"
+                                    width: songDurationInfo_rec.width
+                                    anchors.horizontalCenter: songDurationInfo_rec.horizontalCenter
+                                    anchors.verticalCenter: songDurationInfo_rec.verticalCenter
+                                }
+                            }
+                        }
+                    }
+
                     ListView {
                         id: _mySongData
-                        anchors.top: songListTop.bottom
+                        anchors.top: songListInfo.bottom
                         width: parent.width
-                        height: parent.height - songListTop.height
+                        height: parent.height - songListTop.height - songListInfo.height
                         ListModel {
                             id: _mySongDataModel
                         }
@@ -687,16 +773,19 @@ Frame {
 
                     color: hover2.hovered ? "lightblue" : "white"
 
-                    RowLayout {
-                        RoundButton {
-                            width: 20
-                            height: 20
-                            icon.name: "application-menu"
-                            TapHandler {
-                                acceptedButtons: Qt.RightButton
-                                onTapped: popup2.open()
-                            }
+                    TapHandler {
+                        parent: delegateMyDataList
+                        acceptedButtons: Qt.RightButton
+                        onTapped: {
+                            popup2.open()
                         }
+                    }
+
+                    RowLayout {
+                        id: songListLayout
+                        // 新加
+                        spacing: delegateMyDataList.width / 15
+                        // 删除了一个菜单按钮
                         Popup {
                             id: popup2
                             x: 20
@@ -735,37 +824,77 @@ Frame {
                                 }
                             }
                         }
-
-                        Text {
-                            id: songTitle
-                            font.pixelSize: 13
-                            text: title
-                            // color: _mySongData.currentIndex === index ? "red" : "black"
-                            font.italic: hover2.hovered ? true : false
-                            font.bold: hover2.hovered ? true : false
+                        // 在Text前封装了Rectangle，为了修改样式
+                        Rectangle {
+                            id: songTitle_rec
+                            height: delegateMyDataList.height
+                            width: delegateMyDataList.width / 4
+                            color: "transparent"
+                            Text {
+                                id: songTitle
+                                font.pixelSize: 13
+                                text: " " + (index + 1) + "   " + title
+                                font.italic: hover2.hovered ? true : false
+                                font.bold: hover2.hovered ? true : false
+                                clip: true
+                                //elide: Text.ElideMiddle
+                                width: songTitle_rec.width
+                                anchors.horizontalCenter: songTitle_rec.horizontalCenter
+                                anchors.verticalCenter: songTitle_rec.verticalCenter
+                            }
                         }
-                        Text {
-                            id: songAuthor
-                            font.pixelSize: 13
-                            text: author
-                            //color: _mySongData.currentIndex === index ? "red" : "black"
-                            font.italic: hover2.hovered ? true : false
-                            font.bold: hover2.hovered ? true : false
+                        Rectangle {
+                            id: songAuthor_rec
+                            height: delegateMyDataList.height
+                            width: delegateMyDataList.width / 4
+                            color: "transparent"
+                            Text {
+                                id: songAuthor
+                                font.pixelSize: 13
+                                text: author
+                                font.italic: hover2.hovered ? true : false
+                                font.bold: hover2.hovered ? true : false
+                                width: songAuthor_rec.width
+                                clip: true
+                                anchors.horizontalCenter: songAuthor_rec.horizontalCenter
+                                anchors.verticalCenter: songAuthor_rec.verticalCenter
+                            }
                         }
-                        Text {
-                            id: songDuration
-                            font.pixelSize: 13
-                            text: duration
-                            //color: _mySongData.currentIndex === index ? "red" : "black"
-                            font.italic: hover2.hovered ? true : false
-                            font.bold: hover2.hovered ? true : false
+                        Rectangle {
+                            id: songDuration_rec
+                            height: delegateMyDataList.height
+                            width: delegateMyDataList.width / 4
+                            color: "transparent"
+                            Text {
+                                id: songDuration
+                                font.pixelSize: 13
+                                text: duration
+                                font.italic: hover2.hovered ? true : false
+                                font.bold: hover2.hovered ? true : false
+                                clip: true
+                                width: songDuration_rec.width
+                                anchors.horizontalCenter: songDuration_rec.horizontalCenter
+                                anchors.verticalCenter: songDuration_rec.verticalCenter
+                            }
                         }
-                        Text {
-                            id: songGenre
-                            font.pixelSize: 13
-                            text: genre
-                            font.italic: hover2.hovered ? true : false
-                            font.bold: hover2.hovered ? true : false
+                        Rectangle {
+                            id: songGenre_rec
+                            height: delegateMyDataList.height
+                            width: delegateMyDataList.width / 4
+                            //anchors.left: songDuration_rec.right
+                            color: "transparent"
+                            Text {
+                                id: songGenre
+                                font.pixelSize: 13
+                                text: genre
+                                font.italic: hover2.hovered ? true : false
+                                font.bold: hover2.hovered ? true : false
+                                clip: true
+                                width: songGenre_rec.width
+                                //anchors.topMargin: songGenre_rec.height / 2
+                                anchors.horizontalCenter: songGenre_rec.horizontalCenter
+                                anchors.verticalCenter: songGenre_rec.verticalCenter
+                            }
                         }
                     }
                 }

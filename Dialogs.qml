@@ -11,7 +11,7 @@ Item {
     property alias timingoffDialog: _timingoffDialog
     property alias text: _text
     property alias button: _button
-    property alias failToOpen: _failToOpen
+    // property alias failToOpen: _failToOpen
     property alias buttonRoutine: _buttonRoutine
     property alias rateChangeDialog: _rateChangeDialog
     property alias rateSlider: _rateSlider
@@ -32,12 +32,12 @@ Item {
         informativeText: qsTr("Freemusic is a free software, and you can download its source code from www.open-src.com")
         detailedText: "Copyright©2024  (2026614567@qq.com,3247859095@qq.com,2327014830@qq.com)"
     }
-    MessageDialog {
-        id: _failToOpen
-        modality: Qt.WindowModal
-        buttons: MessageDialog.Ok
-        text: "Fail to open the file (.lrc)!"
-    }
+    // MessageDialog {
+    //     id: _failToOpen
+    //     modality: Qt.WindowModal
+    //     buttons: MessageDialog.Ok
+    //     text: "Fail to open the file (.lrc)!"
+    // }
     Dialog {
         id: _timingoffDialog
         title: "select timingoff"

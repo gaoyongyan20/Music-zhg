@@ -72,17 +72,6 @@ function setBackwardMusic() {
         content.playmusic.play()
         return
     }
-
-    // 顺序播放
-    // if (currentMusicIndex === 0) {
-    //     content.playmusic.source = arguments[0][arguments[0].length - 1]
-    //     content.listview.currentIndex = arguments[0].length - 1
-    //     content.filesModel.move(content.listview.currentIndex, 0, 1)
-    // } else {
-    //     content.playmusic.source = arguments[0][currentMusicIndex - 1]
-    //     content.listview.currentIndex = currentMusicIndex - 1
-    //     content.filesModel.move(content.listview.currentIndex, 0, 1)
-    // }
     if (content.listview.currentIndex > 0) {
         content.listview.currentIndex -= 1
     } else {
@@ -289,6 +278,8 @@ function disableDeleteButton() {
 function appendToList() {
     // 在歌单列表中我们可以从它的模型数据中获取到播放歌曲的路径，但是别的信息需要调用元数据解析方法获得
     var filePath = content.filesModel.get(arguments[0]).filePath
+    console.log("当前项： " + arguments[0])
+
     var data = {
         "filePath": filePath,
         "title": "loading",
