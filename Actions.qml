@@ -19,7 +19,7 @@ Item {
     property alias close: _close
     property alias control: _control
     property alias rate: _rate
-
+    property alias pomodoroTimer: _pomodoroTimer
     Action {
         id: _open
         text: qsTr("&OpenFiles..")
@@ -31,6 +31,7 @@ Item {
         id: _control
         text: qsTr("Control")
         icon.name: "media-playlist-normal-symbolic"
+        shortcut: "Ctrl+C,Ctrl+L"
     }
 
     Action {
@@ -58,18 +59,21 @@ Item {
         text: qsTr("Backgrond")
         icon.name: "games-config-theme-symbolic"
         icon.color: "black"
+        shortcut: "Ctrl+B"
     }
 
     Action {
         id: _timingoff
         text: qsTr("Timingoff")
         icon.name: "accept_time_event-symbolic"
+        shortcut: "Ctrl+T"
     }
 
     Action {
         id: _about
         text: qsTr("About")
         icon.name: "help-about"
+        shortcut: "Ctrl+A"
     }
 
     Action {
@@ -88,11 +92,17 @@ Item {
         id: _close
         text: qsTr("Closesonglist")
         icon.name: "view-close"
+        shortcut: StandardKey.Close
     }
 
     Action {
         id: _rate
         text: qsTr("rateChange")
         icon.name: "view-close"
+    }
+    Action {
+        id: _pomodoroTimer
+        text: qsTr("PomodoroTimer")
+        icon.name: "accept_time_event-symboli"
     }
 }
