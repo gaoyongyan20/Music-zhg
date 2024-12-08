@@ -40,6 +40,24 @@ function setFilesModel(selectedFiles) {
                                                   content.exchangepath()
                                               })
 }
+//打开选择图片的对话框，将选好的图片设置为背景并更新视图
+function setbackground(selectedFile) {
+    content.dialogs.imagefileOpen.open()
+
+    function onAccepted() {
+        content.backgrondImage.source = content.dialogs.imagefileOpen.selectedFile
+        content.imagelist.writeimagepath(
+                    content.dialogs.imagefileOpen.selectedFile)
+        setImageListModel()
+        //在结束后，必须断开信号连接，否则，将会出现：第一次写一张，第二次写两张，第三次三张的情况。
+        content.dialogs.imagefileOpen.accepted.disconnect(onAccepted)
+    }
+
+    content.dialogs.imagefileOpen.rejected.connect(() => {
+                                                       return
+                                                   })
+    content.dialogs.imagefileOpen.accepted.connect(onAccepted)
+}
 
 //设置上一首歌
 function setBackwardMusic() {
@@ -215,7 +233,6 @@ function setNoLyricsFileModel() {
         "ci": ci
     }
     content.playlistshow.lrcmodel.append(data)
-
     content.playlistshow.list.model = content.playlistshow.lrcmodel
     content.playlistshow.list.currentIndex = 0
 }
@@ -260,6 +277,26 @@ function appendsong(cindex) {
     content.filesModel.append(data)
 }
 
+//响应番茄钟
+function pomdoroClock() {
+    if (content.playmusic.pause()) {
+        content.playmusic.play()
+        content.rotate()
+        foot.play_button.icon.name = "media-playback-pause-symbolic"
+    } else if (content.filesModel.count !== 0) {
+        content.playmusic.source = content.filesModel.get(0).filePath
+        content.changeinformation()
+        content.exchangepath()
+        content.playmusic.play()
+        content.rotate()
+        foot.play_button.icon.name = "media-playback-pause-symbolic"
+    } else {
+        content.dialogs.playlistIsEmptyDialog.open()
+        content.dialogs.playlistIsEmptyDialog.x = 270
+        content.dialogs.playlistIsEmptyDialog.y = 230
+    }
+}
+
 function deletesong(songIndex) {
     console.log("enter..")
 }
@@ -290,4 +327,26 @@ function appendToList() {
     }
     content.mySongDataModel.append(data)
     content.getAllData(filePath, arguments[0])
+}
+
+//图片视图的加载
+function setImageListModel() {
+    console.log("找文件")
+    content.imagelist.openfile()
+    content.background_model.clear()
+
+    var allimages = content.imagelist.getAllMap()
+    var size = content.imagelist.getMapCount()
+    var imagefilePath
+    for (var i = 0; i < size; i++) {
+        if ((imagefilePath = content.imagelist.getUrlByIndex(i)) !== "") {
+            // imagefilePath.
+            var data = {
+                "imagefilePath": imagefilePath
+            }
+        }
+        content.background_model.append(data)
+        content.my_image.model = content.background_model
+        content.my_image.currentIndex = 0
+    }
 }

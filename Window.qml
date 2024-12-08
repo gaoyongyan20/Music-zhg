@@ -34,8 +34,15 @@ ApplicationWindow {
             MenuItem {
                 action: actions.background
             }
-            MenuItem {
-                action: actions.timingoff
+            Menu {
+                title: qsTr("Timer")
+                icon.name: "accept_time_event-symbolic"
+                MenuItem {
+                    action: actions.timingoff
+                }
+                MenuItem {
+                    action: actions.pomodoroTimer
+                }
             }
             MenuItem {
                 action: actions.rate
@@ -127,16 +134,13 @@ ApplicationWindow {
 
         //全屏显示歌词板块
         fullscreen.onClicked: {
-
             if (content.information.anchors.left == content.rowlayout.left) {
                 content.information.visible = false // 将旋转唱片所在部分进行隐藏
-
                 content.information.anchors.left = content.rowlayout.right // 利用锚线改变旋转唱片所在定位
                 content.playlistshow.anchors.left = content.rowlayout.left // 同上
                 content.songRect.x = 650
             } else {
                 content.information.visible = true // 将旋转唱片显示
-
                 content.information.anchors.left = content.rowlayout.left // 恢复旋转唱片原来的位置
                 content.playlistshow.anchors.left = content.information.right
                 content.playlistshow.anchors.right = content.rowlayout.right // 恢复滚动歌词界面的位置
@@ -186,6 +190,7 @@ ApplicationWindow {
         property alias timingoffTimer: _timingoffTimer
         property alias timingProgram: _timingProgram
         property alias pomodoroClock: _pomodoroClock
+        property alias pomodoroClockstop: _pomodoroClockstop
         property bool isLoop: false
         property bool isRandom: false
         property bool isSequence: true
@@ -204,7 +209,8 @@ ApplicationWindow {
         }
 
         open.onTriggered: Controller.setFilesModel()
-        background.onTriggered: content.imageDialog.open()
+        background.onTriggered: content.imageDialog.open(
+                                    ) & Controller.setImageListModel()
         about.onTriggered: content.dialogs.about.open()
         rate.onTriggered: {
             content.dialogs.rateChangeDialog.open()
@@ -212,9 +218,14 @@ ApplicationWindow {
         timingoff.onTriggered: {
             content.dialogs.timingoffDialog.open()
         }
+        pomodoroTimer.onTriggered: {
+            content.dialogs.pomodoroTimerDialog.open()
+        }
+
         Timer {
             id: _timingoffTimer
             onTriggered: {
+                content.timingoffDialog.close()
                 content.playmusic.pause()
                 content.rotationAnimation.pause()
                 foot.play_button.icon.name = "media-playback-start-symbolic"
@@ -227,13 +238,23 @@ ApplicationWindow {
                 Qt.quit()
             }
         }
-
+        //番茄钟
         Timer {
             id: _pomodoroClock
             onTriggered: {
-                content.playmusic.play()
-                content.rotationAnimation.resume()
-                foot.play_button.icon.name = "media-playback-pause-symbolic"
+                Controller.pomdoroClock()
+            }
+        }
+        //询问番茄钟是否继续
+        Timer {
+            id: _pomodoroClockstop
+            onTriggered: {
+                content.playmusic.pause()
+                content.rotationAnimation.pause()
+                foot.play_button.icon.name = "media-playback-start-symbolic"
+                content.dialogs.pomodorotimerrepeat.open()
+                content.dialogs.pomodorotimerrepeat.x = 270
+                content.dialogs.pomodorotimerrepeat.y = 230
             }
         }
 
@@ -278,8 +299,8 @@ ApplicationWindow {
 
         //songRect.anchors.bottom: foot.top
         //自定义定时后，点击确认按钮
-        dialogs.button.onClicked: {
-            var number = parseInt(dialogs.text.text)
+        dialogs.buttonMusic.onClicked: {
+            var number = parseInt(dialogs.timingofftext.text)
             if (isNaN(number)) {
                 console.log("Invalid input")
             } else {
@@ -291,7 +312,7 @@ ApplicationWindow {
 
         //定时关闭应用程序
         dialogs.buttonRoutine.onClicked: {
-            var number = parseInt(dialogs.text.text)
+            var number = parseInt(dialogs.timingofftext.text)
             if (isNaN(number)) {
                 console.log("Invalid input")
             } else {
@@ -305,15 +326,29 @@ ApplicationWindow {
         }
 
         //番茄钟
-        dialogs.pomodoroTimer.onClicked: {
-            var number = parseInt(dialogs.text.text)
+        dialogs.pomodoroTimerButton.onClicked: {
+            dialogs.pomodoroTimerDialog.close()
+            var number = parseInt(dialogs.pomodoroTimertext.text)
             if (isNaN(number)) {
                 console.log("Invalid input")
             } else {
                 console.log("The number is:", number)
                 actions.pomodoroClock.interval = number * 60000
                 actions.pomodoroClock.running = true
+                actions.pomodoroClockstop.interval = (number + 1) * 60000
+                actions.pomodoroClockstop.running = true
             }
+        }
+
+        //重复番茄钟
+        dialogs.yesPomodorotimerRepeat.onClicked: {
+            dialogs.pomodorotimerrepeat.close()
+            dialogs.pomodoroTimerButton.clicked()
+        }
+
+        //不重复番茄钟
+        dialogs.noPomodorotimerRepeat.onClicked: {
+            dialogs.pomodorotimerrepeat.close()
         }
 
         onChangeIcon: {
@@ -401,6 +436,16 @@ ApplicationWindow {
         // 关闭歌单界面的响应
         closeButton.onClicked: {
             actions.close.trigger()
+        }
+        //点击从本地相册选取图片的圆形按钮
+        onChangeBackground: {
+            console.log("点击点击")
+            Controller.setbackground()
+        }
+        //以前自定义的图片被保存到软件中，右键点击图片将重新设置该图片为背景
+        onRightchangeback: {
+            console.log("改了改了")
+            content.dialogs.wrightchangeback.open()
         }
     }
 }

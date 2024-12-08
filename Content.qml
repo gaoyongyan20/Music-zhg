@@ -39,6 +39,11 @@ Frame {
 
     property alias songListInfo: _songListInfo // 新加
 
+    property alias own_set_playground: _own_set_playground // 自定义图片的圆形按钮的名字
+    property alias imagelist: _imagelist // c++类（自定义图片）的名字
+    property alias background_model: _background_model
+    property alias my_image: _my_image //图片视图的id--->girdview
+
     property string textauthor: "author"
     property string textalubm: "album"
 
@@ -49,10 +54,11 @@ Frame {
     signal addToPlayList
     signal tapInSongListName
     signal deleteSongInSongList
+    signal changeBackground
+    signal rightchangeback
     // 新加
     signal addListSongToPlay
 
-    // 新加
     function rotate() {
         if (!rotationAnimation.running) {
             // 如果动画未运行，开始动画
@@ -68,6 +74,9 @@ Frame {
     }
     Songlist {
         id: _songlist
+    }
+    Imagelist {
+        id: _imagelist
     }
     Image {
         id: _backgrondImage
@@ -85,28 +94,128 @@ Frame {
     Dialogs {
         id: _dialogs
 
+        onOk_changeImage: {
+            console.log("接受接受")
+            backgrondImage.source = _my_image.model.get(
+                        _my_image.currentIndex).imagefilePath
+        }
+
         Dialog {
             id: _imageDialog
-            title: "select background"
-            width: 315
+            width: 660
             height: 200
             clip: true
+            RowLayout {
+                Rectangle {
+                    width: 300
+                    height: 190
+                    color: "transparent"
 
-            GridView {
-                anchors.fill: parent
-                model: ["myimage1.png", "myimage2.png", "myimage3.png", "myimage4.png", "myimage5.png", "myimage6.png", "myimage7.png", "myimage8.png", "myimage9.png", "myimage10.png"]
+                    Rectangle {
+                        id: title
+                        width: 200
+                        height: 30
+                        color: "transparent"
+                        Text {
+                            text: qsTr("select background")
+                            anchors.centerIn: title
+                        }
+                    }
+                    RoundButton {
+                        id: _own_set_playground
+                        icon.name: "games-config-background-symbolic.svg"
+                        width: 30
+                        height: 30
+                        icon.color: "black"
+                        anchors.left: title.right
+                        onClicked: {
+                            changeBackground()
+                        }
+                    }
 
-                delegate: Rectangle {
-                    width: 50
-                    height: 50
-                    Image {
-                        width: parent.width
-                        height: parent.height
-                        source: "qrc:/" + modelData
-                        TapHandler {
-                            onTapped: {
-                                // 将点击的图片设置为程序的背景
-                                backgrondImage.source = "qrc:/" + modelData
+                    Rectangle {
+                        width: 300
+                        height: 160
+                        anchors.top: title.bottom
+                        color: "transparent"
+                        clip: true
+                        GridView {
+                            anchors.fill: parent
+                            model: ["myimage1.png", "myimage2.png", "myimage3.png", "myimage4.png"]
+
+                            delegate: Rectangle {
+                                width: 50
+                                height: 50
+
+                                Image {
+                                    width: parent.width
+                                    height: parent.height
+                                    source: "qrc:/" + modelData
+                                    TapHandler {
+                                        onTapped: {
+                                            // 将点击的图片设置为程序的背景
+                                            backgrondImage.source = "qrc:/" + modelData
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                //做一个分割线
+                Rectangle {
+                    width: 1 // 设置竖线的宽度
+                    height: 200 // 使Rectangle的高度与其父容器相同
+                    color: "black" // 设置竖线的颜色
+                }
+
+                ColumnLayout {
+                    Rectangle {
+                        id: store_background_show
+                        Text {
+                            text: qsTr("Customize the background picture")
+                        }
+                        width: 330
+                        height: 30
+                        color: "transparent"
+                    }
+
+                    Rectangle {
+                        id: custom_made
+                        width: 330
+                        height: 160
+                        color: "transparent"
+                        clip: true
+                        GridView {
+                            anchors.fill: parent
+                            id: _my_image
+                            ListModel {
+                                id: _background_model
+                            }
+                            delegate: ImageDelegate {}
+                        }
+                        component ImageDelegate: Rectangle {
+                            required property url imagefilePath
+                            required property int index
+
+                            Image {
+                                id: image
+                                width: 50
+                                height: 50
+                                source: imagefilePath
+
+                                MouseArea {
+                                    id: rightchangeback_or_not
+                                    anchors.fill: parent
+                                    acceptedButtons: Qt.RightButton
+                                    onReleased: {
+                                        if (mouse.button == Qt.RightButton) {
+                                            console.log("right button of Button clicked")
+                                            _my_image.currentIndex = index
+                                            rightchangeback()
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -303,9 +412,7 @@ Frame {
                     id: _songRect
                     opacity: 0.7
                     width: 250
-
                     height: 230
-
                     modal: true
                     focus: true
                     x: 350
