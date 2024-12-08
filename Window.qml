@@ -335,7 +335,7 @@ ApplicationWindow {
                 console.log("The number is:", number)
                 actions.pomodoroClock.interval = number * 60000
                 actions.pomodoroClock.running = true
-                actions.pomodoroClockstop.interval = (number + 1) * 60000
+                actions.pomodoroClockstop.interval = (number + 5) * 60000
                 actions.pomodoroClockstop.running = true
             }
         }
